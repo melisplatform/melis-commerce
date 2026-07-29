@@ -10,6 +10,7 @@ import { fetchCountries, type CountryItem } from '../../countries/api'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td } from '../../../shared/styles'
 import { ChevronDownIcon, TrashIcon } from '../../../shared/icons'
 import { notify } from '../../../shared/notify'
+import { useIsNarrow } from '../../../shared/useIsNarrow'
 import type { CSSProperties } from 'react'
 
 const qtyBtn: CSSProperties = { ...btnGhost, width: 24, height: 24, padding: 0, justifyContent: 'center' }
@@ -18,6 +19,7 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
   countryId: number | null; onBack: () => void; onNext: (countryId: number) => void
 }) {
   const t = makeT(DICT)
+  const narrow = useIsNarrow()
   const [countries, setCountries] = useState<CountryItem[]>([])
   const [country, setCountry] = useState<number | null>(countryId)
   const [products, setProducts] = useState<CheckoutProduct[]>([])
@@ -69,7 +71,7 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
   async function add(v: CheckoutVariant) {
     if (adding) return
     setAdding(v.id)
-    try { const r = await checkoutBasketAdd(v.id, 1); setBasket(r.items) }
+    try { const r = await checkoutBasketAdd(v.id, 1); setBasket(r.items); notify('ok', t('checkout_step_products'), t('checkout_added_to_basket', { sku: v.sku })) }
     catch (e) { notify('ko', t('checkout_step_products'), e instanceof Error ? e.message : 'Error') }
     finally { setAdding(null) }
   }
@@ -117,9 +119,9 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
       {!country ? (
         <div style={{ padding: 30, textAlign: 'center', color: 'var(--color-muted-foreground)' }}>{t('checkout_choose_country_hint')}</div>
       ) : (
-        <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ ...card, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', flexDirection: narrow ? 'column' : 'row', gap: 20, alignItems: 'flex-start' }}>
+          <div style={{ flex: 1, minWidth: 0, width: narrow ? '100%' : undefined }}>
+            <div style={{ ...card, overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}>
                   <tr><th style={{ ...th, width: 30 }} /><th style={th}>{t('checkout_col_product')}</th><th style={{ ...th, width: 90, textAlign: 'center' }}>{t('checkout_col_variants')}</th></tr>
@@ -144,8 +146,8 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
                             ) : (
                               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                                 {variants.map((v) => (
-                                  <div key={v.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0' }}>
-                                    <code style={{ fontSize: 12, minWidth: 90 }}>{v.sku}</code>
+                                  <div key={v.id} style={{ display: 'flex', flexWrap: narrow ? 'wrap' : 'nowrap', alignItems: 'center', gap: 10, padding: '6px 0' }}>
+                                    <code style={{ fontSize: 12, minWidth: narrow ? undefined : 90 }}>{v.sku}</code>
                                     <span style={{ fontSize: 12, color: 'var(--color-muted-foreground)', flex: 1 }}>{v.attributes || '—'}</span>
                                     <span style={{ fontSize: 12, color: v.stock && v.stock > 0 ? '#16a34a' : '#dc2626' }}>{v.stock ?? '—'} {t('checkout_in_stock')}</span>
                                     <span style={{ fontSize: 13, fontWeight: 600, minWidth: 60, textAlign: 'right' }}>{v.price != null ? v.price.toFixed(2) : '—'}</span>
@@ -173,7 +175,7 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
             )}
           </div>
 
-          <div style={{ width: 320, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 12, position: 'sticky', top: 0 }}>
+          <div style={{ width: narrow ? '100%' : 320, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 12, position: narrow ? undefined : 'sticky', top: narrow ? undefined : 0 }}>
             <div style={{ ...card, padding: 16 }}>
               <h4 style={{ fontSize: 14, fontWeight: 600, margin: '0 0 12px' }}>{t('checkout_basket_title')}</h4>
               {basket.length === 0 ? (

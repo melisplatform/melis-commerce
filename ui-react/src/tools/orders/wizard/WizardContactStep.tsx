@@ -36,13 +36,13 @@ export function WizardContactStep({ onNext }: { onNext: (contactId: number) => v
       key: 'status', label: t('col_status'), width: 70,
       render: (r) => <span style={{ display: 'inline-flex', width: 10, height: 10, borderRadius: 999, background: r.status === 1 ? '#16a34a' : '#dc2626' }} />,
     },
-    { key: 'contact', label: t('checkout_col_contact'), render: (r) => `${r.firstname} ${r.name}`.trim() },
+    { key: 'contact', label: t('checkout_col_contact'), essential: true, render: (r) => `${r.firstname} ${r.name}`.trim() },
     { key: 'group', label: t('checkout_col_group'), render: (r) => r.groupName || '—' },
     { key: 'email', label: t('col_email'), render: (r) => r.email },
     { key: 'orders', label: t('checkout_col_orders'), width: 90, render: (r) => r.numOrders },
     { key: 'lastOrder', label: t('checkout_col_last_order'), render: (r) => (r.lastOrder ? r.lastOrder.slice(0, 10) : '—') },
     {
-      key: 'action', label: '', width: 60,
+      key: 'action', label: '', width: 60, essential: true,
       render: (r) => (
         <button style={{ ...btnPrimary, height: 30, padding: '0 10px' }} disabled={selecting === r.id} onClick={() => pick(r)}>
           {selecting === r.id ? '…' : '→'}

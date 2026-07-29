@@ -3,10 +3,12 @@ import { card, inputCss, btnGhost, iconBtn, label } from './styles'
 import { PlusIcon, TrashIcon } from './icons'
 import { ConfirmModal } from './ConfirmModal'
 import { type Address, type AddressOptions, newAddress } from './address'
+import { useIsNarrow } from './useIsNarrow'
 import type { T } from './i18n'
 
 /** Formulaire d'adresse (réutilisé : modale d'ajout + panneau d'édition de droite + wizard commande). */
 export function AddressForm({ value, onChange, opts, t }: { value: Address; onChange: (a: Address) => void; opts: AddressOptions; t: T }) {
+  const narrow = useIsNarrow()
   const set = <K extends keyof Address>(k: K, v: Address[K]) => onChange({ ...value, [k]: v })
   const field = (k: keyof Address, lbl: string) => (
     <div><label style={label}>{lbl}</label><input style={inputCss} value={String(value[k] ?? '')} onChange={(e) => set(k, e.target.value as never)} autoComplete="off" /></div>
@@ -14,7 +16,7 @@ export function AddressForm({ value, onChange, opts, t }: { value: Address; onCh
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div><label style={label}>{t('ad_name')}<span style={{ color: '#ef4444', marginLeft: 2 }}>*</span></label><input style={inputCss} value={value.addressName} onChange={(e) => set('addressName', e.target.value)} autoComplete="off" /></div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: 12 }}>
         <div><label style={label}>{t('ad_type')}<span style={{ color: '#ef4444', marginLeft: 2 }}>*</span></label>
           <select style={inputCss} value={value.type} onChange={(e) => set('type', Number(e.target.value))}>
             {opts.types.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
@@ -27,11 +29,11 @@ export function AddressForm({ value, onChange, opts, t }: { value: Address; onCh
           </select>
         </div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>{field('firstname', t('ad_firstname'))}{field('name', t('ad_lastname'))}{field('middleName', t('ad_middlename'))}</div>
-      <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 12 }}>{field('num', t('ad_num'))}{field('street', t('ad_street'))}</div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>{field('building', t('ad_building'))}{field('zipcode', t('ad_zip'))}</div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>{field('city', t('ad_city'))}{field('state', t('ad_state'))}</div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>{field('country', t('ad_country'))}{field('phoneMobile', t('ad_phone'))}</div>
+      <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr 1fr', gap: 12 }}>{field('firstname', t('ad_firstname'))}{field('name', t('ad_lastname'))}{field('middleName', t('ad_middlename'))}</div>
+      <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '120px 1fr', gap: 12 }}>{field('num', t('ad_num'))}{field('street', t('ad_street'))}</div>
+      <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: 12 }}>{field('building', t('ad_building'))}{field('zipcode', t('ad_zip'))}</div>
+      <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: 12 }}>{field('city', t('ad_city'))}{field('state', t('ad_state'))}</div>
+      <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: 12 }}>{field('country', t('ad_country'))}{field('phoneMobile', t('ad_phone'))}</div>
     </div>
   )
 }
@@ -44,6 +46,7 @@ export function AddressForm({ value, onChange, opts, t }: { value: Address; onCh
 export function AddressEditor({ addresses, onChange, options, t }: {
   addresses: Address[]; onChange: (a: Address[]) => void; options: AddressOptions; t: T
 }) {
+  const narrow = useIsNarrow()
   const [selId, setSelId] = useState<number | null>(null)
   const [modal, setModal] = useState<Address | null>(null)
   const [modalErr, setModalErr] = useState<string | null>(null)
@@ -69,15 +72,15 @@ export function AddressEditor({ addresses, onChange, options, t }: {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginBottom: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginBottom: 16, flexWrap: narrow ? 'wrap' : 'nowrap' }}>
         <h3 style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>{t('ad_section')}</h3>
-        <button style={{ ...btnGhost, height: 34, color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }} onClick={() => { setModal(newAddress(defType)); setModalErr(null) }}><PlusIcon />{t('ad_add')}</button>
+        <button style={{ ...btnGhost, height: 34, color: 'var(--color-primary)', borderColor: 'var(--color-primary)', flex: narrow ? '1 1 100%' : undefined, justifyContent: narrow ? 'center' : undefined }} onClick={() => { setModal(newAddress(defType)); setModalErr(null) }}><PlusIcon />{t('ad_add')}</button>
       </div>
       {addresses.length === 0 ? (
         <div style={{ borderRadius: 8, background: 'var(--color-muted,rgba(0,0,0,.05))', color: 'var(--color-muted-foreground)', padding: '12px 16px', fontSize: 14 }}>{t('ad_empty')}</div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 20, alignItems: 'start' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '220px 1fr', gap: 20, alignItems: 'start' }}>
+          <div style={{ display: 'flex', flexDirection: narrow ? 'row' : 'column', flexWrap: narrow ? 'wrap' : 'nowrap', gap: 6 }}>
             {addresses.map((a) => {
               const sel = a.id === selId
               return (

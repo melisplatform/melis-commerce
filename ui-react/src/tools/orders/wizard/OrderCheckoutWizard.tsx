@@ -3,6 +3,7 @@ import { makeT } from '../../../shared/i18n'
 import { DICT } from '../dict'
 import { UserIcon, UsersIcon, CartIcon, MapPinIcon, FileTextIcon, CreditCardIcon, CheckIcon } from '../../../shared/icons'
 import { card } from '../../../shared/styles'
+import { useIsNarrow } from '../../../shared/useIsNarrow'
 import { checkoutStart, checkoutAbandon, checkoutSetStep, fetchCheckoutState } from '../api'
 import { openSubTab } from '../../../shared/subtabs'
 import { WizardContactStep } from './WizardContactStep'
@@ -39,6 +40,7 @@ interface WizardState {
  *  état côté serveur (session), pas de duplication de la logique métier ici. */
 export default function OrderCheckoutWizard({ base }: { base: string }) {
   const t = makeT(DICT)
+  const narrow = useIsNarrow()
   const subTabPath = `${base}/new`
   const [step, setStep] = useState(0)
   const [ready, setReady] = useState(false)
@@ -132,13 +134,13 @@ export default function OrderCheckoutWizard({ base }: { base: string }) {
           const done = i < step
           return (
             <div key={s.key} style={{
-              flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '14px 8px',
+              flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: narrow ? '10px 2px' : '14px 8px',
               background: active ? 'var(--color-primary)' : done ? 'var(--color-muted)' : 'transparent',
               color: active ? 'var(--color-primary-foreground,#fff)' : 'var(--color-foreground)',
               borderRight: i < STEPS.length - 1 ? '1px solid var(--color-border)' : undefined,
             }}>
               <s.Icon />
-              <span style={{ fontSize: 11, fontWeight: 600, textAlign: 'center' }}>{t(`checkout_step_${s.key}`)}</span>
+              {!narrow && <span style={{ fontSize: 11, fontWeight: 600, textAlign: 'center' }}>{t(`checkout_step_${s.key}`)}</span>}
             </div>
           )
         })}

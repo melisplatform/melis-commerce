@@ -1,7 +1,9 @@
 import { useState, type CSSProperties, type ReactNode } from 'react'
 import { card, vmBtn, btnGhost } from './styles'
-import { SparklesIcon, LayoutIcon } from './icons'
+import { MelisMIcon, LayoutIcon } from './icons'
+import { currentLang } from './i18n'
 import type { T } from './i18n'
+import { useIsNarrow } from './useIsNarrow'
 
 /** Badge de statut Actif/Inactif. */
 export function StatusBadge({ active, t }: { active: boolean; t: T }) {
@@ -31,12 +33,19 @@ export function Kpi({ label, value, icon, iconBg, iconColor }: { label: string; 
   )
 }
 
-/** Toggle segmenté New/Old. */
+/**
+ * Toggle segmenté New/Old — mêmes libellés/icône que melis-core (MelisClassicView.tsx).
+ * Sur mobile (viewport étroit), les libellés textuels disparaissent (icône seule) : le mot
+ * "Nouveau"/"Ancien" à côté du titre + refresh + bouton Créer force sinon un débordement
+ * horizontal — l'icône seule suffit à distinguer les 2 boutons.
+ */
 export function ViewModeToggle({ mode, onReact, onOld }: { mode: 'react' | 'old'; onReact: () => void; onOld: () => void }) {
+  const isFr = currentLang() === 'fr'
+  const narrow = useIsNarrow(480)
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, borderRadius: 10, border: '1px solid var(--color-border)', background: 'var(--color-muted,rgba(0,0,0,.04))', padding: 4 }}>
-      <button style={vmBtn(mode === 'react')} onClick={onReact}><SparklesIcon />New</button>
-      <button style={vmBtn(mode === 'old')} onClick={onOld}><LayoutIcon />Old</button>
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, borderRadius: 10, border: '1px solid var(--color-border)', background: 'var(--color-muted,rgba(0,0,0,.04))', padding: 4, flexShrink: 0 }}>
+      <button style={vmBtn(mode === 'react')} onClick={onReact} title={isFr ? 'Nouveau' : 'New'}><MelisMIcon />{!narrow && (isFr ? 'Nouveau' : 'New')}</button>
+      <button style={vmBtn(mode === 'old')} onClick={onOld} title={isFr ? 'Ancien' : 'Old'}><LayoutIcon />{!narrow && (isFr ? 'Ancien' : 'Old')}</button>
     </div>
   )
 }

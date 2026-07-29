@@ -1,6 +1,8 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { Fragment, useMemo, useState, type ReactNode } from 'react'
 import { card, inputCss, th, td, btnGhost, iconBtn } from '../../shared/styles'
 import { RefreshIcon } from '../../shared/icons'
+import { ExpandToggle, HiddenColsRow } from '../../shared/ExpandableRow'
+import { useIsNarrow } from '../../shared/useIsNarrow'
 
 /**
  * Table d'assignation (clients/produits) façon design system de l'app — carte, recherche,
@@ -13,6 +15,8 @@ export interface AssignCol<T> {
   render?: (row: T) => ReactNode
   align?: 'left' | 'center' | 'right'
   width?: number | string
+  /** Reste visible sur mobile (sinon consultable via le "+" par ligne). */
+  essential?: boolean
 }
 
 export function AssignTable<T>({ title, columns, rows, rowKey, emptyText, onRefresh, actions, t }: {
@@ -25,10 +29,15 @@ export function AssignTable<T>({ title, columns, rows, rowKey, emptyText, onRefr
   actions?: (row: T) => ReactNode
   t: (k: string) => string
 }) {
+  const narrow = useIsNarrow()
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const [sortKey, setSortKey] = useState<string | null>(null)
   const [sortAsc, setSortAsc] = useState(true)
+  const [expanded, setExpanded] = useState<Set<string | number>>(new Set())
+  function toggleExpand(id: string | number) {
+    setExpanded((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
+  }
   const LIMIT = 10
 
   const filtered = useMemo(() => {
@@ -63,12 +72,20 @@ export function AssignTable<T>({ title, columns, rows, rowKey, emptyText, onRefr
   }
   const arrow = (key: string) => sortKey === key ? (sortAsc ? ' ↑' : ' ↓') : ''
 
+  const hasEssentialFlag = columns.some((c) => c.essential)
+  const visibleCols = narrow ? columns.filter((c, i) => (hasEssentialFlag ? c.essential : i === 0)) : columns
+  const hasHidden = narrow && visibleCols.length < columns.length
+  const colSpan = visibleCols.length + (actions ? 1 : 0) + (hasHidden ? 1 : 0)
+  const eColDefs = columns.map((c) => ({ id: c.key, visible: visibleCols.includes(c) }))
+  const labelFor = (id: string) => columns.find((c) => c.key === id)?.label ?? id
+  const cellFor = (row: T, id: string) => { const c = columns.find((x) => x.key === id); return c ? (c.render ? c.render(row) : String(c.value(row))) : '—' }
+
   return (
     <div style={{ ...card, padding: 20 }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 14, flexWrap: narrow ? 'wrap' : 'nowrap' }}>
         {title && <h3 style={{ fontSize: 15, fontWeight: 600, margin: 0 }}>{title}</h3>}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 'auto' }}>
-          <input style={{ ...inputCss, height: 32, width: 160 }} placeholder={t('search')}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: narrow ? 0 : 'auto', flexBasis: narrow ? '100%' : undefined }}>
+          <input style={{ ...inputCss, height: 32, width: narrow ? '100%' : 160, flex: narrow ? 1 : undefined }} placeholder={t('search')}
             value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} />
           {onRefresh && (
             <button style={iconBtn} title={t('refresh')} onClick={onRefresh}><RefreshIcon /></button>
@@ -76,12 +93,13 @@ export function AssignTable<T>({ title, columns, rows, rowKey, emptyText, onRefr
         </div>
       </div>
 
-      <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden' }}>
+      <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}>
             <tr>
-              {columns.map((c) => (
-                <th key={c.key} style={{ ...th, textAlign: c.align ?? 'left', width: c.width, cursor: 'pointer', userSelect: 'none' }} onClick={() => onSort(c.key)}>
+              {hasHidden && <th style={{ ...th, width: 32 }} />}
+              {visibleCols.map((c) => (
+                <th key={c.key} style={{ ...th, textAlign: c.align ?? 'left', width: narrow ? undefined : c.width, cursor: 'pointer', userSelect: 'none' }} onClick={() => onSort(c.key)}>
                   {c.label}{arrow(c.key)}
                 </th>
               ))}
@@ -90,15 +108,26 @@ export function AssignTable<T>({ title, columns, rows, rowKey, emptyText, onRefr
           </thead>
           <tbody>
             {paged.length === 0 ? (
-              <tr><td colSpan={columns.length + (actions ? 1 : 0)} style={{ ...td, textAlign: 'center', padding: '24px', color: 'var(--color-muted-foreground)' }}>{emptyText}</td></tr>
-            ) : paged.map((row) => (
-              <tr key={rowKey(row)}>
-                {columns.map((c) => (
-                  <td key={c.key} style={{ ...td, textAlign: c.align ?? 'left' }}>{c.render ? c.render(row) : String(c.value(row))}</td>
-                ))}
-                {actions && <td style={{ ...td, textAlign: 'right' }}>{actions(row)}</td>}
-              </tr>
-            ))}
+              <tr><td colSpan={colSpan} style={{ ...td, textAlign: 'center', padding: '24px', color: 'var(--color-muted-foreground)' }}>{emptyText}</td></tr>
+            ) : paged.map((row) => {
+              const key = rowKey(row)
+              return (
+                <Fragment key={key}>
+                  <tr>
+                    {hasHidden && (
+                      <td style={td}><ExpandToggle expanded={expanded.has(key)} onClick={() => toggleExpand(key)} /></td>
+                    )}
+                    {visibleCols.map((c) => (
+                      <td key={c.key} style={{ ...td, textAlign: c.align ?? 'left' }}>{c.render ? c.render(row) : String(c.value(row))}</td>
+                    ))}
+                    {actions && <td style={{ ...td, textAlign: 'right' }}>{actions(row)}</td>}
+                  </tr>
+                  {hasHidden && expanded.has(key) && (
+                    <HiddenColsRow cols={eColDefs} labelFor={labelFor} renderValue={(id) => cellFor(row, id)} colSpan={colSpan} narrow={narrow} />
+                  )}
+                </Fragment>
+              )
+            })}
           </tbody>
         </table>
       </div>

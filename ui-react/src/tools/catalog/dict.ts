@@ -38,6 +38,7 @@ export const DICT = mergeDict({
     lang_display: 'Langue d’affichage', reorder_hint: 'Double-clic pour éditer · clic droit pour le menu · glisser-déposer pour réordonner.',
     drag_hint: 'Glisser pour réordonner', no_name: '(sans nom)', empty_tree: 'Aucun résultat.', add_catalog_root: 'Nouveau catalogue',
     editor_empty: 'Sélectionnez un catalogue ou une catégorie dans l’arbre, ou créez-en un nouveau.',
+    back_to_tree: 'Retour à l’arbre',
   },
   en: {
     title: 'Catalogs / Categories', subtitle: 'Manage your catalogs and categories. Reorder them by drag and drop.',
@@ -75,5 +76,6 @@ export const DICT = mergeDict({
     lang_display: 'Display language', reorder_hint: 'Double-click to edit · right-click for menu · drag and drop to reorder.',
     drag_hint: 'Drag to reorder', no_name: '(no name)', empty_tree: 'No result.', add_catalog_root: 'New catalog',
     editor_empty: 'Select a catalog or category in the tree, or create a new one.',
+    back_to_tree: 'Back to tree',
   },
 })

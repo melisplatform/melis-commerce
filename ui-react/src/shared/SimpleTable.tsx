@@ -1,9 +1,11 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { Fragment, useMemo, useState, type ReactNode } from 'react'
 import { card, th, td, inputCss, iconBtn } from './styles'
 import { RefreshIcon } from './icons'
+import { ExpandToggle, HiddenColsRow } from './ExpandableRow'
+import { useIsNarrow } from './useIsNarrow'
 import type { T } from './i18n'
 
-export interface SimpleCol<TRow> { key: string; label: string; render: (row: TRow) => ReactNode; width?: number }
+export interface SimpleCol<TRow> { key: string; label: string; render: (row: TRow) => ReactNode; width?: number; essential?: boolean }
 
 /**
  * Tableau relationnel générique (onglets Contacts/Adresses/Commandes/Fichiers/Association)
@@ -29,10 +31,24 @@ export function SimpleTable<TRow>({
   /** Libellé de fin de liste (déjà traduit par l'appelant, ex. `t('values_count', {n})`) — affiché quand paginate=false. */
   countLabel?: (n: number) => string
 }) {
+  const narrow = useIsNarrow()
   const [q, setQ] = useState('')
   const [limit, setLimit] = useState(10)
   const [page, setPage] = useState(1)
+  const [expanded, setExpanded] = useState<Set<string | number>>(new Set())
+  function toggleExpand(id: string | number) {
+    setExpanded((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
+  }
   const tr = (k: string, v?: Record<string, string | number>) => (t ? t(k, v) : k)
+
+  // Sur mobile, ne garde que les colonnes marquées `essential` (ou la 1ère colonne à défaut) —
+  // le reste se consulte via le "+" par ligne (même mécanisme que les tables principales).
+  const hasEssentialFlag = cols.some((c) => c.essential)
+  const visible = narrow ? cols.filter((c, i) => (hasEssentialFlag ? c.essential : i === 0)) : cols
+  const hasHidden = narrow && visible.length < cols.length
+  const totalCols = visible.length + (hasHidden ? 1 : 0)
+  const eColDefs = cols.map((c) => ({ id: c.key, visible: visible.includes(c) }))
+  const labelFor = (id: string) => cols.find((c) => c.key === id)?.label ?? id
 
   const filtered = useMemo(() => {
     if (!search || !q.trim()) return rows
@@ -75,17 +91,33 @@ export function SimpleTable<TRow>({
         </div>
       )}
 
-      <div style={{ ...card, overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 520 }}>
+      <div style={{ ...card, overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: narrow ? undefined : 520 }}>
           <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}>
-            <tr>{cols.map((c) => <th key={c.key} style={{ ...th, ...(c.width ? { width: c.width } : {}) }}>{c.label}</th>)}</tr>
+            <tr>
+              {hasHidden && <th style={{ ...th, width: 32 }} />}
+              {visible.map((c) => <th key={c.key} style={{ ...th, ...(c.width && !narrow ? { width: c.width } : {}) }}>{c.label}</th>)}
+            </tr>
           </thead>
           <tbody>
             {view.length === 0 ? (
-              <tr><td style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: '32px 16px' }} colSpan={cols.length}>{loading ? (loadingText ?? '…') : empty}</td></tr>
-            ) : view.map((r) => (
-              <tr key={rowKey(r)}>{cols.map((c) => <td key={c.key} style={td}>{c.render(r)}</td>)}</tr>
-            ))}
+              <tr><td style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: '32px 16px' }} colSpan={totalCols}>{loading ? (loadingText ?? '…') : empty}</td></tr>
+            ) : view.map((r) => {
+              const key = rowKey(r)
+              return (
+                <Fragment key={key}>
+                  <tr>
+                    {hasHidden && (
+                      <td style={td}><ExpandToggle expanded={expanded.has(key)} onClick={() => toggleExpand(key)} /></td>
+                    )}
+                    {visible.map((c) => <td key={c.key} style={td}>{c.render(r)}</td>)}
+                  </tr>
+                  {hasHidden && expanded.has(key) && (
+                    <HiddenColsRow cols={eColDefs} labelFor={labelFor} renderValue={(id) => cols.find((c) => c.key === id)?.render(r)} colSpan={totalCols} narrow={narrow} />
+                  )}
+                </Fragment>
+              )
+            })}
           </tbody>
         </table>
       </div>

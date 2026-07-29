@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import {
   fetchOrderReturns, saveOrderAddress, saveOrderShipping, saveOrderMessage,
   type OrderBasketItem, type OrderAddress, type OrderPayment, type OrderPaymentCoupon, type OrderShipping, type OrderMessage, type OrderReturn,
@@ -7,6 +7,8 @@ import { card, inputCss, th, td, label, btnPrimary, btnGhost } from '../../share
 import { fmtDate, currentLang, type T } from '../../shared/i18n'
 import { PackageIcon, MapPinIcon, TruckIcon, MessageSquareIcon, ChevronDownIcon, UserIcon } from '../../shared/icons'
 import { DatePicker } from '../../shared/DatePicker'
+import { ExpandToggle, HiddenColsRow } from '../../shared/ExpandableRow'
+import { useIsNarrow } from '../../shared/useIsNarrow'
 
 const sectionTitle = { fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 6 } as const
 const hint = { fontSize: 12, color: 'var(--color-muted-foreground)', marginTop: 4 } as const
@@ -46,32 +48,56 @@ function dateParts(value: string | null | undefined): { day: string; month: stri
 
 // ── Basket ────────────────────────────────────────────────────────────────────
 export function BasketTab({ basket, t }: { basket: OrderBasketItem[]; t: T }) {
+  const narrow = useIsNarrow()
+  const [expanded, setExpanded] = useState<Set<number>>(new Set())
+  function toggleExpand(id: number) {
+    setExpanded((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
+  }
   const fmtPrice = (v: number) => v.toLocaleString(currentLang() === 'fr' ? 'fr-FR' : 'en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   const total = basket.reduce((s, i) => s + i.qty * i.priceGross, 0)
-  const headers = [t('basket_col_sku'), t('basket_col_name'), t('basket_col_category'), t('basket_col_qty'), t('basket_col_price_net'), t('basket_col_price_gross'), t('basket_col_currency')]
+  const BASKET_COLS: { id: string; label: string; render: (row: OrderBasketItem) => import('react').ReactNode; style?: import('react').CSSProperties }[] = [
+    { id: 'sku', label: t('basket_col_sku'), render: (row) => <code style={{ fontSize: 12 }}>{row.sku}</code> },
+    { id: 'name', label: t('basket_col_name'), render: (row) => row.name },
+    { id: 'category', label: t('basket_col_category'), render: (row) => row.category || '—' },
+    { id: 'qty', label: t('basket_col_qty'), render: (row) => row.qty, style: { ...td, textAlign: 'center' } },
+    { id: 'price_net', label: t('basket_col_price_net'), render: (row) => fmtPrice(row.priceNet), style: { ...td, textAlign: 'right' } },
+    { id: 'price_gross', label: t('basket_col_price_gross'), render: (row) => fmtPrice(row.priceGross), style: { ...td, textAlign: 'right', fontWeight: 600 } },
+    { id: 'currency', label: t('basket_col_currency'), render: (row) => row.currency },
+  ]
+  const visibleBasketCols = narrow ? BASKET_COLS.filter((c) => c.id === 'name') : BASKET_COLS
+  const hasHiddenBasketCols = narrow && visibleBasketCols.length < BASKET_COLS.length
+  const basketColSpan = visibleBasketCols.length + (hasHiddenBasketCols ? 1 : 0)
+  const basketColDefs = BASKET_COLS.map((c) => ({ id: c.id, visible: visibleBasketCols.includes(c) }))
   return (
     <div style={{ ...card, padding: 28 }}>
       <h3 style={sectionTitle}><PackageIcon />{t('section_basket')}</h3>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr>{headers.map((h) => <th key={h} style={th}>{h}</th>)}</tr>
-        </thead>
-        <tbody>
-          {basket.length === 0 ? (
-            <tr><td colSpan={headers.length} style={{ ...td, textAlign: 'center', padding: '28px 16px', color: 'var(--color-muted-foreground)' }}>{t('no_basket_items')}</td></tr>
-          ) : basket.map((row) => (
-            <tr key={row.id}>
-              <td style={td}><code style={{ fontSize: 12 }}>{row.sku}</code></td>
-              <td style={td}>{row.name}</td>
-              <td style={td}>{row.category || '—'}</td>
-              <td style={{ ...td, textAlign: 'center' }}>{row.qty}</td>
-              <td style={{ ...td, textAlign: 'right' }}>{fmtPrice(row.priceNet)}</td>
-              <td style={{ ...td, textAlign: 'right', fontWeight: 600 }}>{fmtPrice(row.priceGross)}</td>
-              <td style={td}>{row.currency}</td>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr>
+              {hasHiddenBasketCols && <th style={{ ...th, width: 32 }} />}
+              {visibleBasketCols.map((c) => <th key={c.id} style={c.style ? { ...th, textAlign: c.style.textAlign } : th}>{c.label}</th>)}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {basket.length === 0 ? (
+              <tr><td colSpan={basketColSpan} style={{ ...td, textAlign: 'center', padding: '28px 16px', color: 'var(--color-muted-foreground)' }}>{t('no_basket_items')}</td></tr>
+            ) : basket.map((row) => (
+              <Fragment key={row.id}>
+                <tr>
+                  {hasHiddenBasketCols && (
+                    <td style={td}><ExpandToggle expanded={expanded.has(row.id)} onClick={() => toggleExpand(row.id)} /></td>
+                  )}
+                  {visibleBasketCols.map((c) => <td key={c.id} style={c.style ?? td}>{c.render(row)}</td>)}
+                </tr>
+                {hasHiddenBasketCols && expanded.has(row.id) && (
+                  <HiddenColsRow cols={basketColDefs} labelFor={(id) => BASKET_COLS.find((c) => c.id === id)?.label ?? id} renderValue={(id) => BASKET_COLS.find((c) => c.id === id)?.render(row)} colSpan={basketColSpan} narrow={narrow} />
+                )}
+              </Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {basket.length > 0 && (
         <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end', fontSize: 15, fontWeight: 700 }}>
           Total: {fmtPrice(total)} {basket[0]?.currency ?? ''}
@@ -85,6 +111,7 @@ export function BasketTab({ basket, t }: { basket: OrderBasketItem[]; t: T }) {
 function AddressEditor({ addr, onChange, t, locked }: {
   addr: Omit<OrderAddress, 'id' | 'type'>; onChange: (a: Omit<OrderAddress, 'id' | 'type'>) => void; t: T; locked: boolean
 }) {
+  const narrow = useIsNarrow()
   const set = <K extends keyof typeof addr>(k: K, v: typeof addr[K]) => onChange({ ...addr, [k]: v })
   const civOptions = [['', t('field_civility')], ['1', 'Mr'], ['2', 'Mrs'], ['3', 'Ms']]
   const field = (k: keyof typeof addr, lbl: string) => (
@@ -97,7 +124,7 @@ function AddressEditor({ addr, onChange, t, locked }: {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       {field('company', t('field_company'))}
-      <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr 1fr', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '160px 1fr 1fr', gap: 12 }}>
         <div>
           <label style={label}>{t('field_civility')}</label>
           <select style={{ ...inputCss }} value={String(addr.civility ?? '')} disabled={locked}
@@ -109,16 +136,16 @@ function AddressEditor({ addr, onChange, t, locked }: {
         {field('name', t('field_name'))}
       </div>
       {field('middleName', t('field_middle_name'))}
-      <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '140px 1fr', gap: 12 }}>
         {field('num', t('field_num'))}{field('street', t('field_street'))}
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: 12 }}>
         {field('building', t('field_building'))}{field('stairs', t('field_stairs'))}
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 140px 1fr', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 140px 1fr', gap: 12 }}>
         {field('city', t('field_city'))}{field('zipcode', t('field_zipcode'))}{field('country', t('field_country'))}
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: 12 }}>
         {field('phoneMobile', t('field_phone_mobile'))}{field('phoneLandline', t('field_phone_landline'))}
       </div>
       {field('complementary', t('field_complementary'))}
@@ -137,6 +164,7 @@ export function AddressesTab({ orderId, billing, delivery, locked, t, onSaved, c
   orderId: number; billing: OrderAddress | null; delivery: OrderAddress | null;
   locked: boolean; t: T; onSaved?: () => void; can?: (cap: string) => boolean
 }) {
+  const narrow = useIsNarrow()
   const allow = (cap: string) => (can ? can(cap) : true)
   const [active, setActive] = useState<'billing' | 'delivery'>('billing')
   const [bAddr, setBAddr] = useState<Omit<OrderAddress, 'id' | 'type'>>(billing ?? EMPTY_ADDR)
@@ -167,9 +195,9 @@ export function AddressesTab({ orderId, billing, delivery, locked, t, onSaved, c
   const setAddr = active === 'billing' ? setBAddr : setDAddr
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 16, alignItems: 'start' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '200px 1fr', gap: 16, alignItems: 'start' }}>
       {/* Left sidebar — chips */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div style={{ display: 'flex', flexDirection: narrow ? 'row' : 'column', flexWrap: narrow ? 'wrap' : 'nowrap', gap: 6 }}>
         {items.map(({ key, label: lbl }) => {
           const sel = active === key
           return (
@@ -482,9 +510,24 @@ export function MessagesTab({ orderId, messages, t, onSaved, can }: {
 
 // ── Returns tab ───────────────────────────────────────────────────────────────
 export function ReturnsTab({ orderId, t }: { orderId: number; t: T }) {
+  const narrow = useIsNarrow()
+  const [expanded, setExpanded] = useState<Set<number>>(new Set())
+  function toggleExpand(id: number) {
+    setExpanded((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
+  }
   const [returns, setReturns] = useState<OrderReturn[]>([])
   useEffect(() => { fetchOrderReturns(orderId).then(setReturns).catch(() => null) }, [orderId])
-  const headers = [t('return_col_id'), t('return_col_sku'), t('return_col_product'), t('return_col_qty'), t('return_col_date')]
+  const RETURN_COLS: { id: string; label: string; render: (r: OrderReturn) => import('react').ReactNode; style?: import('react').CSSProperties }[] = [
+    { id: 'id', label: t('return_col_id'), render: (r) => `#${r.returnId}`, style: { ...td, color: 'var(--color-muted-foreground)' } },
+    { id: 'sku', label: t('return_col_sku'), render: (r) => <code style={{ fontSize: 12 }}>{r.sku || '—'}</code> },
+    { id: 'product', label: t('return_col_product'), render: (r) => r.product || '—' },
+    { id: 'qty', label: t('return_col_qty'), render: (r) => r.qty, style: { ...td, textAlign: 'center' } },
+    { id: 'date', label: t('return_col_date'), render: (r) => r.date ? fmtDate(r.date) : '—' },
+  ]
+  const visibleReturnCols = narrow ? RETURN_COLS.filter((c) => c.id === 'product') : RETURN_COLS
+  const hasHiddenReturnCols = narrow && visibleReturnCols.length < RETURN_COLS.length
+  const returnColSpan = visibleReturnCols.length + (hasHiddenReturnCols ? 1 : 0)
+  const returnColDefs = RETURN_COLS.map((c) => ({ id: c.id, visible: visibleReturnCols.includes(c) }))
 
   return (
     <div style={{ ...card, padding: 28 }}>
@@ -492,22 +535,33 @@ export function ReturnsTab({ orderId, t }: { orderId: number; t: T }) {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 14, height: 14 }}><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         {t('section_returns')}
       </h3>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead><tr>{headers.map((h) => <th key={h} style={th}>{h}</th>)}</tr></thead>
-        <tbody>
-          {returns.length === 0 ? (
-            <tr><td colSpan={headers.length} style={{ ...td, textAlign: 'center', padding: '28px', color: 'var(--color-muted-foreground)' }}>{t('no_returns')}</td></tr>
-          ) : returns.map((r) => (
-            <tr key={r.detailId}>
-              <td style={{ ...td, color: 'var(--color-muted-foreground)' }}>#{r.returnId}</td>
-              <td style={td}><code style={{ fontSize: 12 }}>{r.sku || '—'}</code></td>
-              <td style={td}>{r.product || '—'}</td>
-              <td style={{ ...td, textAlign: 'center' }}>{r.qty}</td>
-              <td style={td}>{r.date ? fmtDate(r.date) : '—'}</td>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr>
+              {hasHiddenReturnCols && <th style={{ ...th, width: 32 }} />}
+              {visibleReturnCols.map((c) => <th key={c.id} style={c.style ? { ...th, textAlign: c.style.textAlign } : th}>{c.label}</th>)}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {returns.length === 0 ? (
+              <tr><td colSpan={returnColSpan} style={{ ...td, textAlign: 'center', padding: '28px', color: 'var(--color-muted-foreground)' }}>{t('no_returns')}</td></tr>
+            ) : returns.map((r) => (
+              <Fragment key={r.detailId}>
+                <tr>
+                  {hasHiddenReturnCols && (
+                    <td style={td}><ExpandToggle expanded={expanded.has(r.detailId)} onClick={() => toggleExpand(r.detailId)} /></td>
+                  )}
+                  {visibleReturnCols.map((c) => <td key={c.id} style={c.style ?? td}>{c.render(r)}</td>)}
+                </tr>
+                {hasHiddenReturnCols && expanded.has(r.detailId) && (
+                  <HiddenColsRow cols={returnColDefs} labelFor={(id) => RETURN_COLS.find((c) => c.id === id)?.label ?? id} renderValue={(id) => RETURN_COLS.find((c) => c.id === id)?.render(r)} colSpan={returnColSpan} narrow={narrow} />
+                )}
+              </Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }

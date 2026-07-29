@@ -1,6 +1,7 @@
 import { useState, type CSSProperties } from 'react'
 import { card, iconBtn, btnGhost, btnPrimary, panelCss, panelTitle } from './styles'
 import { GripIcon, ExcelIcon, FileTextIcon, FileDownIcon } from './icons'
+import { useIsNarrow } from './useIsNarrow'
 import type { ColDef } from './columns'
 import type { T } from './i18n'
 
@@ -13,6 +14,7 @@ export function ExportModal<TItem>({ cols, items, getCell, labelFor, filename, s
   cols: ColDef[]; items: TItem[]; getCell: (it: TItem, colId: string) => string | number
   labelFor: (colId: string) => string; filename: string; sheetTitle: string; t: T; onClose: () => void
 }) {
+  const narrow = useIsNarrow()
   const [included, setIncluded] = useState<ColDef[]>(() => cols.filter((c) => c.visible))
   const [excluded, setExcluded] = useState<ColDef[]>(() => cols.filter((c) => !c.visible))
   const [format, setFormat] = useState<'xlsx' | 'csv'>('xlsx')
@@ -104,7 +106,7 @@ export function ExportModal<TItem>({ cols, items, getCell, labelFor, filename, s
             <button style={fmtBtn(format === 'xlsx')} onClick={() => setFormat('xlsx')}><ExcelIcon /> Excel (.xlsx)</button>
             <button style={fmtBtn(format === 'csv')} onClick={() => setFormat('csv')}><FileTextIcon /> CSV (.csv)</button>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: 8 }}>
             {pane('excluded', excluded)}
             {pane('included', included)}
           </div>

@@ -10,6 +10,7 @@ import { newAddress, type Address, type AddressOptions } from '../../../shared/a
 import { card, inputCss, btnPrimary, btnGhost, label } from '../../../shared/styles'
 import { PlusIcon } from '../../../shared/icons'
 import { notify } from '../../../shared/notify'
+import { useIsNarrow } from '../../../shared/useIsNarrow'
 
 const headerCss = { background: 'var(--color-primary)', color: 'var(--color-primary-foreground,#fff)', padding: '10px 16px', fontWeight: 600, fontSize: 14 } as const
 const bodyCss = { padding: 16, display: 'flex', flexDirection: 'column', gap: 12 } as const
@@ -26,6 +27,7 @@ function PickerCard({
   addresses: Address[]; mode: Mode; selectedId: number | null
   onSelect: (id: number) => void; onClear: () => void; onCreateNew: () => void
 }) {
+  const narrow = useIsNarrow()
   return (
     <div style={{ ...card, overflow: 'hidden' }}>
       <div style={headerCss}>{title}</div>
@@ -41,7 +43,7 @@ function PickerCard({
                 {addresses.map((a) => <option key={a.id} value={a.id}>{a.addressName}</option>)}
               </select>
             </div>
-            <button style={createBtnCss} onClick={onCreateNew}><PlusIcon />{createLabel}</button>
+            <button style={{ ...createBtnCss, whiteSpace: narrow ? 'normal' : 'nowrap', alignSelf: narrow ? 'stretch' : 'flex-end', justifyContent: narrow ? 'center' : undefined, textAlign: narrow ? 'center' : undefined }} onClick={onCreateNew}><PlusIcon />{createLabel}</button>
           </>
         )}
       </div>
@@ -55,6 +57,7 @@ function AddressFormCard({ mode, draft, options, saving, t, onDraftChange, onSav
   mode: Mode; draft: Address | null; options: AddressOptions; saving: boolean; t: T
   onDraftChange: (a: Address) => void; onSaveDraft: () => void
 }) {
+  const narrow = useIsNarrow()
   if (mode === 'none' || !draft) return null
   return (
     <div style={{ ...card, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -62,7 +65,7 @@ function AddressFormCard({ mode, draft, options, saving, t, onDraftChange, onSav
         <AddressForm value={draft} onChange={onDraftChange} opts={options} t={t} />
       </fieldset>
       {mode === 'new' && (
-        <button style={{ ...btnPrimary, alignSelf: 'flex-start' }} disabled={saving} onClick={onSaveDraft}>
+        <button style={{ ...btnPrimary, alignSelf: narrow ? 'stretch' : 'flex-start', whiteSpace: narrow ? 'normal' : 'nowrap', justifyContent: narrow ? 'center' : undefined }} disabled={saving} onClick={onSaveDraft}>
           {saving ? '…' : t('checkout_save_addresses')}
         </button>
       )}
@@ -74,6 +77,7 @@ export function WizardAddressesStep({ clientId, onBack, onNext }: {
   clientId: number; onBack: () => void; onNext: (billingId: number, deliveryId: number) => void
 }) {
   const t = makeT(DICT)
+  const narrow = useIsNarrow()
   const [addresses, setAddresses] = useState<Address[]>([])
   const [options, setOptions] = useState<AddressOptions>({ types: [], civilities: [] })
   const [loading, setLoading] = useState(false)
@@ -172,7 +176,7 @@ export function WizardAddressesStep({ clientId, onBack, onNext }: {
       {loading ? (
         <div style={{ padding: 24, textAlign: 'center', color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: 20, alignItems: 'start' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <PickerCard
               title={t('checkout_delivery_address')} selectLabel={t('checkout_delivery_select')} choosePh={t('checkout_choose_ph')}

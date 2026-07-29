@@ -3,6 +3,7 @@ import { card, iconBtn, btnGhost, panelCss, panelTitle } from './styles'
 import { GripIcon } from './icons'
 import type { ColDef } from './columns'
 import type { T } from './i18n'
+import { useIsNarrow } from './useIsNarrow'
 
 /**
  * Gestionnaire de colonnes générique : popover 2 panneaux (Masquées / Visibles) avec
@@ -12,6 +13,7 @@ export function ColManager({ cols, labelFor, onChange, onClose, save, defaults, 
   cols: ColDef[]; labelFor: (id: string) => string; onChange: (c: ColDef[]) => void
   onClose: () => void; save: (c: ColDef[]) => void; defaults: ColDef[]; t: T
 }) {
+  const narrow = useIsNarrow()
   const [dragId, setDragId] = useState<string | null>(null)
   const [over, setOver] = useState<{ id: string; panel: 'visible' | 'hidden' } | null>(null)
   const shown = cols.filter((c) => c.visible)
@@ -48,13 +50,18 @@ export function ColManager({ cols, labelFor, onChange, onClose, save, defaults, 
 
   const empty: CSSProperties = { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: 'var(--color-muted-foreground)', opacity: 0.5, padding: '16px 0' }
 
-  return (
-    <div style={{ ...card, position: 'absolute', right: 0, top: '100%', marginTop: 6, zIndex: 50, width: 380, maxWidth: 'calc(100vw - 1rem)' }}>
+  const panel = (
+    <div style={{
+      ...card, zIndex: 50, width: 380, maxWidth: narrow ? 'calc(100vw - 2rem)' : 'calc(100vw - 1rem)',
+      ...(narrow
+        ? { position: 'fixed', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }
+        : { position: 'absolute', right: 0, top: '100%', marginTop: 6 }),
+    }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderBottom: '1px solid var(--color-border)' }}>
         <span style={{ fontSize: 14, fontWeight: 600 }}>{t('columns')}</span>
         <button style={{ ...iconBtn, width: 22, height: 22 }} onClick={onClose}>✕</button>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, padding: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, padding: 12, overflow: narrow ? 'auto' : undefined }}>
         <div style={panelCss}
           onDragOver={(e) => { e.preventDefault(); if (over?.id !== '__panel__' || over?.panel !== 'hidden') setOver({ id: '__panel__', panel: 'hidden' }) }}
           onDrop={(e) => { e.preventDefault(); drop('hidden') }}>
@@ -72,6 +79,14 @@ export function ColManager({ cols, labelFor, onChange, onClose, save, defaults, 
         <button style={{ ...btnGhost, width: '100%', height: 30, border: 0, justifyContent: 'center', color: 'var(--color-muted-foreground)' }}
           onClick={() => { onChange(defaults); save(defaults) }}>{t('reset')}</button>
       </div>
+    </div>
+  )
+
+  if (!narrow) return panel
+  return (
+    <div onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
+      style={{ position: 'fixed', inset: 0, zIndex: 49, background: 'rgba(0,0,0,.4)' }}>
+      {panel}
     </div>
   )
 }

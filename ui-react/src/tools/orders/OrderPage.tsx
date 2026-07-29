@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   fetchOrders, fetchOrderStats, fetchOrderStatuses, fetchOrderById,
@@ -14,7 +14,9 @@ import { CartIcon, ShoppingCartKpiIcon, PackageIcon, CalendarIcon, PlusIcon, Ref
 import { Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { DateRangeFilter } from '../../shared/DateRangeFilter'
-import { makeColStore, visibleCols, type ColDef } from '../../shared/columns'
+import { makeColStore, visibleCols, effectiveCols, type ColDef } from '../../shared/columns'
+import { ExpandToggle, HiddenColsRow } from '../../shared/ExpandableRow'
+import { useIsNarrow } from '../../shared/useIsNarrow'
 import { ExportModal } from '../../shared/ExportModal'
 import { ColManager } from '../../shared/ColManager'
 import { openSubTab, updateSubLabel } from '../../shared/subtabs'
@@ -35,6 +37,7 @@ const COL_LABEL: Record<string, string> = {
   firstname: 'col_firstname', name: 'col_name', company: 'col_company', date: 'col_date',
 }
 const cols$ = makeColStore('melis-order-cols-v2', COL_ORDER)
+const ESSENTIAL_COLS = new Set(['reference'])
 
 const listCache = makeCache<{
   items: OrderItem[]; stats: OrderStats | null; total: number; page: number
@@ -86,6 +89,7 @@ function OrderList({ base }: { base: string }) {
   const t = makeT(DICT)
   const navigate = useNavigate()
   const { can } = useCaps(TOOL_MELIS_KEY)
+  const narrow = useIsNarrow()
   // Brique optionnelle : n'apparaît que si le module MelisCommerceOrderInvoice est actif
   // (voir shared/externalBricks.ts) — melis-commerce ignore tout du contenu du bouton.
   const OrderInvoiceButton = useExternalBrickComponent<{ orderId: number }>('MelisCommerceOrderInvoiceBrick', 'OrderRowButton')
@@ -115,6 +119,10 @@ function OrderList({ base }: { base: string }) {
   const [cols, setCols] = useState<ColDef[]>(cols$.load)
   const [showCols, setShowCols] = useState(false)
   const [showExport, setShowExport] = useState(false)
+  const [expanded, setExpanded] = useState<Set<number>>(new Set())
+  function toggleExpand(id: number) {
+    setExpanded((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
+  }
 
   const cacheRef = useRef({ items, stats, total, page, search, searchInput, filterStatus, dateStart, dateEnd, sortCol, sortAsc, mode })
   useEffect(() => { cacheRef.current = { items, stats, total, page, search, searchInput, filterStatus, dateStart, dateEnd, sortCol, sortAsc, mode } })
@@ -130,7 +138,31 @@ function OrderList({ base }: { base: string }) {
       .finally(() => setLoading(false))
   }, [search, filterStatus, dateStart, dateEnd, page, tick])
 
-  const visible = visibleCols(cols)
+  const eCols = effectiveCols(cols, ESSENTIAL_COLS, narrow)
+  const visible = visibleCols(eCols)
+  const hasHidden = eCols.some((c) => !c.visible)
+  const totalCols = visible.length + 1 + (hasHidden ? 1 : 0)
+  function cellStyle(id: string) {
+    if (id === 'id') return { ...td, color: 'var(--color-muted-foreground)', fontVariantNumeric: 'tabular-nums' as const }
+    if (id === 'products') return { ...td, textAlign: 'center' as const }
+    if (id === 'total') return { ...td, textAlign: 'right' as const, fontWeight: 600 }
+    if (id === 'date') return { ...td, color: 'var(--color-muted-foreground)' }
+    return td
+  }
+  function cellContent(o: OrderItem, id: string): ReactNode {
+    switch (id) {
+      case 'id': return o.id
+      case 'reference': return <code style={{ fontSize: 12 }}>{o.reference}</code>
+      case 'status': return <StatusPill color={o.statusColor} name={o.statusName} size="xs" />
+      case 'products': return o.productCount
+      case 'total': return fmtAmt(o.totalAmount)
+      case 'firstname': return o.firstname || '—'
+      case 'name': return o.name || '—'
+      case 'company': return o.company || '—'
+      case 'date': return o.dateCreation ? fmtDate(o.dateCreation) : '—'
+      default: return '—'
+    }
+  }
   const sorted = useMemo(() => {
     const arr = [...items]
     arr.sort((a, b) => {
@@ -178,15 +210,17 @@ function OrderList({ base }: { base: string }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, boxSizing: 'border-box', ...(mode === 'old' ? { height: '100%', overflow: 'hidden' } : {}) }}>
       {/* Title row */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
         <div>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{t('title')}</h1>
           <p style={{ fontSize: 14, color: 'var(--color-muted-foreground)', margin: '2px 0 0' }}>{t('subtitle')}</p>
         </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <ViewModeToggle mode={mode} onReact={() => setMode('react')} onOld={() => { setMode('old'); setOldLoaded(true) }} />
-          <button style={{ ...btnGhost, width: 36, padding: 0, justifyContent: 'center' }} title={t('refresh')} onClick={() => setTick((x) => x + 1)}><RefreshIcon /></button>
-          {can('create') && <button style={btnPrimary} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', justifyContent: 'flex-end' }}>
+            <ViewModeToggle mode={mode} onReact={() => setMode('react')} onOld={() => { setMode('old'); setOldLoaded(true) }} />
+            <button style={{ ...btnGhost, width: 36, padding: 0, justifyContent: 'center', flexShrink: 0 }} title={t('refresh')} onClick={() => setTick((x) => x + 1)}><RefreshIcon /></button>
+          </div>
+          {can('create') && <button style={{ ...btnPrimary, width: '100%', justifyContent: 'center', whiteSpace: 'normal', textAlign: 'center', height: 'auto', minHeight: 36, padding: '8px 14px' }} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>}
         </div>
       </div>
 
@@ -194,7 +228,7 @@ function OrderList({ base }: { base: string }) {
 
       <div style={{ display: mode === 'react' ? 'flex' : 'none', flexDirection: 'column', gap: 20, flex: 1, minHeight: 0 }}>
         {/* KPIs — 3 cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 12 }}>
           <Kpi icon={<ShoppingCartKpiIcon />} label={t('kpi_total')} value={stats?.total ?? null} iconBg="rgba(59,130,246,0.1)" iconColor="#3b82f6" />
           <Kpi icon={<CalendarIcon />}        label={t('kpi_today')} value={stats?.today ?? null} iconBg="rgba(16,185,129,0.1)" iconColor="#10b981" />
           <Kpi icon={<PackageIcon />}          label={t('kpi_month')} value={stats?.thisMonth ?? null} iconBg="rgba(139,92,246,0.1)" iconColor="#8b5cf6" />
@@ -202,79 +236,83 @@ function OrderList({ base }: { base: string }) {
 
         {/* Filters — search + status on same line, then dates + tools */}
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
-          <input style={{ ...inputCss, height: 36, flex: 1, minWidth: 180, maxWidth: 360 }}
+          <input style={{ ...inputCss, height: 36, flex: 1, minWidth: 180, maxWidth: narrow ? undefined : 360, flexBasis: narrow ? '100%' : undefined }}
             placeholder={t('search_placeholder')} value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') { setSearch(searchInput); setPage(1) } }} />
-          <select style={{ ...inputCss, height: 36, width: 'auto', minWidth: 160 }}
+          <select style={{ ...inputCss, height: 36, width: narrow ? '100%' : 'auto', minWidth: 160, flexBasis: narrow ? '100%' : undefined }}
             value={filterStatus ?? ''} onChange={(e) => { setFilterStatus(e.target.value ? Number(e.target.value) : null); setPage(1) }}>
             <option value="">{t('filter_status')}</option>
             {statuses.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
           </select>
-          <DateRangeFilter from={dateStart} to={dateEnd}
-            onChange={(f, to) => { setDateStart(f); setDateEnd(to); setPage(1) }} t={t} />
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
-            <button style={{ ...btnGhost, height: 36 }} onClick={resetFilters}><ResetIcon />{t('reset_filters')}</button>
-            <div style={{ position: 'relative' }}>
-              <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowCols((v) => !v)}><GripIcon />{t('btn_col_manager')}</button>
+          <div style={{ flexBasis: narrow ? '100%' : undefined }}>
+            <DateRangeFilter from={dateStart} to={dateEnd}
+              onChange={(f, to) => { setDateStart(f); setDateEnd(to); setPage(1) }} t={t} />
+          </div>
+          <div style={{ marginLeft: narrow ? 0 : 'auto', display: 'flex', gap: 8, flexBasis: narrow ? '100%' : undefined }}>
+            <button style={{ ...btnGhost, height: narrow ? 'auto' : 36, minHeight: narrow ? 36 : undefined, flex: narrow ? 1 : undefined, minWidth: narrow ? 0 : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} onClick={resetFilters}><ResetIcon />{t('reset_filters')}</button>
+            <div style={{ position: 'relative', flex: narrow ? 1 : undefined, minWidth: narrow ? 0 : undefined, display: narrow ? 'flex' : undefined }}>
+              <button style={{ ...btnGhost, height: narrow ? '100%' : 36, minHeight: narrow ? 36 : undefined, width: narrow ? '100%' : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} onClick={() => setShowCols((v) => !v)}><GripIcon />{t('btn_col_manager')}</button>
               {showCols && (
                 <ColManager cols={cols} labelFor={(id) => t(COL_LABEL[id])} onChange={setCols}
                   onClose={() => setShowCols(false)} save={cols$.save} defaults={cols$.DEFAULT} t={t} />
               )}
             </div>
-            {can('export') && <button style={{ ...btnGhost, height: 36, opacity: sorted.length === 0 ? 0.4 : 1 }} disabled={sorted.length === 0} onClick={() => setShowExport(true)}><FileDownIcon />{t('btn_export')}</button>}
+            {can('export') && <button style={{ ...btnGhost, height: narrow ? 'auto' : 36, minHeight: narrow ? 36 : undefined, opacity: sorted.length === 0 ? 0.4 : 1, flex: narrow ? 1 : undefined, minWidth: narrow ? 0 : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} disabled={sorted.length === 0} onClick={() => setShowExport(true)}><FileDownIcon />{t('btn_export')}</button>}
           </div>
         </div>
 
         {/* Table */}
-        <div style={{ ...card, overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 700 }}>
+        <div style={{ ...card, overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: narrow ? undefined : 700 }}>
             <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}>
               <tr>
+                {hasHidden && <th style={{ ...th, width: 32 }} />}
                 {visible.map((c) => (
                   <th key={c.id} style={{ ...th, cursor: 'pointer', userSelect: 'none' }} onClick={() => onSort(c.id)}>
                     {t(COL_LABEL[c.id])}{arrow(c.id)}
                   </th>
                 ))}
-                <th style={{ ...th, width: OrderInvoiceButton ? 100 : 60, textAlign: 'center' }}>{t('col_action')}</th>
+                <th style={{ ...th, width: OrderInvoiceButton ? 100 : 60, textAlign: 'center', position: 'sticky', right: 0, background: 'var(--color-muted,rgba(0,0,0,.03))' }}>{t('col_action')}</th>
               </tr>
             </thead>
             <tbody>
               {loading && sorted.length === 0 && (
-                <tr><td colSpan={visible.length} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('loading')}</td></tr>
+                <tr><td colSpan={totalCols} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('loading')}</td></tr>
               )}
               {!loading && sorted.length === 0 && (
-                <tr><td colSpan={visible.length} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('no_items')}</td></tr>
+                <tr><td colSpan={totalCols} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('no_items')}</td></tr>
               )}
               {sorted.map((o) => (
-                <tr key={o.id} style={{ cursor: 'pointer' }}
-                  onClick={() => openOrder(o)}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-accent)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = '')}>
-                  {visible.map((c) => {
-                    if (c.id === 'id')        return <td key={c.id} style={{ ...td, color: 'var(--color-muted-foreground)', fontVariantNumeric: 'tabular-nums' }}>{o.id}</td>
-                    if (c.id === 'reference') return <td key={c.id} style={td}><code style={{ fontSize: 12 }}>{o.reference}</code></td>
-                    if (c.id === 'status')    return <td key={c.id} style={td}><StatusPill color={o.statusColor} name={o.statusName} size="xs" /></td>
-                    if (c.id === 'products')  return <td key={c.id} style={{ ...td, textAlign: 'center' }}>{o.productCount}</td>
-                    if (c.id === 'total')     return <td key={c.id} style={{ ...td, textAlign: 'right', fontWeight: 600 }}>{fmtAmt(o.totalAmount)}</td>
-                    if (c.id === 'firstname') return <td key={c.id} style={td}>{o.firstname || '—'}</td>
-                    if (c.id === 'name')      return <td key={c.id} style={td}>{o.name || '—'}</td>
-                    if (c.id === 'company')   return <td key={c.id} style={td}>{o.company || '—'}</td>
-                    if (c.id === 'date')      return <td key={c.id} style={{ ...td, color: 'var(--color-muted-foreground)' }}>{o.dateCreation ? fmtDate(o.dateCreation) : '—'}</td>
-                    return <td key={c.id} style={td}>—</td>
-                  })}
-                  <td style={{ ...td, textAlign: 'center', width: OrderInvoiceButton ? 100 : 60 }} onClick={(e) => e.stopPropagation()}>
-                    {can('edit') && (
-                      <button
-                        onClick={(e) => { e.stopPropagation(); openOrder(o) }}
-                        style={iconBtn}
-                        title={t('col_action')}>
-                        <PencilIcon />
-                      </button>
+                <Fragment key={o.id}>
+                  <tr style={{ cursor: 'pointer' }}
+                    onClick={() => openOrder(o)}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-accent)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = '')}>
+                    {hasHidden && (
+                      <td style={td} onClick={(e) => e.stopPropagation()}>
+                        <ExpandToggle expanded={expanded.has(o.id)} onClick={() => toggleExpand(o.id)} />
+                      </td>
                     )}
-                    {OrderInvoiceButton && <OrderInvoiceButton orderId={o.id} />}
-                  </td>
-                </tr>
+                    {visible.map((c) => (
+                      <td key={c.id} style={cellStyle(c.id)}>{cellContent(o, c.id)}</td>
+                    ))}
+                    <td style={{ ...td, textAlign: 'center', width: OrderInvoiceButton ? 100 : 60, position: 'sticky', right: 0, background: 'var(--color-card,#fff)' }} onClick={(e) => e.stopPropagation()}>
+                      {can('edit') && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); openOrder(o) }}
+                          style={iconBtn}
+                          title={t('col_action')}>
+                          <PencilIcon />
+                        </button>
+                      )}
+                      {OrderInvoiceButton && <OrderInvoiceButton orderId={o.id} />}
+                    </td>
+                  </tr>
+                  {expanded.has(o.id) && (
+                    <HiddenColsRow cols={eCols} labelFor={(id) => t(COL_LABEL[id])} renderValue={(id) => cellContent(o, id)} colSpan={totalCols} narrow={narrow} />
+                  )}
+                </Fragment>
               ))}
             </tbody>
           </table>
@@ -309,6 +347,7 @@ function OrderList({ base }: { base: string }) {
 // ── ORDER FORM ─────────────────────────────────────────────────────────────────
 function OrderForm({ id, base }: { id: string; base: string }) {
   const t       = makeT(DICT)
+  const narrow  = useIsNarrow()
   const navigate = useNavigate()
   const isEdit  = id !== 'new'
   const orderId = isEdit ? Number(id) : null
@@ -390,15 +429,15 @@ function OrderForm({ id, base }: { id: string; base: string }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, boxSizing: 'border-box' }}>
       {/* Header — back + title + Save (same pattern as AccountForm) */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+      <div style={{ display: 'flex', alignItems: narrow ? 'flex-start' : 'center', justifyContent: 'space-between', gap: 16, flexWrap: narrow ? 'wrap' : 'nowrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 8, background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', color: 'var(--color-primary)' }}><ShoppingCartKpiIcon /></span>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>
             {isEdit ? (order ? `${t('title')} ${order.reference || `#${order.id}`}` : t('loading')) : t('new')}
           </h1>
         </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <button style={btnPrimary} onClick={submit} disabled={saving || (isEdit && !order)}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexBasis: narrow ? '100%' : undefined }}>
+          <button style={{ ...btnPrimary, flex: narrow ? 1 : undefined, justifyContent: narrow ? 'center' : undefined }} onClick={submit} disabled={saving || (isEdit && !order)}>
             {saving ? '…' : t('save')}
           </button>
         </div>
@@ -551,6 +590,7 @@ function InformationTab({ orderId, statuses, locked, localStatus, setLocalStatus
   errReference: boolean; setErrReference: (v: boolean) => void
   t: (k: string) => string
 }) {
+  const narrow = useIsNarrow()
   const [attachments, setAttachments] = useState<OrderAttachment[]>([])
   const [showUpload, setShowUpload]   = useState(false)
   const [toDelete, setToDelete]       = useState<OrderAttachment | null>(null)
@@ -573,7 +613,7 @@ function InformationTab({ orderId, statuses, locked, localStatus, setLocalStatus
   const iconSvg = (d: string) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 16, height: 16 }}>{d}</svg>
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 14, paddingTop: 16, alignItems: 'start' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 320px', gap: 14, paddingTop: 16, alignItems: 'start' }}>
 
       {/* ── Left column ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>

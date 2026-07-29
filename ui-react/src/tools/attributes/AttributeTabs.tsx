@@ -69,10 +69,10 @@ export function AttributeValuesTab({ attributeId, languages, can, t }: {
 
   const allCols: Record<string, SimpleCol<AttributeValueItem>> = {
     id: { key: 'id', label: t('value_col_id'), width: 70, render: (r) => <span style={{ color: 'var(--color-muted-foreground)' }}>{r.id}</span> },
-    value: { key: 'value', label: t('value_col_value'), render: (r) => displayValue(r.displayValue, typeColumn, t) },
+    value: { key: 'value', label: t('value_col_value'), essential: true, render: (r) => displayValue(r.displayValue, typeColumn, t) },
   }
   const action: SimpleCol<AttributeValueItem> = {
-    key: 'action', label: t('col_action'), width: 90, render: (r) => (
+    key: 'action', label: t('col_action'), width: 90, essential: true, render: (r) => (
       <div style={{ display: 'inline-flex', gap: 6 }}>
         {allow('values.edit') && <button onClick={() => setEditing(r)}
           style={iconBtn} title={t('edit')}><PencilIcon /></button>}

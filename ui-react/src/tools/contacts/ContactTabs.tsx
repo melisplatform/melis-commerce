@@ -52,11 +52,11 @@ export function AssociationTab({ contactId, t, can }: { contactId: number; t: T;
         onAdd={() => navigate(`${ACCOUNT_ROUTE}/new`)} addIcon={<UserPlusIcon />} addTitle={t('as_add')}
         cols={[
           { key: 'id', label: t('col_id'), width: 70, render: (r) => <span style={{ color: 'var(--color-muted-foreground)' }}>{r.id}</span> },
-          { key: 'account', label: t('as_account'), render: (r) => <span style={{ fontWeight: 500 }}>{r.name || '—'}</span> },
+          { key: 'account', label: t('as_account'), essential: true, render: (r) => <span style={{ fontWeight: 500 }}>{r.name || '—'}</span> },
           { key: 'status', label: t('as_status'), render: (r) => <StatusBadge active={r.status === 1} t={t} /> },
           { key: 'def_account', label: t('as_def_account'), render: (r) => (r.isDefaultAccount ? <StarIcon /> : '—') },
           { key: 'def_contact', label: t('as_def_contact'), render: (r) => (r.isMain ? <StarIcon /> : '—') },
-          { key: 'action', label: t('action'), width: 120, render: (r) => (
+          { key: 'action', label: t('action'), width: 120, essential: true, render: (r) => (
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6 }}>
               <button style={iconBtn} title={t('edit')} onClick={() => navigate(`${ACCOUNT_ROUTE}/${r.id}`)}><PencilIcon /></button>
               {!r.isDefaultAccount && <button style={iconBtn} title={t('set_default')} onClick={() => setDefault(r.id)}><CheckIcon /></button>}

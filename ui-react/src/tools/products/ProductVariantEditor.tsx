@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import type React from 'react'
 import {
   saveProductVariant, fetchVariant, fetchVariantMedia,
@@ -17,6 +17,8 @@ import { StatusBadge, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { Tabs, type TabDef } from '../../shared/Tabs'
 import { InfoDot, FlagSwitcher, MediaModal, Lightbox, hoverCircle, ImageFilters, passesImageFilter, type PendingMedia } from './ProductTabs'
+import { ExpandToggle, HiddenColsRow } from '../../shared/ExpandableRow'
+import { useIsNarrow } from '../../shared/useIsNarrow'
 import type { Option } from '../../shared/api'
 import type { LangOption } from '../catalog/api'
 
@@ -31,6 +33,7 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
   productId: number; variantId: number | null; countries: CountryOption[]; currencies: Option[]; languages: LangOption[]
   t: TFn; onClose: () => void; onSaved: () => void; can?: (cap: string) => boolean
 }) {
+  const narrow = useIsNarrow()
   const [vid, setVid] = useState<number | null>(variantId)
   const isEdit = vid != null
   const pricesSaveRef = useRef<((id: number) => Promise<void>) | null>(null)
@@ -102,7 +105,7 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginBottom: 16 }}>
+      <div style={{ display: 'flex', alignItems: narrow ? 'flex-start' : 'center', justifyContent: 'space-between', gap: 16, marginBottom: 16, flexWrap: narrow ? 'wrap' : 'nowrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {/* Vraie navigation arrière (pas juste décorative) : ce formulaire est niché DANS l'onglet
               Variants du produit — le SubTabBar de l'hôte ne connaît que le niveau Produit, donc cette
@@ -110,8 +113,8 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
           <button type="button" style={{ ...iconBtn, width: 32, height: 32 }} onClick={onClose} title={t('back')}><ArrowLeftIcon /></button>
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>{isEdit ? t('var_edit') : t('var_new')}</h2>
         </div>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          <button style={btnPrimary} onClick={save} disabled={saving || loading}>{saving ? '…' : t('save_variant')}</button>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexBasis: narrow ? '100%' : undefined }}>
+          <button style={{ ...btnPrimary, flex: narrow ? 1 : undefined, justifyContent: narrow ? 'center' : undefined }} onClick={save} disabled={saving || loading}>{saving ? '…' : t('save_variant')}</button>
         </div>
       </div>
 
@@ -136,7 +139,7 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
           </div>
 
           {/* 2 colonnes équilibrées, chaque section dans sa propre carte */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 20, alignItems: 'start' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : 'repeat(auto-fit, minmax(360px, 1fr))', gap: 20, alignItems: 'start' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20, minWidth: 0 }}>
               <div style={{ ...card, padding: 20 }}>
                 <h3 style={secT}><SettingsIcon />{t('var_information')}</h3>
@@ -160,8 +163,8 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
         (
           <div>
             <h3 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 16px' }}>{t('tab_seo')}</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: 18, maxWidth: 900 }}>
-              <FlagSwitcher items={languages} value={seoLang} onChange={setSeoLang} />
+            <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '160px 1fr', gap: 18, maxWidth: narrow ? undefined : 900 }}>
+              <FlagSwitcher items={languages} value={seoLang} onChange={setSeoLang} narrow={narrow} />
               {seo.filter((s) => s.langId === seoLang).map((s) => {
               const SEO_TIPS: Record<string, string> = { pageId: 'tip_var_seo_page_id', metaTitle: 'tip_var_seo_meta_title', metaDescription: 'tip_var_seo_meta_desc', url: 'tip_var_seo_url', urlRedirect: 'tip_var_seo_url_redirect', url301: 'tip_var_seo_url_301' }
               return (
@@ -195,6 +198,7 @@ const secT = { fontSize: 12, fontWeight: 600, color: 'var(--color-foreground)', 
 
 // ── Prix du variant (formulaire par pays : Net/Brut/TVA%/Montant TVA/Autre taxe) ──
 function VarPrices({ productId, variantId, countryItems, currency, t, saveRef }: { productId: number; variantId: number | null; countryItems: { id: number; name: string; flag?: string }[]; currency: number; t: TFn; saveRef?: React.MutableRefObject<((id: number) => Promise<void>) | null> }) {
+  const narrow = useIsNarrow()
   const [prices, setPrices] = useState<VariantPrice[]>([])
   const [country, setCountry] = useState<number>(-1)
   const [tick, setTick] = useState(0)
@@ -220,8 +224,8 @@ function VarPrices({ productId, variantId, countryItems, currency, t, saveRef }:
   return (
     <div>
       <h3 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 16px' }}>{t('tab_prices')}</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: 18, maxWidth: 900 }}>
-        <FlagSwitcher items={countryItems} value={country} onChange={setCountry} />
+      <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '160px 1fr', gap: 18, maxWidth: narrow ? undefined : 900 }}>
+        <FlagSwitcher items={countryItems} value={country} onChange={setCountry} narrow={narrow} />
         <div style={{ ...card, padding: 18 }}>
           <h4 style={{ fontSize: 14, fontWeight: 600, margin: '0 0 14px', color: 'var(--color-primary)' }}>$ {t('price_general_pricing')}</h4>
           {fields.map(([k, lbl], i) => (
@@ -238,6 +242,7 @@ function VarPrices({ productId, variantId, countryItems, currency, t, saveRef }:
 
 // ── Stocks du variant (par pays : Quantité + Date de réapprovisionnement) ────
 function VarStocks({ productId, variantId, countryItems, t, saveRef }: { productId: number; variantId: number | null; countryItems: { id: number; name: string; flag?: string }[]; t: TFn; saveRef?: React.MutableRefObject<((id: number) => Promise<void>) | null> }) {
+  const narrow = useIsNarrow()
   const [stocks, setStocks] = useState<VariantStock[]>([])
   const [country, setCountry] = useState<number>(-1)
   const [tick, setTick] = useState(0)
@@ -259,8 +264,8 @@ function VarStocks({ productId, variantId, countryItems, t, saveRef }: { product
   return (
     <div>
       <h3 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 16px' }}>{t('var_tab_stocks')}</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: 18, maxWidth: 900 }}>
-        <FlagSwitcher items={countryItems} value={country} onChange={setCountry} />
+      <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '160px 1fr', gap: 18, maxWidth: narrow ? undefined : 900 }}>
+        <FlagSwitcher items={countryItems} value={country} onChange={setCountry} narrow={narrow} />
         <div style={{ ...card, padding: 18 }}>
           <h4 style={{ fontSize: 14, fontWeight: 600, margin: '0 0 14px' }}>{t('stock_general')}</h4>
           <div style={labelRow}><label style={label}>{t('stock_qty')}</label><InfoDot text={t('tip_stock_qty')} /></div>
@@ -430,37 +435,94 @@ function VarAttributes({ productId, variantId, t, onNeedVid }: { productId: numb
 }
 
 // ── Association : variants associés + variants disponibles à associer ────────
+const ASSOC_ESSENTIAL_COLS = new Set(['product'])
+
 function VarAssoc({ productId, variantId, t, onNeedVid }: { productId: number; variantId: number | null; t: TFn; onNeedVid?: () => Promise<number | null> }) {
+  const narrow = useIsNarrow()
   const [associated, setAssociated] = useState<AssocVariant[]>([])
   const [available, setAvailable] = useState<AvailVariant[]>([])
   const [tick, setTick] = useState(0)
   const [search, setSearch] = useState('')
+  const [expandedAssoc, setExpandedAssoc] = useState<Set<number>>(new Set())
+  const [expandedAvail, setExpandedAvail] = useState<Set<number>>(new Set())
+  function toggle(set: Set<number>, setter: (s: Set<number>) => void, id: number) {
+    const next = new Set(set); next.has(id) ? next.delete(id) : next.add(id); setter(next)
+  }
   useEffect(() => { if (variantId == null) return; fetchVariantAssoc(productId, variantId).then((r) => { setAssociated(r.associated); setAvailable(r.available) }).catch(() => null) }, [productId, variantId, tick])
   async function add(vId: number) { const id = variantId ?? await onNeedVid?.(); if (!id) return; try { await saveVariantAssoc(productId, id, vId); setTick((x) => x + 1) } catch { /* */ } }
   async function del(avarId: number) { const id = variantId ?? await onNeedVid?.(); if (!id) return; try { await deleteVariantAssoc(productId, id, avarId); setTick((x) => x + 1) } catch { /* */ } }
   const filt = available.filter((v) => !search || v.productName.toLowerCase().includes(search.toLowerCase()) || v.sku.toLowerCase().includes(search.toLowerCase()) || String(v.variantId).includes(search))
   const tbl = { width: '100%', borderCollapse: 'collapse' as const }
+
+  type Row = AssocVariant | AvailVariant
+  const ASSOC_COLS: { id: string; label: string; render: (v: Row) => import('react').ReactNode; style?: import('react').CSSProperties }[] = [
+    { id: 'id', label: t('var_col_id'), render: (v) => v.variantId },
+    { id: 'status', label: t('col_status'), render: (v) => <StatusBadge active={v.status === 1} t={t} /> },
+    { id: 'product', label: t('assoc_product'), render: (v) => v.productName, style: { ...td, fontWeight: 500 } },
+    { id: 'sku', label: t('var_col_sku'), render: (v) => v.sku || '—' },
+    { id: 'attrs', label: t('var_col_attrs'), render: (v) => v.attributes || '—', style: { ...td, color: 'var(--color-muted-foreground)' } },
+  ]
+  const visibleAssocCols = narrow ? ASSOC_COLS.filter((c) => ASSOC_ESSENTIAL_COLS.has(c.id)) : ASSOC_COLS
+  const hasHiddenAssocCols = narrow && visibleAssocCols.length < ASSOC_COLS.length
+  const assocColSpan = visibleAssocCols.length + 1 + (hasHiddenAssocCols ? 1 : 0)
+  const assocColDefs = ASSOC_COLS.map((c) => ({ id: c.id, visible: visibleAssocCols.includes(c) }))
+  const labelFor = (id: string) => ASSOC_COLS.find((c) => c.id === id)?.label ?? id
+
   return (
     <div>
       <h3 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 12px' }}>{t('var_tab_assoc')}</h3>
-      <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden', marginBottom: 24 }}>
+      <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, overflowX: 'auto', marginBottom: 24 }}>
         <table style={tbl}>
-          <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}><tr><th style={{ ...th, width: 50 }}>{t('var_col_id')}</th><th style={{ ...th, width: 80 }}>{t('col_status')}</th><th style={th}>{t('assoc_product')}</th><th style={th}>{t('var_col_sku')}</th><th style={th}>{t('var_col_attrs')}</th><th style={{ ...th, width: 70 }} /></tr></thead>
+          <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}>
+            <tr>
+              {hasHiddenAssocCols && <th style={{ ...th, width: 32 }} />}
+              {visibleAssocCols.map((c) => <th key={c.id} style={th}>{c.label}</th>)}
+              <th style={{ ...th, width: 70 }} />
+            </tr>
+          </thead>
           <tbody>
-            {associated.length === 0 ? <tr><td colSpan={6} style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: 24 }}>{t('assoc_empty')}</td></tr>
-              : associated.map((v) => (<tr key={v.avarId}><td style={td}>{v.variantId}</td><td style={td}><StatusBadge active={v.status === 1} t={t} /></td><td style={{ ...td, fontWeight: 500 }}>{v.productName}</td><td style={td}>{v.sku || '—'}</td><td style={{ ...td, color: 'var(--color-muted-foreground)' }}>{v.attributes || '—'}</td><td style={td}><button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => del(v.avarId)}><TrashIcon /></button></td></tr>))}
+            {associated.length === 0 ? <tr><td colSpan={assocColSpan} style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: 24 }}>{t('assoc_empty')}</td></tr>
+              : associated.map((v) => (
+                <Fragment key={v.avarId}>
+                  <tr>
+                    {hasHiddenAssocCols && <td style={td}><ExpandToggle expanded={expandedAssoc.has(v.avarId)} onClick={() => toggle(expandedAssoc, setExpandedAssoc, v.avarId)} /></td>}
+                    {visibleAssocCols.map((c) => <td key={c.id} style={c.style ?? td}>{c.render(v)}</td>)}
+                    <td style={td}><button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => del(v.avarId)}><TrashIcon /></button></td>
+                  </tr>
+                  {hasHiddenAssocCols && expandedAssoc.has(v.avarId) && (
+                    <HiddenColsRow cols={assocColDefs} labelFor={labelFor} renderValue={(id) => ASSOC_COLS.find((c) => c.id === id)?.render(v)} colSpan={assocColSpan} narrow={narrow} />
+                  )}
+                </Fragment>
+              ))}
           </tbody>
         </table>
       </div>
 
       <h3 style={{ fontSize: 15, fontWeight: 600, margin: '0 0 10px' }}>{t('assoc_variants')}</h3>
-      <input style={{ ...inputCss, height: 34, maxWidth: 320, marginBottom: 10 }} value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('search')} />
-      <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden' }}>
+      <input style={{ ...inputCss, height: 34, maxWidth: narrow ? undefined : 320, width: narrow ? '100%' : undefined, marginBottom: 10 }} value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('search')} />
+      <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, overflowX: 'auto' }}>
         <table style={tbl}>
-          <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}><tr><th style={{ ...th, width: 50 }}>{t('var_col_id')}</th><th style={{ ...th, width: 80 }}>{t('col_status')}</th><th style={th}>{t('assoc_product')}</th><th style={th}>{t('var_col_sku')}</th><th style={th}>{t('var_col_attrs')}</th><th style={{ ...th, width: 70 }} /></tr></thead>
+          <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}>
+            <tr>
+              {hasHiddenAssocCols && <th style={{ ...th, width: 32 }} />}
+              {visibleAssocCols.map((c) => <th key={c.id} style={th}>{c.label}</th>)}
+              <th style={{ ...th, width: 70 }} />
+            </tr>
+          </thead>
           <tbody>
-            {filt.length === 0 ? <tr><td colSpan={6} style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: 24 }}>{t('empty')}</td></tr>
-              : filt.map((v) => (<tr key={v.variantId}><td style={td}>{v.variantId}</td><td style={td}><StatusBadge active={v.status === 1} t={t} /></td><td style={{ ...td, fontWeight: 500 }}>{v.productName}</td><td style={td}>{v.sku || '—'}</td><td style={{ ...td, color: 'var(--color-muted-foreground)' }}>{v.attributes || '—'}</td><td style={td}><button style={iconBtn} title={t('assoc_add')} onClick={() => add(v.variantId)}><PlusIcon /></button></td></tr>))}
+            {filt.length === 0 ? <tr><td colSpan={assocColSpan} style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: 24 }}>{t('empty')}</td></tr>
+              : filt.map((v) => (
+                <Fragment key={v.variantId}>
+                  <tr>
+                    {hasHiddenAssocCols && <td style={td}><ExpandToggle expanded={expandedAvail.has(v.variantId)} onClick={() => toggle(expandedAvail, setExpandedAvail, v.variantId)} /></td>}
+                    {visibleAssocCols.map((c) => <td key={c.id} style={c.style ?? td}>{c.render(v)}</td>)}
+                    <td style={td}><button style={iconBtn} title={t('assoc_add')} onClick={() => add(v.variantId)}><PlusIcon /></button></td>
+                  </tr>
+                  {hasHiddenAssocCols && expandedAvail.has(v.variantId) && (
+                    <HiddenColsRow cols={assocColDefs} labelFor={labelFor} renderValue={(id) => ASSOC_COLS.find((c) => c.id === id)?.render(v)} colSpan={assocColSpan} narrow={narrow} />
+                  )}
+                </Fragment>
+              ))}
           </tbody>
         </table>
       </div>

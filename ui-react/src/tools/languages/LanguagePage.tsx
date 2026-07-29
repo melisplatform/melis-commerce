@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import {
   fetchLanguages, fetchLanguageStats, saveLanguage, deleteLanguage,
   type LanguageItem, type LanguageStats,
@@ -10,7 +10,9 @@ import { card, inputCss, label, btnGhost, btnPrimary, th, td, iconBtn } from '..
 import { CheckIcon, RefreshIcon, PlusIcon, PencilIcon, TrashIcon, FileDownIcon, GripIcon, GlobeIcon, ListIcon, ResetIcon } from '../../shared/icons'
 import { Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
-import { makeColStore, visibleCols, type ColDef } from '../../shared/columns'
+import { makeColStore, visibleCols, effectiveCols, type ColDef } from '../../shared/columns'
+import { ExpandToggle, HiddenColsRow } from '../../shared/ExpandableRow'
+import { useIsNarrow } from '../../shared/useIsNarrow'
 import { ExportModal } from '../../shared/ExportModal'
 import { ColManager } from '../../shared/ColManager'
 import { useCaps } from '../../shared/useCaps'
@@ -22,6 +24,7 @@ const COL_LABEL: Record<string, string> = {
   id: 'col_id', flag: 'col_flag', status: 'col_status', locale: 'col_locale', name: 'col_name',
 }
 const cols$ = makeColStore('melis-language-cols-v1', COL_ORDER)
+const ESSENTIAL_COLS = new Set(['name'])
 
 const listCache = makeCache<{
   items: LanguageItem[]; stats: LanguageStats | null; total: number; page: number
@@ -75,6 +78,7 @@ function getCellExport(l: LanguageItem, id: string): string | number {
 export default function LanguagePage() {
   const t = makeT(DICT)
   const { can } = useCaps(TOOL_MELIS_KEY)
+  const narrow = useIsNarrow()
   const [mode, setMode] = useState<'react' | 'old'>(listCache.get()?.mode ?? 'react')
   // Non-persistent bricks get fully unmounted when the tab isn't active and rebuilt from
   // scratch when revisited — only `mode` survives that via listCache. If `oldLoaded`
@@ -100,6 +104,10 @@ export default function LanguagePage() {
   const [showExport, setShowExport] = useState(false)
   const [toDelete, setToDelete] = useState<LanguageItem | null>(null)
   const [editing, setEditing] = useState<LanguageItem | 'new' | null>(null)
+  const [expanded, setExpanded] = useState<Set<number>>(new Set())
+  function toggleExpand(id: number) {
+    setExpanded((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
+  }
 
   const cacheRef = useRef({ items, stats, total, page, search, searchInput, filterStatus, sortCol, sortAsc, mode })
   useEffect(() => { cacheRef.current = { items, stats, total, page, search, searchInput, filterStatus, sortCol, sortAsc, mode } })
@@ -114,7 +122,25 @@ export default function LanguagePage() {
       .finally(() => setLoading(false))
   }, [search, filterStatus, page, tick])
 
-  const visible = visibleCols(cols)
+  const eCols = effectiveCols(cols, ESSENTIAL_COLS, narrow)
+  const visible = visibleCols(eCols)
+  const hasHidden = eCols.some((c) => !c.visible)
+  const totalCols = visible.length + 1 + (hasHidden ? 1 : 0)
+  function cellStyle(id: string) {
+    if (id === 'id') return { ...td, color: 'var(--color-muted-foreground)', fontVariantNumeric: 'tabular-nums' as const }
+    if (id === 'name') return { ...td, fontWeight: 600 }
+    return td
+  }
+  function cellContent(l: LanguageItem, id: string): ReactNode {
+    switch (id) {
+      case 'id': return l.id
+      case 'flag': return <FlagThumb flag={l.flag} />
+      case 'status': return <StatusPill active={l.status === 1} t={t} />
+      case 'locale': return <code style={{ fontSize: 12 }}>{l.locale}</code>
+      case 'name': return l.name
+      default: return '—'
+    }
+  }
   const sorted = useMemo(() => {
     const arr = [...items]
     arr.sort((a, b) => {
@@ -155,92 +181,100 @@ export default function LanguagePage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, boxSizing: 'border-box', ...(mode === 'old' ? { height: '100%', overflow: 'hidden' } : {}) }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
         <div>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{t('title')}</h1>
           <p style={{ fontSize: 14, color: 'var(--color-muted-foreground)', margin: '2px 0 0' }}>{t('subtitle')}</p>
         </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <ViewModeToggle mode={mode} onReact={() => setMode('react')} onOld={() => { setMode('old'); setOldLoaded(true) }} />
-          <button style={{ ...btnGhost, width: 36, padding: 0, justifyContent: 'center' }} title={t('refresh')} onClick={() => setTick((x) => x + 1)}><RefreshIcon /></button>
-          {can('create') && <button style={btnPrimary} onClick={() => setEditing('new')}><PlusIcon />{t('new')}</button>}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', justifyContent: 'flex-end' }}>
+            <ViewModeToggle mode={mode} onReact={() => setMode('react')} onOld={() => { setMode('old'); setOldLoaded(true) }} />
+            <button style={{ ...btnGhost, width: 36, padding: 0, justifyContent: 'center', flexShrink: 0 }} title={t('refresh')} onClick={() => setTick((x) => x + 1)}><RefreshIcon /></button>
+          </div>
+          {can('create') && <button style={{ ...btnPrimary, width: '100%', justifyContent: 'center', whiteSpace: 'normal', textAlign: 'center', height: 'auto', minHeight: 36, padding: '8px 14px' }} onClick={() => setEditing('new')}><PlusIcon />{t('new')}</button>}
         </div>
       </div>
 
       {oldLoaded && <LegacyFrame melisKey={TOOL_MELIS_KEY} title={t('title')} visible={mode === 'old'} />}
 
       <div style={{ display: mode === 'react' ? 'flex' : 'none', flexDirection: 'column', gap: 20, flex: 1, minHeight: 0 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 12 }}>
           <Kpi icon={<GlobeIcon />} label={t('kpi_total')} value={stats?.total ?? null} iconBg="rgba(59,130,246,0.1)" iconColor="#3b82f6" />
           <Kpi icon={<CheckIcon />} label={t('kpi_active')} value={stats?.active ?? null} iconBg="rgba(16,185,129,0.1)" iconColor="#10b981" />
           <Kpi icon={<ListIcon />} label={t('kpi_inactive')} value={stats?.inactive ?? null} iconBg="rgba(107,114,128,0.1)" iconColor="#6b7280" />
         </div>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
-          <input style={{ ...inputCss, height: 36, flex: 1, minWidth: 180, maxWidth: 360 }}
+          <input style={{ ...inputCss, height: 36, flex: 1, minWidth: 180, maxWidth: narrow ? undefined : 360, flexBasis: narrow ? '100%' : undefined }}
             placeholder={t('search_placeholder')} value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') { setSearch(searchInput); setPage(1) } }} />
-          <select style={{ ...inputCss, height: 36, width: 'auto', minWidth: 160 }}
+          <select style={{ ...inputCss, height: 36, width: narrow ? '100%' : 'auto', minWidth: 160, flexBasis: narrow ? '100%' : undefined }}
             value={filterStatus ?? ''} onChange={(e) => { setFilterStatus(e.target.value === '' ? null : Number(e.target.value)); setPage(1) }}>
             <option value="">{t('filter_status')}</option>
             <option value={1}>{t('status_active')}</option>
             <option value={0}>{t('status_inactive')}</option>
           </select>
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
-            <button style={{ ...btnGhost, height: 36 }} onClick={resetFilters}><ResetIcon />{t('reset_filters')}</button>
-            <div style={{ position: 'relative' }}>
-              <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowCols((v) => !v)}><GripIcon />{t('btn_col_manager')}</button>
+          <div style={{ marginLeft: narrow ? 0 : 'auto', display: 'flex', gap: 8, flexBasis: narrow ? '100%' : undefined }}>
+            <button style={{ ...btnGhost, height: narrow ? 'auto' : 36, minHeight: narrow ? 36 : undefined, flex: narrow ? 1 : undefined, minWidth: narrow ? 0 : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} onClick={resetFilters}><ResetIcon />{t('reset_filters')}</button>
+            <div style={{ position: 'relative', flex: narrow ? 1 : undefined, minWidth: narrow ? 0 : undefined, display: narrow ? 'flex' : undefined }}>
+              <button style={{ ...btnGhost, height: narrow ? '100%' : 36, minHeight: narrow ? 36 : undefined, width: narrow ? '100%' : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} onClick={() => setShowCols((v) => !v)}><GripIcon />{t('btn_col_manager')}</button>
               {showCols && (
                 <ColManager cols={cols} labelFor={(id) => t(COL_LABEL[id])} onChange={setCols}
                   onClose={() => setShowCols(false)} save={cols$.save} defaults={cols$.DEFAULT} t={t} />
               )}
             </div>
-            {can('export') && <button style={{ ...btnGhost, height: 36, opacity: sorted.length === 0 ? 0.4 : 1 }} disabled={sorted.length === 0} onClick={() => setShowExport(true)}><FileDownIcon />{t('btn_export')}</button>}
+            {can('export') && <button style={{ ...btnGhost, height: narrow ? 'auto' : 36, minHeight: narrow ? 36 : undefined, opacity: sorted.length === 0 ? 0.4 : 1, flex: narrow ? 1 : undefined, minWidth: narrow ? 0 : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} disabled={sorted.length === 0} onClick={() => setShowExport(true)}><FileDownIcon />{t('btn_export')}</button>}
           </div>
         </div>
 
-        <div style={{ ...card, overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 600 }}>
+        <div style={{ ...card, overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: narrow ? undefined : 600 }}>
             <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}>
               <tr>
+                {hasHidden && <th style={{ ...th, width: 32 }} />}
                 {visible.map((c) => (
                   <th key={c.id} style={{ ...th, cursor: 'pointer', userSelect: 'none' }} onClick={() => onSort(c.id)}>
                     {t(COL_LABEL[c.id])}{arrow(c.id)}
                   </th>
                 ))}
-                <th style={{ ...th, width: 90, textAlign: 'center' }}>{t('col_action')}</th>
+                <th style={{ ...th, width: 90, textAlign: 'center', position: 'sticky', right: 0, background: 'var(--color-muted,rgba(0,0,0,.03))' }}>{t('col_action')}</th>
               </tr>
             </thead>
             <tbody>
               {loading && sorted.length === 0 && (
-                <tr><td colSpan={visible.length + 1} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('loading')}</td></tr>
+                <tr><td colSpan={totalCols} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('loading')}</td></tr>
               )}
               {!loading && sorted.length === 0 && (
-                <tr><td colSpan={visible.length + 1} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('no_items')}</td></tr>
+                <tr><td colSpan={totalCols} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('no_items')}</td></tr>
               )}
               {sorted.map((l) => (
-                <tr key={l.id} style={{ cursor: 'pointer' }}
-                  onClick={() => setEditing(l)}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-accent)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = '')}>
-                  {visible.map((col) => {
-                    if (col.id === 'id')     return <td key={col.id} style={{ ...td, color: 'var(--color-muted-foreground)', fontVariantNumeric: 'tabular-nums' }}>{l.id}</td>
-                    if (col.id === 'flag')   return <td key={col.id} style={td}><FlagThumb flag={l.flag} /></td>
-                    if (col.id === 'status') return <td key={col.id} style={td}><StatusPill active={l.status === 1} t={t} /></td>
-                    if (col.id === 'locale') return <td key={col.id} style={td}><code style={{ fontSize: 12 }}>{l.locale}</code></td>
-                    if (col.id === 'name')   return <td key={col.id} style={{ ...td, fontWeight: 600 }}>{l.name}</td>
-                    return <td key={col.id} style={td}>—</td>
-                  })}
-                  <td style={{ ...td, textAlign: 'center', width: 90 }} onClick={(e) => e.stopPropagation()}>
-                    <div style={{ display: 'inline-flex', gap: 6 }}>
-                      {can('edit') && <button onClick={(e) => { e.stopPropagation(); setEditing(l) }}
-                        style={iconBtn} title={t('edit')}><PencilIcon /></button>}
-                      {can('delete') && <button onClick={(e) => { e.stopPropagation(); setToDelete(l) }}
-                        style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')}><TrashIcon /></button>}
-                    </div>
-                  </td>
-                </tr>
+                <Fragment key={l.id}>
+                  <tr style={{ cursor: 'pointer' }}
+                    onClick={() => setEditing(l)}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-accent)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = '')}>
+                    {hasHidden && (
+                      <td style={td} onClick={(e) => e.stopPropagation()}>
+                        <ExpandToggle expanded={expanded.has(l.id)} onClick={() => toggleExpand(l.id)} />
+                      </td>
+                    )}
+                    {visible.map((col) => (
+                      <td key={col.id} style={cellStyle(col.id)}>{cellContent(l, col.id)}</td>
+                    ))}
+                    <td style={{ ...td, textAlign: 'center', width: 90, position: 'sticky', right: 0, background: 'var(--color-card,#fff)' }} onClick={(e) => e.stopPropagation()}>
+                      <div style={{ display: 'inline-flex', gap: 6 }}>
+                        {can('edit') && <button onClick={(e) => { e.stopPropagation(); setEditing(l) }}
+                          style={iconBtn} title={t('edit')}><PencilIcon /></button>}
+                        {can('delete') && <button onClick={(e) => { e.stopPropagation(); setToDelete(l) }}
+                          style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')}><TrashIcon /></button>}
+                      </div>
+                    </td>
+                  </tr>
+                  {expanded.has(l.id) && (
+                    <HiddenColsRow cols={eCols} labelFor={(id) => t(COL_LABEL[id])} renderValue={(id) => cellContent(l, id)} colSpan={totalCols} narrow={narrow} />
+                  )}
+                </Fragment>
               ))}
             </tbody>
           </table>

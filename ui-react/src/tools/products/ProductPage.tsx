@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   deleteProduct, duplicateProduct, fetchProductById, fetchProductOptions, fetchProducts, fetchProductStats, saveProduct, fetchProductTooltip,
@@ -21,7 +21,9 @@ import { notify } from '../../shared/notify'
 import { useCaps } from '../../shared/useCaps'
 import { ColManager } from '../../shared/ColManager'
 import { ExportModal } from '../../shared/ExportModal'
-import { makeColStore, visibleCols, type ColDef } from '../../shared/columns'
+import { makeColStore, visibleCols, effectiveCols, type ColDef } from '../../shared/columns'
+import { ExpandToggle, HiddenColsRow } from '../../shared/ExpandableRow'
+import { useIsNarrow } from '../../shared/useIsNarrow'
 import { openSubTab, closeSubTab, updateSubLabel } from '../../shared/subtabs'
 import type { Option } from '../../shared/api'
 import type { LangOption } from '../catalog/api'
@@ -35,6 +37,7 @@ const TOOL_MELIS_KEY = 'meliscommerce_product_list_container'
 const COL_ORDER = ['id', 'status', 'image', 'reference', 'name', 'categories', 'created'] as const
 const COL_LABEL: Record<string, string> = { id: 'col_id', status: 'col_status', image: 'col_image', reference: 'col_reference', name: 'col_name', categories: 'col_categories', created: 'col_created' }
 const cols$ = makeColStore('melis-products-cols-v1', COL_ORDER)
+const ESSENTIAL_COLS = new Set(['name'])
 
 const listCache = makeCache<{
   items: ProductItem[]; stats: ProductStats | null
@@ -88,7 +91,8 @@ function ProductNameCell({ id, name, t, onOpenVariant }: { id: number; name: str
     if (data === null) fetchProductTooltip(id).then((res) => setData(res.items)).catch(() => setData([]))
   }
   return (
-    <span ref={ref} onMouseEnter={enter} onMouseLeave={scheduleClose} style={{ fontWeight: 500, cursor: 'default' }}>
+    <span ref={ref} onMouseEnter={enter} onMouseLeave={scheduleClose} title={name || undefined}
+      style={{ fontWeight: 500, cursor: 'default', display: 'inline-block', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', verticalAlign: 'middle' }}>
       {name || '—'}
       {show && data && data.length > 0 && (
         <VariantTooltipTable items={data} pos={pos} t={t} onMouseEnter={clearCloseTimer} onMouseLeave={scheduleClose}
@@ -103,6 +107,7 @@ function ProductList({ base }: { base: string }) {
   const t = makeT(DICT)
   const navigate = useNavigate()
   const { can } = useCaps(TOOL_MELIS_KEY)
+  const narrow = useIsNarrow()
   const [mode, setMode] = useState<'react' | 'old'>(listCache.get()?.mode ?? 'react')
   // Non-persistent bricks get fully unmounted when the tab isn't active and rebuilt from
   // scratch when revisited — only `mode` survives that via listCache. If `oldLoaded`
@@ -127,6 +132,10 @@ function ProductList({ base }: { base: string }) {
   const [cols, setCols] = useState<ColDef[]>(cols$.load)
   const [showCols, setShowCols] = useState(false)
   const [showExport, setShowExport] = useState(false)
+  const [expanded, setExpanded] = useState<Set<number>>(new Set())
+  function toggleExpand(id: number) {
+    setExpanded((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
+  }
 
   const cacheRef = useRef({ items, stats, search, searchInput, status, categoryId, sortCol, sortAsc, mode })
   useEffect(() => { cacheRef.current = { items, stats, search, searchInput, status, categoryId, sortCol, sortAsc, mode } })
@@ -171,88 +180,112 @@ function ProductList({ base }: { base: string }) {
     { k: 'f_inactive', v: 0, dot: '#ef4444' },
   ]
 
+  const eCols = effectiveCols(cols, ESSENTIAL_COLS, narrow)
+  const visible = visibleCols(eCols)
+  const hasHidden = eCols.some((c) => !c.visible)
+  const totalCols = visible.length + 1 + (hasHidden ? 1 : 0)
+  function cellContent(p: ProductItem, id: string): ReactNode {
+    switch (id) {
+      case 'id': return p.id
+      case 'status': return <StatusBadge active={p.status === 1} t={t} />
+      case 'image': return <ProductThumb src={p.image} alt={p.name} />
+      case 'reference': return p.reference || '—'
+      case 'name': return <ProductNameCell id={p.id} name={p.name} t={t} onOpenVariant={openVariant} />
+      case 'categories': return p.categories.length ? p.categories.join(', ') : '—'
+      case 'created': return <span style={{ color: 'var(--color-muted-foreground)' }}>{fmtDate(p.dateCreation)}</span>
+      default: return null
+    }
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, boxSizing: 'border-box', ...(mode === 'old' ? { height: '100%', overflow: 'hidden' } : {}) }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
         <div>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{t('title')}</h1>
           <p style={{ fontSize: 14, color: 'var(--color-muted-foreground)', margin: '2px 0 0' }}>{t('subtitle')}</p>
         </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <ViewModeToggle mode={mode} onReact={() => setMode('react')} onOld={() => { setMode('old'); setOldLoaded(true) }} />
-          <button style={{ ...btnGhost, width: 36, padding: 0, justifyContent: 'center' }} onClick={() => setTick((x) => x + 1)} title={t('refresh')}>↻</button>
-          {can('create') && <button style={btnPrimary} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', justifyContent: 'flex-end' }}>
+            <ViewModeToggle mode={mode} onReact={() => setMode('react')} onOld={() => { setMode('old'); setOldLoaded(true) }} />
+            <button style={{ ...btnGhost, width: 36, padding: 0, justifyContent: 'center', flexShrink: 0 }} onClick={() => setTick((x) => x + 1)} title={t('refresh')}>↻</button>
+          </div>
+          {can('create') && <button style={{ ...btnPrimary, width: '100%', justifyContent: 'center', whiteSpace: 'normal', textAlign: 'center', height: 'auto', minHeight: 36, padding: '8px 14px' }} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>}
         </div>
       </div>
 
       {oldLoaded && <LegacyFrame melisKey={TOOL_MELIS_KEY} title={t('title')} visible={mode === 'old'} />}
 
       <div style={{ display: mode === 'react' ? 'flex' : 'none', flexDirection: 'column', gap: 20, flex: 1, minHeight: 0 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 12 }}>
           <Kpi label={t('kpi_total')}    value={stats?.total    ?? null} icon={<PackageIcon />}      iconBg="rgba(59,130,246,0.1)"  iconColor="#3b82f6" />
           <Kpi label={t('kpi_active')}   value={stats?.active   ?? null} icon={<PackageCheckIcon />}  iconBg="rgba(16,185,129,0.1)"  iconColor="#10b981" />
           <Kpi label={t('kpi_inactive')} value={stats?.inactive ?? null} icon={<PackageXIcon />}      iconBg="rgba(239,68,68,0.1)"   iconColor="#ef4444" />
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
-          <input style={{ ...inputCss, height: 36, flex: 1, minWidth: 180, maxWidth: 384 }} value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && setSearch(searchInput.trim())} placeholder={t('search')} />
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: 4, borderRadius: 8, border: '1px solid var(--color-border)', background: 'var(--color-muted,rgba(0,0,0,.04))' }}>
+          <input style={{ ...inputCss, height: 36, flex: 1, minWidth: 180, maxWidth: narrow ? undefined : 384, flexBasis: narrow ? '100%' : undefined }} value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && setSearch(searchInput.trim())} placeholder={t('search')} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: 4, borderRadius: 8, border: '1px solid var(--color-border)', background: 'var(--color-muted,rgba(0,0,0,.04))', width: narrow ? '100%' : undefined, flexBasis: narrow ? '100%' : undefined }}>
             {FILTERS.map((f) => (
-              <button key={f.k} onClick={() => setStatus(f.v)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 6, border: 0, cursor: 'pointer', fontSize: 12, fontWeight: 500, background: status === f.v ? 'var(--color-card)' : 'transparent', color: status === f.v ? 'var(--color-foreground)' : 'var(--color-muted-foreground)', boxShadow: status === f.v ? '0 1px 2px rgba(0,0,0,.08)' : 'none' }}>
+              <button key={f.k} onClick={() => setStatus(f.v)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '5px 10px', borderRadius: 6, border: 0, cursor: 'pointer', fontSize: 12, fontWeight: 500, flex: narrow ? 1 : undefined, background: status === f.v ? 'var(--color-card)' : 'transparent', color: status === f.v ? 'var(--color-foreground)' : 'var(--color-muted-foreground)', boxShadow: status === f.v ? '0 1px 2px rgba(0,0,0,.08)' : 'none' }}>
                 {f.dot && <span style={{ width: 6, height: 6, borderRadius: '50%', background: f.dot, flexShrink: 0 }} />}
                 {t(f.k)}
               </button>
             ))}
           </div>
-          <select style={{ ...inputCss, height: 36, width: 'auto', minWidth: 180 }} value={categoryId} onChange={(e) => setCategoryId(Number(e.target.value))}>
+          <select style={{ ...inputCss, height: 36, width: narrow ? '100%' : 'auto', minWidth: 180, flexBasis: narrow ? '100%' : undefined }} value={categoryId} onChange={(e) => setCategoryId(Number(e.target.value))}>
             <option value={0}>{t('filter_category')}</option>
             {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
-            <button style={{ ...btnGhost, height: 36 }} onClick={resetFilters}><ResetIcon />{t('reset_filters')}</button>
-            <div style={{ position: 'relative' }}>
-              <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowCols((v) => !v)}><GripIcon />{t('columns')}</button>
+          <div style={{ marginLeft: narrow ? 0 : 'auto', display: 'flex', gap: 8, flexBasis: narrow ? '100%' : undefined }}>
+            <button style={{ ...btnGhost, height: narrow ? 'auto' : 36, minHeight: narrow ? 36 : undefined, flex: narrow ? 1 : undefined, minWidth: narrow ? 0 : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} onClick={resetFilters}><ResetIcon />{t('reset_filters')}</button>
+            <div style={{ position: 'relative', flex: narrow ? 1 : undefined, minWidth: narrow ? 0 : undefined, display: narrow ? 'flex' : undefined }}>
+              <button style={{ ...btnGhost, height: narrow ? '100%' : 36, minHeight: narrow ? 36 : undefined, width: narrow ? '100%' : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} onClick={() => setShowCols((v) => !v)}><GripIcon />{t('columns')}</button>
               {showCols && <ColManager cols={cols} labelFor={(id) => t(COL_LABEL[id])} onChange={setCols} onClose={() => setShowCols(false)} save={cols$.save} defaults={cols$.DEFAULT} t={t} />}
             </div>
-            {can('export') && <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowExport(true)}><FileDownIcon />{t('export')}</button>}
+            {can('export') && <button style={{ ...btnGhost, height: narrow ? 'auto' : 36, minHeight: narrow ? 36 : undefined, flex: narrow ? 1 : undefined, minWidth: narrow ? 0 : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} onClick={() => setShowExport(true)}><FileDownIcon />{t('export')}</button>}
           </div>
         </div>
 
-        <div style={{ ...card, overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 760 }}>
+        <div style={{ ...card, overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: narrow ? undefined : 760 }}>
             <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}>
               <tr>
-                {visibleCols(cols).map(({ id }) => (
+                {hasHidden && <th style={{ ...th, width: 32 }} />}
+                {visible.map(({ id }) => (
                   <th key={id} style={{ ...th, cursor: id === 'image' ? 'default' : 'pointer', ...(id === 'id' ? { width: 70 } : {}) }} onClick={() => id !== 'image' && toggleSort(id)}>
                     {t(COL_LABEL[id])}{sortCol === id ? ` ${sortAsc ? '↑' : '↓'}` : ''}
                   </th>
                 ))}
-                <th style={{ ...th, width: 80 }} />
+                <th style={{ ...th, width: 80, position: 'sticky', right: 0, background: 'var(--color-muted,rgba(0,0,0,.03))' }} />
               </tr>
             </thead>
             <tbody>
               {sorted.length === 0 && !loading ? (
-                <tr><td style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: '40px 16px' }} colSpan={visibleCols(cols).length + 1}>{t('empty')}</td></tr>
+                <tr><td style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: '40px 16px' }} colSpan={totalCols}>{t('empty')}</td></tr>
               ) : sorted.map((p) => (
-                <tr key={p.id}>
-                  {visibleCols(cols).map(({ id }) => (
-                    <td key={id} style={{ ...td, ...(id === 'id' ? { color: 'var(--color-muted-foreground)', fontVariantNumeric: 'tabular-nums' } : {}) }}>
-                      {id === 'id' && p.id}
-                      {id === 'status' && <StatusBadge active={p.status === 1} t={t} />}
-                      {id === 'image' && <ProductThumb src={p.image} alt={p.name} />}
-                      {id === 'reference' && (p.reference || '—')}
-                      {id === 'name' && <ProductNameCell id={p.id} name={p.name} t={t} onOpenVariant={openVariant} />}
-                      {id === 'categories' && (p.categories.length ? p.categories.join(', ') : '—')}
-                      {id === 'created' && <span style={{ color: 'var(--color-muted-foreground)' }}>{fmtDate(p.dateCreation)}</span>}
+                <Fragment key={p.id}>
+                  <tr>
+                    {hasHidden && (
+                      <td style={td}>
+                        <ExpandToggle expanded={expanded.has(p.id)} onClick={() => toggleExpand(p.id)} />
+                      </td>
+                    )}
+                    {visible.map(({ id }) => (
+                      <td key={id} style={{ ...td, ...(id === 'id' ? { color: 'var(--color-muted-foreground)', fontVariantNumeric: 'tabular-nums' } : {}) }}>
+                        {cellContent(p, id)}
+                      </td>
+                    ))}
+                    <td style={{ ...td, position: 'sticky', right: 0, background: 'var(--color-card,#fff)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 4 }}>
+                        {can('duplicate') && <button style={iconBtn} title={t('var_duplicate')} onClick={() => setToDup(p)}>⧉</button>}
+                        {can('edit') && <button style={iconBtn} title={t('edit')} onClick={() => navigate(`${base}/${p.id}`)}><PencilIcon /></button>}
+                        {can('delete') && <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => setToDelete(p)}><TrashIcon /></button>}
+                      </div>
                     </td>
-                  ))}
-                  <td style={td}>
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 4 }}>
-                      {can('duplicate') && <button style={iconBtn} title={t('var_duplicate')} onClick={() => setToDup(p)}>⧉</button>}
-                      {can('edit') && <button style={iconBtn} title={t('edit')} onClick={() => navigate(`${base}/${p.id}`)}><PencilIcon /></button>}
-                      {can('delete') && <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => setToDelete(p)}><TrashIcon /></button>}
-                    </div>
-                  </td>
-                </tr>
+                  </tr>
+                  {expanded.has(p.id) && (
+                    <HiddenColsRow cols={eCols} labelFor={(id) => t(COL_LABEL[id])} renderValue={(id) => cellContent(p, id)} colSpan={totalCols} narrow={narrow} />
+                  )}
+                </Fragment>
               ))}
             </tbody>
           </table>
@@ -277,14 +310,15 @@ function ProductList({ base }: { base: string }) {
 }
 
 // ── Sélecteur de langue vertical (drapeau + nom) ────────────────────────────────
-function LangSwitcher({ languages, value, onChange }: { languages: LangOption[]; value: number; onChange: (id: number) => void }) {
+function LangSwitcher({ languages, value, onChange, narrow }: { languages: LangOption[]; value: number; onChange: (id: number) => void; narrow?: boolean }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+    <div style={{ display: 'flex', flexDirection: narrow ? 'row' : 'column', flexWrap: narrow ? 'wrap' : 'nowrap', gap: 4 }}>
       {languages.map((l) => {
         const on = l.id === value
         return (
           <button key={l.id} onClick={() => onChange(l.id)}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '8px 10px', borderRadius: 6, cursor: 'pointer', textAlign: 'left',
+            style={{ display: 'flex', alignItems: 'center', justifyContent: narrow ? 'center' : 'space-between', gap: 8, padding: '8px 10px', borderRadius: 6, cursor: 'pointer', textAlign: 'left',
+              flex: narrow ? '1 1 auto' : undefined,
               border: '1px solid ' + (on ? 'var(--color-primary)' : 'var(--color-border)'), background: on ? 'var(--color-primary)' : 'transparent',
               color: on ? 'var(--color-primary-foreground,#fff)' : 'inherit', fontWeight: on ? 600 : 400, fontSize: 14 }}>
             <span>{l.name}</span>
@@ -299,6 +333,7 @@ function LangSwitcher({ languages, value, onChange }: { languages: LangOption[];
 // ── Formulaire (sous-onglet) — onglets Principal / Textes / Variants / SEO ──────
 function ProductForm({ id, base }: { id: string; base: string }) {
   const t = makeT(DICT)
+  const narrow = useIsNarrow()
   const navigate = useNavigate()
   const location = useLocation()
   const isEdit = id !== 'new'
@@ -473,13 +508,13 @@ function ProductForm({ id, base }: { id: string; base: string }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, boxSizing: 'border-box' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+      <div style={{ display: 'flex', alignItems: narrow ? 'flex-start' : 'center', justifyContent: 'space-between', gap: 16, flexWrap: narrow ? 'wrap' : 'nowrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 8, background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', color: 'var(--color-primary)' }}><PackageIcon /></span>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{isEdit ? t('edit_title') : t('new_title')}</h1>
         </div>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          <button style={btnPrimary} onClick={submit} disabled={saving || loading}>{saving ? '…' : t('save_product')}</button>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexBasis: narrow ? '100%' : undefined }}>
+          <button style={{ ...btnPrimary, flex: narrow ? 1 : undefined, justifyContent: narrow ? 'center' : undefined }} onClick={submit} disabled={saving || loading}>{saving ? '…' : t('save_product')}</button>
         </div>
       </div>
 
@@ -506,7 +541,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
         </div>
 
         {/* 2 colonnes équilibrées, chaque section dans sa propre carte */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 20, alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : 'repeat(auto-fit, minmax(360px, 1fr))', gap: 20, alignItems: 'start' }}>
           {/* Colonne gauche */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20, minWidth: 0 }}>
             <div style={{ ...card, padding: 20 }}>
@@ -575,8 +610,8 @@ function ProductForm({ id, base }: { id: string; base: string }) {
         </div>
         </div>
       ) : tab === 'text' ? (
-        <div style={{ display: 'grid', gridTemplateColumns: '150px minmax(0, 1fr)', gap: 14, maxWidth: 1080 }}>
-          <LangSwitcher languages={languages} value={lang} onChange={setLang} />
+        <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '150px minmax(0, 1fr)', gap: 14, maxWidth: 1080 }}>
+          <LangSwitcher languages={languages} value={lang} onChange={setLang} narrow={narrow} />
           {texts.filter((x) => x.langId === lang).map((tx) => (
             <div key={tx.langId} style={{ ...card, padding: 18, minWidth: 0 }}>
               <div style={labelRow}><label style={label}>{t('f_name')}</label></div>
@@ -596,8 +631,8 @@ function ProductForm({ id, base }: { id: string; base: string }) {
       ) : tab === 'prices' ? (
         <PricesTab productId={productId} countries={countries} currencies={currencies} t={t} pendingPrices={pendingPrices} onBufferPrice={(p) => setPendingPrices((prev) => [...prev.filter((x) => x.countryId !== p.countryId), p])} />
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr', gap: 14, maxWidth: 760 }}>
-            <LangSwitcher languages={languages} value={lang} onChange={setLang} />
+        <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '150px 1fr', gap: 14, maxWidth: narrow ? undefined : 760 }}>
+            <LangSwitcher languages={languages} value={lang} onChange={setLang} narrow={narrow} />
             {seo.filter((s) => s.langId === lang).map((s) => {
               const SEO_FIELDS: [keyof ProductSeo, string, string][] = [
                 ['pageId', 'seo_page_id', 'tip_prd_seo_page_id'],

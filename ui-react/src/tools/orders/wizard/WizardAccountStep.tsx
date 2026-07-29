@@ -39,10 +39,10 @@ export function WizardAccountStep({ contactId, onBack, onNext }: {
       key: 'status', label: t('col_status'), width: 70,
       render: (r) => <span style={{ display: 'inline-flex', width: 10, height: 10, borderRadius: 999, background: r.status === 1 ? '#16a34a' : '#dc2626' }} />,
     },
-    { key: 'name', label: t('checkout_col_account'), render: (r) => r.name },
+    { key: 'name', label: t('checkout_col_account'), essential: true, render: (r) => r.name },
     { key: 'default', label: t('checkout_col_default_account'), width: 100, render: (r) => (r.isDefaultAccount ? '★' : '') },
     {
-      key: 'action', label: '', width: 60,
+      key: 'action', label: '', width: 60, essential: true,
       render: (r) => (
         <button style={{ ...btnPrimary, height: 30, padding: '0 10px' }} disabled={selecting === r.id} onClick={() => pick(r)}>
           {selecting === r.id ? '…' : '→'}

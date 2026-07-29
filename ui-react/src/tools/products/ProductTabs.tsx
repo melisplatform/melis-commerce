@@ -1,5 +1,5 @@
 import { createPortal } from 'react-dom'
-import { type ChangeEvent, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Fragment, type ChangeEvent, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
   fetchProductVariants, saveProductVariant, deleteProductVariant, duplicateProductVariant,
   fetchProductPrices, saveProductPrice, deleteProductPrice,
@@ -10,9 +10,13 @@ import {
   type ProductVariant, type ProductPrice, type ProductAttribute, type MediaItem, type DocType, type AlertRecipient, type UserOption, type CountryOption, type TooltipVariant,
 } from './api'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
-import { PencilIcon, EyeIcon, TrashIcon, PlusIcon, GlobeIcon, ImageIcon, ChevronDownIcon, PaperclipIcon, CubesIcon, PowerIcon } from '../../shared/icons'
+import { PencilIcon, EyeIcon, TrashIcon, PlusIcon, GlobeIcon, ImageIcon, ChevronDownIcon, PaperclipIcon, CubesIcon, PowerIcon, GripIcon } from '../../shared/icons'
 import { StatusBadge } from '../../shared/widgets'
 import { SearchableSelect } from '../../shared/SearchableSelect'
+import { useIsNarrow } from '../../shared/useIsNarrow'
+import { makeColStore, visibleCols, effectiveCols, type ColDef } from '../../shared/columns'
+import { ExpandToggle, HiddenColsRow } from '../../shared/ExpandableRow'
+import { ColManager } from '../../shared/ColManager'
 import type { Option } from '../../shared/api'
 import { notify } from '../../shared/notify'
 import { fetchCatalogTree, type CatNode, type LangOption } from '../catalog/api'
@@ -35,14 +39,15 @@ export function StatusToggle({ active, onChange, t }: { active: boolean; onChang
 }
 
 // ── Sélecteur vertical à drapeaux (langue ou pays) ──────────────────────────────
-export function FlagSwitcher({ items, value, onChange }: { items: { id: number; name: string; flag?: string; hasPending?: boolean }[]; value: number; onChange: (id: number) => void }) {
+export function FlagSwitcher({ items, value, onChange, narrow }: { items: { id: number; name: string; flag?: string; hasPending?: boolean }[]; value: number; onChange: (id: number) => void; narrow?: boolean }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 150 }}>
+    <div style={{ display: 'flex', flexDirection: narrow ? 'row' : 'column', flexWrap: narrow ? 'wrap' : 'nowrap', gap: 4, minWidth: narrow ? 0 : 150 }}>
       {items.map((l) => {
         const on = l.id === value
         return (
           <button key={l.id} onClick={() => onChange(l.id)}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '8px 10px', borderRadius: 6, cursor: 'pointer', textAlign: 'left',
+            style={{ display: 'flex', alignItems: 'center', justifyContent: narrow ? 'center' : 'space-between', gap: 8, padding: '8px 10px', borderRadius: 6, cursor: 'pointer', textAlign: 'left',
+              flex: narrow ? '1 1 auto' : undefined,
               border: '1px solid ' + (on ? 'var(--color-primary)' : 'var(--color-border)'), background: on ? 'var(--color-primary)' : 'transparent',
               color: on ? 'var(--color-primary-foreground,#fff)' : 'inherit', fontWeight: on ? 600 : 400, fontSize: 14 }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -840,8 +845,23 @@ export function VariantTooltipTable({ items, pos, t, onMouseEnter, onMouseLeave,
 }
 
 // ── Onglet Variants (table type legacy : ID / Principale / Image / Statut / SKU / Attributs / Action) ──
+const VARIANT_COL_ORDER = ['id', 'main', 'image', 'status', 'sku', 'attrs'] as const
+const VARIANT_COL_LABEL: Record<string, string> = {
+  id: 'var_col_id', main: 'var_col_main', image: 'col_image', status: 'col_status', sku: 'var_col_sku', attrs: 'var_col_attrs',
+}
+const VARIANT_COL_WIDTH: Record<string, number> = { id: 50, main: 60, image: 70, status: 70 }
+const variantCols$ = makeColStore('melis-product-variant-cols-v1', VARIANT_COL_ORDER)
+const VARIANT_ESSENTIAL_COLS = new Set(['sku'])
+
 export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: number | null; t: TFn; onAdd: () => void; onEdit: (id: number) => void; can?: (cap: string) => boolean }) {
+  const narrow = useIsNarrow()
   const allow = (cap: string) => (can ? can(cap) : true)
+  const [cols, setCols] = useState<ColDef[]>(variantCols$.load)
+  const [showCols, setShowCols] = useState(false)
+  const [expanded, setExpanded] = useState<Set<number>>(new Set())
+  function toggleExpand(id: number) {
+    setExpanded((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
+  }
   const [items, setItems] = useState<ProductVariant[]>([])
   const [tick, setTick] = useState(0)
   const [search, setSearch] = useState('')
@@ -873,58 +893,96 @@ export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: n
 
   const view = items.filter((v) => !search || v.sku.toLowerCase().includes(search.toLowerCase()) || v.attributes.toLowerCase().includes(search.toLowerCase()) || String(v.id).includes(search))
 
+  const eCols = effectiveCols(cols, VARIANT_ESSENTIAL_COLS, narrow)
+  const visible = visibleCols(eCols)
+  const hasHidden = eCols.some((c) => !c.visible)
+  const totalCols = visible.length + 1 + (hasHidden ? 1 : 0)
+  function cellContent(v: ProductVariant, id: string): import('react').ReactNode {
+    switch (id) {
+      case 'id': return v.id
+      case 'main': return <span style={{ color: v.isMain ? '#f5a623' : 'var(--color-border)', fontSize: 16 }}>★</span>
+      case 'image': return v.image
+        ? <img src={v.image} alt="" style={{ width: 38, height: 38, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--color-border)' }} onError={(e) => { (e.target as HTMLImageElement).style.opacity = '.3' }} />
+        : <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 38, height: 38, borderRadius: 6, background: 'var(--color-muted,rgba(0,0,0,.05))', color: 'var(--color-muted-foreground)' }}>🖼</span>
+      case 'status': return <span style={{ color: v.status === 1 ? '#16a34a' : '#dc2626', fontSize: 12 }}>●</span>
+      case 'sku': return (
+        <>
+          <button onClick={() => onEdit(v.id)} onMouseEnter={(e) => hoverSku(e, v.id)} onMouseLeave={scheduleTooltipClose}
+            style={{ border: 0, background: 'transparent', color: 'var(--color-primary)', cursor: 'pointer', fontWeight: 500, fontSize: 14, padding: 0, textDecoration: 'underline' }}>
+            {v.sku || `#${v.id}`}
+          </button>
+          {hoveredSkuId === v.id && hoveredTooltipRow.length > 0 && (
+            <VariantTooltipTable items={hoveredTooltipRow} pos={tooltipPos} t={t} onMouseEnter={clearTooltipCloseTimer} onMouseLeave={scheduleTooltipClose}
+              onRowClick={(variantId) => { clearTooltipCloseTimer(); setHoveredSkuId(null); onEdit(variantId) }} />
+          )}
+        </>
+      )
+      case 'attrs': return v.attributes || '—'
+      default: return '—'
+    }
+  }
+  function cellStyle(id: string) {
+    if (id === 'id') return { ...td, color: 'var(--color-muted-foreground)' }
+    if (id === 'attrs') return { ...td, color: 'var(--color-muted-foreground)' }
+    return td
+  }
+
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, gap: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, gap: 12, flexWrap: narrow ? 'wrap' : 'nowrap' }}>
         <h3 style={{ fontSize: 15, fontWeight: 600, margin: 0 }}>{t('var_title')}</h3>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <input style={{ ...inputCss, height: 34, width: 220 }} value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('search')} />
-          <button style={{ ...btnGhost, height: 34 }} onClick={() => setTick((x) => x + 1)} title={t('refresh')}>↻</button>
-          {productId && allow('variants.create') && <button style={btnPrimary} onClick={onAdd}><PlusIcon />{t('var_add')}</button>}
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexBasis: narrow ? '100%' : undefined, flexWrap: narrow ? 'wrap' : 'nowrap' }}>
+          <input style={{ ...inputCss, height: 34, width: narrow ? '100%' : 220 }} value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('search')} />
+          <button style={{ ...btnGhost, height: 34, flex: narrow ? 1 : undefined }} onClick={() => setTick((x) => x + 1)} title={t('refresh')}>↻</button>
+          <div style={{ position: 'relative', flex: narrow ? 1 : undefined, display: narrow ? 'flex' : undefined }}>
+            <button style={{ ...btnGhost, height: narrow ? '100%' : 34, width: narrow ? '100%' : undefined, justifyContent: 'center', whiteSpace: narrow ? 'normal' : 'nowrap', padding: narrow ? '6px 8px' : '0 12px' }} onClick={() => setShowCols((x) => !x)} title={t('columns')}><GripIcon />{t('columns')}</button>
+            {showCols && (
+              <ColManager cols={cols} labelFor={(id) => t(VARIANT_COL_LABEL[id])} onChange={setCols}
+                onClose={() => setShowCols(false)} save={variantCols$.save} defaults={variantCols$.DEFAULT} t={t} />
+            )}
+          </div>
+          {productId && allow('variants.create') && <button style={{ ...btnPrimary, flex: narrow ? 1 : undefined, justifyContent: 'center' }} onClick={onAdd}><PlusIcon />{t('var_add')}</button>}
         </div>
       </div>
 
-      <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div style={{ ...card, overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: narrow ? undefined : 700 }}>
           <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}>
             <tr>
-              <th style={{ ...th, width: 50 }}>{t('var_col_id')}</th><th style={{ ...th, width: 60 }}>{t('var_col_main')}</th>
-              <th style={{ ...th, width: 70 }}>{t('col_image')}</th><th style={{ ...th, width: 70 }}>{t('col_status')}</th>
-              <th style={th}>{t('var_col_sku')}</th><th style={th}>{t('var_col_attrs')}</th><th style={{ ...th, width: 150, textAlign: 'right' }}>{t('action')}</th>
+              {hasHidden && <th style={{ ...th, width: 32 }} />}
+              {visible.map((c) => (
+                <th key={c.id} style={{ ...th, ...(VARIANT_COL_WIDTH[c.id] ? { width: VARIANT_COL_WIDTH[c.id] } : {}) }}>{t(VARIANT_COL_LABEL[c.id])}</th>
+              ))}
+              <th style={{ ...th, width: 150, textAlign: 'right' }}>{t('action')}</th>
             </tr>
           </thead>
           <tbody>
             {view.length === 0 ? (
-              <tr><td colSpan={7} style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: '30px 16px' }}>{t('var_empty')}</td></tr>
+              <tr><td colSpan={totalCols} style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: '30px 16px' }}>{t('var_empty')}</td></tr>
             ) : view.map((v) => (
-              <tr key={v.id}>
-                <td style={{ ...td, color: 'var(--color-muted-foreground)' }}>{v.id}</td>
-                <td style={td}><span style={{ color: v.isMain ? '#f5a623' : 'var(--color-border)', fontSize: 16 }}>★</span></td>
-                <td style={td}>
-                  {v.image ? <img src={v.image} alt="" style={{ width: 38, height: 38, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--color-border)' }} onError={(e) => { (e.target as HTMLImageElement).style.opacity = '.3' }} />
-                    : <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 38, height: 38, borderRadius: 6, background: 'var(--color-muted,rgba(0,0,0,.05))', color: 'var(--color-muted-foreground)' }}>🖼</span>}
-                </td>
-                <td style={td}><span style={{ color: v.status === 1 ? '#16a34a' : '#dc2626', fontSize: 12 }}>●</span></td>
-                <td style={td}>
-                  <button onClick={() => onEdit(v.id)} onMouseEnter={(e) => hoverSku(e, v.id)} onMouseLeave={scheduleTooltipClose}
-                    style={{ border: 0, background: 'transparent', color: 'var(--color-primary)', cursor: 'pointer', fontWeight: 500, fontSize: 14, padding: 0, textDecoration: 'underline' }}>
-                    {v.sku || `#${v.id}`}
-                  </button>
-                  {hoveredSkuId === v.id && hoveredTooltipRow.length > 0 && (
-                    <VariantTooltipTable items={hoveredTooltipRow} pos={tooltipPos} t={t} onMouseEnter={clearTooltipCloseTimer} onMouseLeave={scheduleTooltipClose}
-                      onRowClick={(variantId) => { clearTooltipCloseTimer(); setHoveredSkuId(null); onEdit(variantId) }} />
+              <Fragment key={v.id}>
+                <tr>
+                  {hasHidden && (
+                    <td style={td}>
+                      <ExpandToggle expanded={expanded.has(v.id)} onClick={() => toggleExpand(v.id)} />
+                    </td>
                   )}
-                </td>
-                <td style={{ ...td, color: 'var(--color-muted-foreground)' }}>{v.attributes || '—'}</td>
-                <td style={td}>
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 5 }}>
-                    {allow('variants.edit') && <button style={{ ...iconBtn, color: v.status === 1 ? '#16a34a' : 'var(--color-muted-foreground)' }} title={v.status === 1 ? t('var_deactivate') : t('var_activate')} onClick={() => toggleStatus(v)}><PowerIcon /></button>}
-                    {allow('variants.duplicate') && <button style={iconBtn} title={t('var_duplicate')} onClick={() => setToDup(v)}>⧉</button>}
-                    {allow('variants.edit') && <button style={iconBtn} title={t('edit')} onClick={() => onEdit(v.id)}><PencilIcon /></button>}
-                    {allow('variants.delete') && <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => setToDelete(v)}><TrashIcon /></button>}
-                  </div>
-                </td>
-              </tr>
+                  {visible.map((col) => (
+                    <td key={col.id} style={cellStyle(col.id)}>{cellContent(v, col.id)}</td>
+                  ))}
+                  <td style={td}>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 5 }}>
+                      {allow('variants.edit') && <button style={{ ...iconBtn, color: v.status === 1 ? '#16a34a' : 'var(--color-muted-foreground)' }} title={v.status === 1 ? t('var_deactivate') : t('var_activate')} onClick={() => toggleStatus(v)}><PowerIcon /></button>}
+                      {allow('variants.duplicate') && <button style={iconBtn} title={t('var_duplicate')} onClick={() => setToDup(v)}>⧉</button>}
+                      {allow('variants.edit') && <button style={iconBtn} title={t('edit')} onClick={() => onEdit(v.id)}><PencilIcon /></button>}
+                      {allow('variants.delete') && <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => setToDelete(v)}><TrashIcon /></button>}
+                    </div>
+                  </td>
+                </tr>
+                {expanded.has(v.id) && (
+                  <HiddenColsRow cols={eCols} labelFor={(id) => t(VARIANT_COL_LABEL[id])} renderValue={(id) => cellContent(v, id)} colSpan={totalCols} narrow={narrow} />
+                )}
+              </Fragment>
             ))}
           </tbody>
         </table>
@@ -947,6 +1005,7 @@ export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: n
 export interface PendingPrice { id?: number | null; countryId: number; currency: number; net: number | null; gross: number | null; vatPercent: number | null; vatPrice: number | null; otherTax: number | null }
 
 export function PricesTab({ productId, countries, currencies, t, pendingPrices = [], onBufferPrice }: { productId: number | null; countries: Option[]; currencies: Option[]; t: TFn; pendingPrices?: PendingPrice[]; onBufferPrice?: (p: PendingPrice) => void }) {
+  const narrow = useIsNarrow()
   const [items, setItems] = useState<ProductPrice[]>([])
   const [country, setCountry] = useState<number>(-1)
   const [f, setF] = useState({ net: '', gross: '', vatPercent: '', vatPrice: '', otherTax: '' })
@@ -985,12 +1044,12 @@ export function PricesTab({ productId, countries, currencies, t, pendingPrices =
       {!productId && hasMeaningfulPending.length > 0 && (
         <p style={{ ...hint, marginBottom: 12 }}>{t('price_pending_hint', { n: hasMeaningfulPending.length })}</p>
       )}
-      <div style={{ display: 'grid', gridTemplateColumns: '170px 1fr', gap: 18, maxWidth: 940 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '170px 1fr', gap: 18, maxWidth: narrow ? undefined : 940 }}>
         <div>
           <div style={{ ...sectionTitle, marginBottom: 8 }}>🌐 {t('price_country')}</div>
           <FlagSwitcher
             items={countryItems.map((c) => ({ ...c, hasPending: !productId && pendingPrices.some((p) => p.countryId === c.id && (p.net !== null || p.gross !== null || p.vatPercent !== null || p.vatPrice !== null || p.otherTax !== null)) }))}
-            value={country} onChange={setCountry}
+            value={country} onChange={setCountry} narrow={narrow}
           />
         </div>
         <div style={{ ...card, padding: 18 }}>

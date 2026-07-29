@@ -9,6 +9,7 @@ import { notify } from '../../shared/notify'
 import { useCaps } from '../../shared/useCaps'
 import { Tabs } from '../../shared/Tabs'
 import { SearchableSelect } from '../../shared/SearchableSelect'
+import { useIsNarrow } from '../../shared/useIsNarrow'
 
 const TOOL_MELIS_KEY = 'meliscommerce_settings_page'
 
@@ -29,6 +30,7 @@ function GearIcon() {
 
 export default function SettingsPage() {
   const t = makeT(DICT)
+  const narrow = useIsNarrow()
   const { can, loaded: capsLoaded } = useCaps(TOOL_MELIS_KEY)
   const [mode, setMode] = useState<'react' | 'old'>('react')
   const [oldLoaded, setOldLoaded] = useState(false)
@@ -98,14 +100,14 @@ export default function SettingsPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, boxSizing: 'border-box', ...(mode === 'old' ? { height: '100%', overflow: 'hidden' } : {}) }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+      <div style={{ display: 'flex', alignItems: narrow ? 'flex-start' : 'center', justifyContent: 'space-between', gap: 16, flexWrap: narrow ? 'wrap' : 'nowrap' }}>
         <div>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{t('title')}</h1>
           <p style={{ fontSize: 14, color: 'var(--color-muted-foreground)', margin: '2px 0 0' }}>{t('subtitle')}</p>
         </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexBasis: narrow ? '100%' : undefined }}>
           <ViewModeToggle mode={mode} onReact={() => setMode('react')} onOld={() => { setMode('old'); setOldLoaded(true) }} />
-          {can('edit') && <button style={btnPrimary} onClick={submit} disabled={saving || loading}>{saving ? '…' : t('save')}</button>}
+          {can('edit') && <button style={{ ...btnPrimary, flex: narrow ? 1 : undefined, justifyContent: narrow ? 'center' : undefined }} onClick={submit} disabled={saving || loading}>{saving ? '…' : t('save')}</button>}
         </div>
       </div>
 

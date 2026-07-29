@@ -9,11 +9,12 @@ import CatalogTree from './CatalogTree'
 import { makeT } from '../../shared/i18n'
 import { DatePicker } from '../../shared/DatePicker'
 import { card, inputCss, btnPrimary, btnGhost, label, hint } from '../../shared/styles'
-import { PlusIcon, PencilIcon, TrashIcon, LayoutIcon, TagIcon, FileTextIcon, MapPinIcon, CartIcon, GripIcon } from '../../shared/icons'
+import { PlusIcon, PencilIcon, TrashIcon, LayoutIcon, TagIcon, FileTextIcon, MapPinIcon, CartIcon, GripIcon, SettingsIcon, GlobeIcon } from '../../shared/icons'
 import { ViewModeToggle, LegacyFrame, StatusBadge, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { Tabs, type TabDef } from '../../shared/Tabs'
 import { useCaps } from '../../shared/useCaps'
+import { useIsNarrow } from '../../shared/useIsNarrow'
 import type { Option } from '../../shared/api'
 
 /* Brique « Catalogues / Catégories » (MelisCommerce) — arbre full React (drag-and-drop) +
@@ -65,6 +66,7 @@ function CheckRow({ state, label, strong, onChange }: { state: Tri; label: strin
 export default function CatalogPage() {
   const t = makeT(DICT)
   const { can } = useCaps(TOOL_MELIS_KEY)
+  const narrow = useIsNarrow()
   const [mode, setMode] = useState<'react' | 'old'>('react')
   const [oldLoaded, setOldLoaded] = useState(false)
   const [tree, setTree] = useState<CatNode[]>([])
@@ -110,7 +112,7 @@ export default function CatalogPage() {
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{t('title')}</h1>
           <p style={{ fontSize: 14, color: 'var(--color-muted-foreground)', margin: '2px 0 0' }}>{t('subtitle')}</p>
         </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           <ViewModeToggle mode={mode} onReact={() => setMode('react')} onOld={() => { setMode('old'); setOldLoaded(true) }} />
         </div>
       </div>
@@ -121,34 +123,43 @@ export default function CatalogPage() {
       <div style={{ display: mode === 'react' ? 'flex' : 'none', flexDirection: 'column', gap: 12, flex: 1, minHeight: 0, marginTop: 16 }}>
         {err && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, flexShrink: 0 }}>{err}</div>}
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 440px) minmax(0, 1fr)', gap: 16, flex: 1, minHeight: 0 }}>
-          {/* Colonne gauche : arbre */}
-          <CatalogTree
-            nodes={tree} languages={languages} currentLangId={langId} onLangChange={setLangId}
-            selectedId={highlightId} loading={loading} can={can} t={t}
-            onSelect={openEdit} onAddChild={addChild}
-            onAddCatalog={() => { setErr(null); setHighlightId(null); setSel({ mode: 'new-catalog' }) }}
-            onDelete={setToDelete}
-            onContext={(n, x, y) => { setHighlightId(n.id); setCtxMenu({ node: n, x, y }) }}
-            onReorder={doMove}
-            onRefresh={refresh}
-          />
+        <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : 'minmax(320px, 440px) minmax(0, 1fr)', gap: 16, flex: 1, minHeight: 0 }}>
+          {/* Colonne gauche : arbre — sur mobile, masqué dès qu'une sélection ouvre le formulaire (drill-down, plus de place pour 2 colonnes côte à côte). */}
+          {(!narrow || !sel) && (
+            <CatalogTree
+              nodes={tree} languages={languages} currentLangId={langId} onLangChange={setLangId}
+              selectedId={highlightId} loading={loading} can={can} t={t}
+              onSelect={openEdit} onAddChild={addChild}
+              onAddCatalog={() => { setErr(null); setHighlightId(null); setSel({ mode: 'new-catalog' }) }}
+              onDelete={setToDelete}
+              onContext={(n, x, y) => { setHighlightId(n.id); setCtxMenu({ node: n, x, y }) }}
+              onReorder={doMove}
+              onRefresh={refresh}
+            />
+          )}
 
-          {/* Colonne droite : édition (ou placeholder) */}
-          <div style={{ minWidth: 0, minHeight: 0, overflow: 'auto' }}>
-            {sel ? (
-              <CategoryForm
-                key={sel.mode === 'edit' ? `e${sel.catId}` : sel.mode === 'new-category' ? `nc${sel.fatherId}` : 'ncat'}
-                sel={sel} tree={tree} languages={languages} countries={countries}
-                onSaved={(id, type) => { refresh(); setHighlightId(id); setSel({ mode: 'edit', catId: id, type }) }}
-                onClose={() => { setSel(null); setHighlightId(null) }} t={t}
-              />
-            ) : (
-              <div style={{ ...card, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 40, boxSizing: 'border-box' }}>
-                <p style={{ maxWidth: 320, fontSize: 14, color: 'var(--color-muted-foreground)', margin: 0 }}>{t('editor_empty')}</p>
-              </div>
-            )}
-          </div>
+          {/* Colonne droite : édition (ou placeholder) — masquée sur mobile tant que rien n'est sélectionné. */}
+          {(!narrow || sel) && (
+            <div style={{ minWidth: 0, minHeight: 0, overflow: 'auto' }}>
+              {sel ? (
+                <>
+                  {narrow && (
+                    <button style={{ ...btnGhost, marginBottom: 12 }} onClick={() => { setSel(null); setHighlightId(null) }}>← {t('back_to_tree')}</button>
+                  )}
+                  <CategoryForm
+                    key={sel.mode === 'edit' ? `e${sel.catId}` : sel.mode === 'new-category' ? `nc${sel.fatherId}` : 'ncat'}
+                    sel={sel} tree={tree} languages={languages} countries={countries}
+                    onSaved={(id, type) => { refresh(); setHighlightId(id); setSel({ mode: 'edit', catId: id, type }) }}
+                    onClose={() => { setSel(null); setHighlightId(null) }} t={t}
+                  />
+                </>
+              ) : (
+                <div style={{ ...card, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 40, boxSizing: 'border-box' }}>
+                  <p style={{ maxWidth: 320, fontSize: 14, color: 'var(--color-muted-foreground)', margin: 0 }}>{t('editor_empty')}</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -188,6 +199,7 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
   t: (k: string, v?: Record<string, string | number>) => string
 }) {
   const { can, loaded: capsLoaded } = useCaps(TOOL_MELIS_KEY)
+  const narrow = useIsNarrow()
   const isEdit = sel.mode === 'edit'
   const isCatalog = sel.mode === 'new-catalog' || (sel.mode === 'edit' && sel.type === 'catalog')
   const catId = sel.mode === 'edit' ? sel.catId : null
@@ -296,15 +308,15 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
   return (
     <div style={{ ...card, padding: 0 }}>
       {/* En-tête du formulaire */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, padding: '16px 20px', borderBottom: '1px solid var(--color-border)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ display: 'inline-flex', color: 'var(--color-primary)' }}>{isCatalog ? <LayoutIcon /> : <TagIcon />}</span>
+      <div style={{ display: 'flex', alignItems: narrow ? 'flex-start' : 'center', justifyContent: 'space-between', gap: 16, padding: '16px 20px', borderBottom: '1px solid var(--color-border)', flexWrap: narrow ? 'wrap' : 'nowrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+          <span style={{ display: 'inline-flex', color: 'var(--color-primary)', flexShrink: 0 }}>{isCatalog ? <LayoutIcon /> : <TagIcon />}</span>
           <h2 style={{ fontSize: 17, fontWeight: 700, margin: 0 }}>{headerTitle}</h2>
           {sel.mode === 'new-category' && parentName && <span style={{ fontSize: 13, color: 'var(--color-muted-foreground)' }}>↳ {parentName}</span>}
         </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <button style={btnGhost} onClick={onClose}>{t('cancel')}</button>
-          <button style={btnPrimary} onClick={submit} disabled={saving || loading}>{saving ? '…' : (isCatalog ? t('save_catalog') : t('save_category'))}</button>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexBasis: narrow ? '100%' : undefined }}>
+          <button style={{ ...btnGhost, flex: narrow ? 1 : undefined, minWidth: narrow ? 0 : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap' }} onClick={onClose}>{t('cancel')}</button>
+          <button style={{ ...btnPrimary, flex: narrow ? 1 : undefined, minWidth: narrow ? 0 : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap' }} onClick={submit} disabled={saving || loading}>{saving ? '…' : (isCatalog ? t('save_catalog') : t('save_category'))}</button>
         </div>
       </div>
 
@@ -330,12 +342,12 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: 24, alignItems: 'start' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : 'repeat(auto-fit,minmax(320px,1fr))', gap: 24, alignItems: 'start' }}>
               {/* Texts (sélecteur de langue vertical) */}
               <div>
-                <h4 style={secTitle}>⚙ {t('sec_texts')}</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr', gap: 14 }}>
-                  <LangSwitcher languages={languages} value={lang} onChange={setLang} />
+                <h4 style={secTitle}><span style={{ display: 'inline-flex' }}><SettingsIcon /></span> {t('sec_texts')}</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '150px 1fr', gap: 14 }}>
+                  <LangSwitcher languages={languages} value={lang} onChange={setLang} narrow={narrow} />
                   {texts.filter((x) => x.langId === lang).map((tx) => (
                     <div key={tx.langId}>
                       <label style={label}>{t('f_name')} *</label>
@@ -352,7 +364,7 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                 <div>
                   <h4 style={secTitle}><span style={{ display: 'inline-flex' }}><MapPinIcon /></span> {t('sec_dates')}</h4>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: 12 }}>
                     <div>
                       <label style={label}>{t('f_valid_start')}</label>
                       <DatePicker t={t} value={validStart} onChange={setValidStart} />
@@ -366,7 +378,7 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
                   <input style={inputCss} value={reference} onChange={(e) => setReference(e.target.value)} placeholder={t('f_reference_ph')} autoComplete="off" />
                 </div>
                 <div>
-                  <h4 style={secTitle}>🌐 {t('sec_countries')}</h4>
+                  <h4 style={secTitle}><span style={{ display: 'inline-flex' }}><GlobeIcon /></span> {t('sec_countries')}</h4>
                   {countries.length === 0 ? <p style={{ ...hint, margin: 0 }}>{t('f_no_country')}</p> : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                       {/* Tous les pays : tri-état (tiret si sélection partielle) — design melis-core Users/droits. */}
@@ -384,8 +396,8 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
           </div>
         ) : tab === 'seo' ? (
           !isEdit ? <p style={{ ...hint }}>{t('save_first_tab')}</p> : (
-            <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr', gap: 14, maxWidth: 760 }}>
-              <LangSwitcher languages={languages} value={lang} onChange={setLang} />
+            <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '150px 1fr', gap: 14, maxWidth: narrow ? undefined : 760 }}>
+              <LangSwitcher languages={languages} value={lang} onChange={setLang} narrow={narrow} />
               {seo.filter((s) => s.langId === lang).map((s) => (
                 <div key={s.langId}>
                   <label style={label}>{t('seo_page_id')}</label>
@@ -455,14 +467,15 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
 }
 
 /** Sélecteur de langue vertical (drapeau + nom), comme l'outil legacy. */
-function LangSwitcher({ languages, value, onChange }: { languages: LangOption[]; value: number; onChange: (id: number) => void }) {
+function LangSwitcher({ languages, value, onChange, narrow }: { languages: LangOption[]; value: number; onChange: (id: number) => void; narrow?: boolean }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+    <div style={{ display: 'flex', flexDirection: narrow ? 'row' : 'column', flexWrap: narrow ? 'wrap' : 'nowrap', gap: 4 }}>
       {languages.map((l) => {
         const on = l.id === value
         return (
           <button key={l.id} onClick={() => onChange(l.id)}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '8px 10px', borderRadius: 6, cursor: 'pointer', textAlign: 'left',
+            style={{ display: 'flex', alignItems: 'center', justifyContent: narrow ? 'center' : 'space-between', gap: 8, padding: '8px 10px', borderRadius: 6, cursor: 'pointer', textAlign: 'left',
+              flex: narrow ? '1 1 auto' : undefined,
               border: '1px solid ' + (on ? 'var(--color-primary)' : 'var(--color-border)'),
               background: on ? 'var(--color-primary)' : 'transparent', color: on ? 'var(--color-primary-foreground,#fff)' : 'inherit', fontWeight: on ? 600 : 400, fontSize: 14 }}>
             <span>{l.name}</span>

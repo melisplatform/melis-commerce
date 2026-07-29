@@ -18,6 +18,7 @@ import { DatePicker } from '../../shared/DatePicker'
 import { TrashIcon, PencilIcon, StarIcon, CheckIcon, UserPlusIcon, PaperclipIcon, PlusIcon, ImageIcon } from '../../shared/icons'
 import { fmtDate, type T } from '../../shared/i18n'
 import { notify } from '../../shared/notify'
+import { useIsNarrow } from '../../shared/useIsNarrow'
 import type { Option } from '../../shared/api'
 
 /** Lit un fichier en data URL base64 (pour le logo société). */
@@ -37,6 +38,7 @@ export const EMPTY_CO: Omit<CompanyData, 'id'> = {
 export function CompanyTab({ company, onChange, loading, t, nameRequired }: {
   company: Omit<CompanyData, 'id'>; onChange: (c: Omit<CompanyData, 'id'>) => void; loading: boolean; t: T; nameRequired?: boolean
 }) {
+  const narrow = useIsNarrow()
   const set = <K extends keyof typeof company>(k: K, v: (typeof company)[K]) => onChange({ ...company, [k]: v })
   const field = (k: keyof typeof company, lbl: string, type: 'text' | 'number' = 'text', required?: boolean) => (
     <div>
@@ -47,12 +49,12 @@ export function CompanyTab({ company, onChange, loading, t, nameRequired }: {
   )
   if (loading) return <div style={{ display: 'flex', justifyContent: 'center', minHeight: '30vh', alignItems: 'center', color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, alignItems: 'start' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: 20, alignItems: 'start' }}>
       <div style={{ ...card, padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
         <h3 style={sectionTitle}>{t('co_section_id')}</h3>
         {field('name', t('co_name'), 'text', nameRequired)}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>{field('numberId', t('co_number'))}{field('vatNumber', t('co_vat'))}</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>{field('group', t('co_group'))}{field('employees', t('co_employees'), 'number')}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: 14 }}>{field('numberId', t('co_number'))}{field('vatNumber', t('co_vat'))}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: 14 }}>{field('group', t('co_group'))}{field('employees', t('co_employees'), 'number')}</div>
         <div>
           <label style={label}>{t('co_creation_date')}</label>
           <DatePicker t={t} value={company.compCreationDate} onChange={(v) => set('compCreationDate', v)} />
@@ -61,10 +63,10 @@ export function CompanyTab({ company, onChange, loading, t, nameRequired }: {
       </div>
       <div style={{ ...card, padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
         <h3 style={sectionTitle}>{t('co_section_addr')}</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: '90px 1fr', gap: 14 }}>{field('addNumber', t('co_address'))}{field('addStreet', t('co_street'))}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '90px 1fr', gap: 14 }}>{field('addNumber', t('co_address'))}{field('addStreet', t('co_street'))}</div>
         {field('addBuilding', t('co_building'))}
-        <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 14 }}>{field('addZip', t('co_zip'))}{field('addCity', t('co_city'))}</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>{field('addState', t('co_state'))}{field('addCountry', t('co_country'))}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '120px 1fr', gap: 14 }}>{field('addZip', t('co_zip'))}{field('addCity', t('co_city'))}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: 14 }}>{field('addState', t('co_state'))}{field('addCountry', t('co_country'))}</div>
         {field('phone', t('co_phone'))}
       </div>
       <div style={{ ...card, padding: 28, gridColumn: '1 / -1' }}>
@@ -177,12 +179,12 @@ export function ContactsTab({ accountId, pending, onPendingChange, t, can }: {
         onAdd={allow('contacts.create') ? () => navigate(`${CONTACT_ROUTE}/new`) : undefined} addIcon={<UserPlusIcon />} addTitle={t('c_add')}
         cols={[
           { key: 'firstname', label: t('c_firstname'), render: (r) => r.firstname || '—' },
-          { key: 'name', label: t('c_name'), render: (r) => <span style={{ fontWeight: 500 }}>{r.name || '—'}</span> },
+          { key: 'name', label: t('c_name'), essential: true, render: (r) => <span style={{ fontWeight: 500 }}>{r.name || '—'}</span> },
           { key: 'email', label: t('c_email'), render: (r) => r.email || '—' },
           { key: 'status', label: t('col_status'), render: (r) => <StatusBadge active={r.status === 1} t={t} /> },
           { key: 'def_contact', label: t('c_def_contact'), render: (r) => (r.isMain ? <StarIcon /> : '—') },
           { key: 'def_account', label: t('c_def_account'), render: (r) => (r.isDefaultAccount ? <StarIcon /> : '—') },
-          { key: 'action', label: t('action'), width: 120, render: (r) => (
+          { key: 'action', label: t('action'), width: 120, essential: true, render: (r) => (
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6 }}>
               <button style={iconBtn} title={t('edit')} onClick={() => navigate(`${CONTACT_ROUTE}/${r.id}`)}><PencilIcon /></button>
               {!r.isMain && <button style={iconBtn} title={t('set_default')} onClick={() => setDefault(r.id)}><CheckIcon /></button>}
@@ -244,7 +246,7 @@ export function OrdersTab({ accountId, t }: { accountId: number; t: T }) {
       t={t} search={(r) => `${r.reference} ${r.statusName}`} searchPlaceholder={t('ph_search_order')} filters={filters} onRefresh={() => setTick((x) => x + 1)}
       cols={[
         { key: 'id', label: t('col_id'), width: 70, render: (r) => <span style={{ color: 'var(--color-muted-foreground)' }}>{r.id}</span> },
-        { key: 'ref', label: t('o_ref'), render: (r) => <span style={{ fontWeight: 500 }}>{r.reference || '—'}</span> },
+        { key: 'ref', label: t('o_ref'), essential: true, render: (r) => <span style={{ fontWeight: 500 }}>{r.reference || '—'}</span> },
         { key: 'status', label: t('o_status'), render: (r) => r.statusName || `#${r.status}` },
         { key: 'date', label: t('o_date'), render: (r) => fmtDate(r.dateCreation) },
       ]} />

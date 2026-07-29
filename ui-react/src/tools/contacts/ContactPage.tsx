@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   deleteContact, fetchContactById, fetchContactOptions, fetchContacts, fetchContactStats,
@@ -15,7 +15,9 @@ import { notify } from '../../shared/notify'
 import { useCaps } from '../../shared/useCaps'
 import { ColManager } from '../../shared/ColManager'
 import { ExportModal } from '../../shared/ExportModal'
-import { makeColStore, visibleCols, type ColDef } from '../../shared/columns'
+import { makeColStore, visibleCols, effectiveCols, type ColDef } from '../../shared/columns'
+import { ExpandToggle, HiddenColsRow } from '../../shared/ExpandableRow'
+import { useIsNarrow } from '../../shared/useIsNarrow'
 import { openSubTab, closeSubTab, updateSubLabel } from '../../shared/subtabs'
 import type { Option } from '../../shared/api'
 import { Tabs, type TabDef } from '../../shared/Tabs'
@@ -31,6 +33,7 @@ const COL_LABEL: Record<string, string> = {
   email: 'col_email', type: 'col_type', tags: 'col_tags', created: 'col_created',
 }
 const cols$ = makeColStore('melis-contact-cols-v1', COL_ORDER)
+const ESSENTIAL_COLS = new Set(['name'])
 
 const listCache = makeCache<{
   items: ContactItem[]; stats: ContactStats | null
@@ -67,6 +70,7 @@ function ContactList({ base }: { base: string }) {
   const t = makeT(DICT)
   const navigate = useNavigate()
   const { can } = useCaps(TOOL_MELIS_KEY)
+  const narrow = useIsNarrow()
   const [mode, setMode] = useState<'react' | 'old'>(listCache.get()?.mode ?? 'react')
   // Non-persistent bricks get fully unmounted when the tab isn't active and rebuilt from
   // scratch when revisited — only `mode` survives that via listCache. If `oldLoaded`
@@ -91,6 +95,10 @@ function ContactList({ base }: { base: string }) {
   const [cols, setCols] = useState<ColDef[]>(cols$.load)
   const [showCols, setShowCols] = useState(false)
   const [showExport, setShowExport] = useState(false)
+  const [expanded, setExpanded] = useState<Set<number>>(new Set())
+  function toggleExpand(id: number) {
+    setExpanded((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
+  }
 
   const cacheRef = useRef({ items, stats, search, searchInput, status, filterAccountId, filterType, sortCol, sortAsc, mode })
   useEffect(() => { cacheRef.current = { items, stats, search, searchInput, status, filterAccountId, filterType, sortCol, sortAsc, mode } })
@@ -137,95 +145,119 @@ function ContactList({ base }: { base: string }) {
   }
   const FILTERS: { k: string; v: number | null; dot?: string }[] = [{ k: 'f_all', v: null }, { k: 'f_active', v: 1, dot: '#10b981' }, { k: 'f_inactive', v: 0, dot: '#ef4444' }]
 
+  const eCols = effectiveCols(cols, ESSENTIAL_COLS, narrow)
+  const visible = visibleCols(eCols)
+  const hasHidden = eCols.some((c) => !c.visible)
+  const totalCols = visible.length + 1 + (hasHidden ? 1 : 0)
+  function cellContent(c: ContactItem, id: string): ReactNode {
+    switch (id) {
+      case 'id': return c.id
+      case 'status': return <StatusBadge active={c.status === 1} t={t} />
+      case 'firstname': return c.firstname || '—'
+      case 'name': return <span style={{ fontWeight: 500 }}>{c.name || '—'}</span>
+      case 'account': return c.accountName || '—'
+      case 'email': return c.email || '—'
+      case 'type': return c.type || '—'
+      case 'tags': return <TagsDisplay value={c.tags} />
+      case 'created': return <span style={{ color: 'var(--color-muted-foreground)' }}>{fmtDate(c.dateCreation)}</span>
+      default: return null
+    }
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, boxSizing: 'border-box', ...(mode === 'old' ? { height: '100%', overflow: 'hidden' } : {}) }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
         <div>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{t('title')}</h1>
           <p style={{ fontSize: 14, color: 'var(--color-muted-foreground)', margin: '2px 0 0' }}>{t('subtitle')}</p>
         </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <ViewModeToggle mode={mode} onReact={() => setMode('react')} onOld={() => { setMode('old'); setOldLoaded(true) }} />
-          <button style={{ ...btnGhost, width: 36, padding: 0, justifyContent: 'center' }} onClick={() => setTick((x) => x + 1)} title={t('refresh')}>↻</button>
-          {can('create') && <button style={btnPrimary} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', justifyContent: 'flex-end' }}>
+            <ViewModeToggle mode={mode} onReact={() => setMode('react')} onOld={() => { setMode('old'); setOldLoaded(true) }} />
+            <button style={{ ...btnGhost, width: 36, padding: 0, justifyContent: 'center', flexShrink: 0 }} onClick={() => setTick((x) => x + 1)} title={t('refresh')}>↻</button>
+          </div>
+          {can('create') && <button style={{ ...btnPrimary, width: '100%', justifyContent: 'center', whiteSpace: 'normal', textAlign: 'center', height: 'auto', minHeight: 36, padding: '8px 14px' }} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>}
         </div>
       </div>
 
       {oldLoaded && <LegacyFrame melisKey={TOOL_MELIS_KEY} title={t('title')} visible={mode === 'old'} />}
 
       <div style={{ display: mode === 'react' ? 'flex' : 'none', flexDirection: 'column', gap: 20, flex: 1, minHeight: 0 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 12 }}>
           <Kpi label={t('kpi_total')}    value={stats?.total    ?? null} icon={<UsersKpiIcon />} iconBg="rgba(59,130,246,0.1)"  iconColor="#3b82f6" />
           <Kpi label={t('kpi_active')}   value={stats?.active   ?? null} icon={<UsersKpiIcon />} iconBg="rgba(16,185,129,0.1)"  iconColor="#10b981" />
           <Kpi label={t('kpi_inactive')} value={stats?.inactive ?? null} icon={<UsersKpiIcon />} iconBg="rgba(239,68,68,0.1)"   iconColor="#ef4444" />
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
-          <input style={{ ...inputCss, height: 36, flex: 1, minWidth: 180, maxWidth: 384 }} value={searchInput}
+          <input style={{ ...inputCss, height: 36, flex: 1, minWidth: 180, maxWidth: narrow ? undefined : 384, flexBasis: narrow ? '100%' : undefined }} value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && setSearch(searchInput.trim())} placeholder={t('search')} />
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: 4, borderRadius: 8, border: '1px solid var(--color-border)', background: 'var(--color-muted,rgba(0,0,0,.04))' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: 4, borderRadius: 8, border: '1px solid var(--color-border)', background: 'var(--color-muted,rgba(0,0,0,.04))', width: narrow ? '100%' : undefined, flexBasis: narrow ? '100%' : undefined }}>
             {FILTERS.map((f) => (
-              <button key={f.k} onClick={() => setStatus(f.v)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 6, border: 0, cursor: 'pointer', fontSize: 12, fontWeight: 500, background: status === f.v ? 'var(--color-card)' : 'transparent', color: status === f.v ? 'var(--color-foreground)' : 'var(--color-muted-foreground)', boxShadow: status === f.v ? '0 1px 2px rgba(0,0,0,.08)' : 'none' }}>
+              <button key={f.k} onClick={() => setStatus(f.v)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '5px 10px', borderRadius: 6, border: 0, cursor: 'pointer', fontSize: 12, fontWeight: 500, flex: narrow ? 1 : undefined, background: status === f.v ? 'var(--color-card)' : 'transparent', color: status === f.v ? 'var(--color-foreground)' : 'var(--color-muted-foreground)', boxShadow: status === f.v ? '0 1px 2px rgba(0,0,0,.08)' : 'none' }}>
                 {f.dot && <span style={{ width: 6, height: 6, borderRadius: '50%', background: f.dot, flexShrink: 0 }} />}
                 {t(f.k)}
               </button>
             ))}
           </div>
-          <select style={{ ...inputCss, height: 36, width: 'auto', minWidth: 170 }} value={filterAccountId} onChange={(e) => setFilterAccountId(Number(e.target.value))}>
+          <select style={{ ...inputCss, height: 36, width: narrow ? '100%' : 'auto', minWidth: 170, flexBasis: narrow ? '100%' : undefined }} value={filterAccountId} onChange={(e) => setFilterAccountId(Number(e.target.value))}>
             <option value={0}>{t('filter_account')}</option>
             {accounts.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
           </select>
-          <select style={{ ...inputCss, height: 36, width: 'auto', minWidth: 130 }} value={filterType} onChange={(e) => setFilterType(e.target.value)}>
+          <select style={{ ...inputCss, height: 36, width: narrow ? '100%' : 'auto', minWidth: 130, flexBasis: narrow ? '100%' : undefined }} value={filterType} onChange={(e) => setFilterType(e.target.value)}>
             <option value="">{t('filter_type')}</option>
             <option value="person">{t('type_person')}</option>
             <option value="company">{t('type_company')}</option>
           </select>
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
-            <button style={{ ...btnGhost, height: 36 }} onClick={resetFilters}><ResetIcon />{t('reset_filters')}</button>
-            <div style={{ position: 'relative' }}>
-              <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowCols((v) => !v)}><GripIcon />{t('columns')}</button>
+          <div style={{ marginLeft: narrow ? 0 : 'auto', display: 'flex', gap: 8, flexBasis: narrow ? '100%' : undefined }}>
+            <button style={{ ...btnGhost, height: narrow ? 'auto' : 36, minHeight: narrow ? 36 : undefined, flex: narrow ? 1 : undefined, minWidth: narrow ? 0 : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} onClick={resetFilters}><ResetIcon />{t('reset_filters')}</button>
+            <div style={{ position: 'relative', flex: narrow ? 1 : undefined, minWidth: narrow ? 0 : undefined, display: narrow ? 'flex' : undefined }}>
+              <button style={{ ...btnGhost, height: narrow ? '100%' : 36, minHeight: narrow ? 36 : undefined, width: narrow ? '100%' : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} onClick={() => setShowCols((v) => !v)}><GripIcon />{t('columns')}</button>
               {showCols && <ColManager cols={cols} labelFor={(id) => t(COL_LABEL[id])} onChange={setCols} onClose={() => setShowCols(false)} save={cols$.save} defaults={cols$.DEFAULT} t={t} />}
             </div>
-            {can('export') && <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowExport(true)}><FileDownIcon />{t('export')}</button>}
+            {can('export') && <button style={{ ...btnGhost, height: narrow ? 'auto' : 36, minHeight: narrow ? 36 : undefined, flex: narrow ? 1 : undefined, minWidth: narrow ? 0 : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} onClick={() => setShowExport(true)}><FileDownIcon />{t('export')}</button>}
           </div>
         </div>
 
-        <div style={{ ...card, overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 760 }}>
+        <div style={{ ...card, overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: narrow ? undefined : 760 }}>
             <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}>
               <tr>
-                {visibleCols(cols).map(({ id }) => (
+                {hasHidden && <th style={{ ...th, width: 32 }} />}
+                {visible.map(({ id }) => (
                   <th key={id} style={{ ...th, cursor: 'pointer', ...(id === 'id' ? { width: 70 } : {}) }} onClick={() => toggleSort(id)}>
                     {t(COL_LABEL[id])}{sortCol === id ? ` ${sortAsc ? '↑' : '↓'}` : ''}
                   </th>
                 ))}
-                <th style={{ ...th, width: 80 }} />
+                <th style={{ ...th, width: 80, position: 'sticky', right: 0, background: 'var(--color-muted,rgba(0,0,0,.03))' }} />
               </tr>
             </thead>
             <tbody>
               {sorted.length === 0 && !loading ? (
-                <tr><td style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: '40px 16px' }} colSpan={visibleCols(cols).length + 1}>{t('empty')}</td></tr>
+                <tr><td style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: '40px 16px' }} colSpan={totalCols}>{t('empty')}</td></tr>
               ) : sorted.map((c) => (
-                <tr key={c.id}>
-                  {visibleCols(cols).map(({ id }) => (
-                    <td key={id} style={{ ...td, ...(id === 'id' ? { color: 'var(--color-muted-foreground)', fontVariantNumeric: 'tabular-nums' } : {}) }}>
-                      {id === 'id' && c.id}
-                      {id === 'status' && <StatusBadge active={c.status === 1} t={t} />}
-                      {id === 'firstname' && (c.firstname || '—')}
-                      {id === 'name' && <span style={{ fontWeight: 500 }}>{c.name || '—'}</span>}
-                      {id === 'account' && (c.accountName || '—')}
-                      {id === 'email' && (c.email || '—')}
-                      {id === 'type' && (c.type || '—')}
-                      {id === 'tags' && <TagsDisplay value={c.tags} />}
-                      {id === 'created' && <span style={{ color: 'var(--color-muted-foreground)' }}>{fmtDate(c.dateCreation)}</span>}
+                <Fragment key={c.id}>
+                  <tr>
+                    {hasHidden && (
+                      <td style={td}>
+                        <ExpandToggle expanded={expanded.has(c.id)} onClick={() => toggleExpand(c.id)} />
+                      </td>
+                    )}
+                    {visible.map(({ id }) => (
+                      <td key={id} style={{ ...td, ...(id === 'id' ? { color: 'var(--color-muted-foreground)', fontVariantNumeric: 'tabular-nums' } : {}) }}>
+                        {cellContent(c, id)}
+                      </td>
+                    ))}
+                    <td style={{ ...td, position: 'sticky', right: 0, background: 'var(--color-card,#fff)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 4 }}>
+                        {can('edit') && <button style={iconBtn} title={t('edit')} onClick={() => navigate(`${base}/${c.id}`)}><PencilIcon /></button>}
+                        {can('delete') && <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => setToDelete(c)}><TrashIcon /></button>}
+                      </div>
                     </td>
-                  ))}
-                  <td style={td}>
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 4 }}>
-                      {can('edit') && <button style={iconBtn} title={t('edit')} onClick={() => navigate(`${base}/${c.id}`)}><PencilIcon /></button>}
-                      {can('delete') && <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => setToDelete(c)}><TrashIcon /></button>}
-                    </div>
-                  </td>
-                </tr>
+                  </tr>
+                  {expanded.has(c.id) && (
+                    <HiddenColsRow cols={eCols} labelFor={(id) => t(COL_LABEL[id])} renderValue={(id) => cellContent(c, id)} colSpan={totalCols} narrow={narrow} />
+                  )}
+                </Fragment>
               ))}
             </tbody>
           </table>
@@ -248,6 +280,7 @@ function ContactList({ base }: { base: string }) {
 // ── Formulaire (sous-onglet in-tool) ────────────────────────────────────────────
 function ContactForm({ id, base }: { id: string; base: string }) {
   const t = makeT(DICT)
+  const narrow = useIsNarrow()
   const navigate = useNavigate()
   const isEdit = id !== 'new'
   const contactId = isEdit ? parseInt(id) : null
@@ -382,13 +415,13 @@ function ContactForm({ id, base }: { id: string; base: string }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, boxSizing: 'border-box' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+      <div style={{ display: 'flex', alignItems: narrow ? 'flex-start' : 'center', justifyContent: 'space-between', gap: 16, flexWrap: narrow ? 'wrap' : 'nowrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 8, background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', color: 'var(--color-primary)' }}><UsersKpiIcon /></span>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{isEdit ? t('edit_title') : t('new_title')}</h1>
         </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <button style={btnPrimary} onClick={submit} disabled={saving || loading}>{saving ? '…' : t('save')}</button>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexBasis: narrow ? '100%' : undefined }}>
+          <button style={{ ...btnPrimary, flex: narrow ? 1 : undefined, justifyContent: narrow ? 'center' : undefined }} onClick={submit} disabled={saving || loading}>{saving ? '…' : t('save')}</button>
         </div>
       </div>
 
@@ -403,9 +436,9 @@ function ContactForm({ id, base }: { id: string; base: string }) {
       {loading ? (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '40vh', color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>
       ) : (
-        <div style={{ display: 'flex', gap: 20, alignItems: 'start' }}>
+        <div style={{ display: 'flex', flexDirection: narrow ? 'column' : 'row', gap: 20, alignItems: 'start' }}>
           {/* Main content */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ flex: 1, width: narrow ? '100%' : undefined, display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div style={{ ...card, padding: 24 }}>
               <h3 style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 20px' }}>
                 <UserIcon />{t('f_identity')}
@@ -434,7 +467,7 @@ function ContactForm({ id, base }: { id: string; base: string }) {
                   </div>
                 )}
                 {/* Firstname (relabellisé « Société » en mode company) + Name (masqué en mode company) */}
-                <div style={{ display: 'grid', gridTemplateColumns: isCompany ? '1fr' : '1fr 1fr', gap: 16 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: (isCompany || narrow) ? '1fr' : '1fr 1fr', gap: 16 }}>
                   <div>
                     <label style={label}>{isCompany ? t('type_company') : t('f_firstname')} <span style={{ color: '#ef4444' }}>*</span></label>
                     <input style={inputCss} value={firstname} onChange={(e) => { setFirstname(e.target.value); if (firstnameError && e.target.value.trim()) setFirstnameError('') }} placeholder={isCompany ? t('type_company') : t('f_firstname_ph')} autoComplete="off" />
@@ -472,7 +505,7 @@ function ContactForm({ id, base }: { id: string; base: string }) {
                 </div>
                 {/* Job title + Job service (masqués en mode company) */}
                 {!isCompany && (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: 16 }}>
                     <div>
                       <label style={label}>{t('f_job')}</label>
                       <input style={inputCss} value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder={t('f_job_ph')} autoComplete="off" />
@@ -484,7 +517,7 @@ function ContactForm({ id, base }: { id: string; base: string }) {
                   </div>
                 )}
                 {/* Mobile + Landline */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: 16 }}>
                   <div>
                     <label style={label}>{t('f_mobile')}</label>
                     <input style={inputCss} value={telMobile} onChange={(e) => setTelMobile(e.target.value)} placeholder={t('f_mobile_ph')} autoComplete="off" />
@@ -507,7 +540,7 @@ function ContactForm({ id, base }: { id: string; base: string }) {
               <h3 style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 20px' }}>
                 <KeyIcon />{t('f_section_password')}
               </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: 16 }}>
                 <div>
                   <label style={label}>{isEdit ? t('f_password_edit') : t('f_password')} <span style={{ color: '#ef4444' }}>*</span></label>
                   <input type="password" style={inputCss} value={password} onChange={(e) => { setPassword(e.target.value); if (passwordError) setPasswordError('') }} placeholder="******" autoComplete="new-password" />
@@ -522,7 +555,7 @@ function ContactForm({ id, base }: { id: string; base: string }) {
           </div>
 
           {/* Right sidebar */}
-          <div style={{ width: 256, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ width: narrow ? '100%' : 256, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div style={{ ...card, padding: 16 }}>
               <h3 style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 12px' }}>
                 <ToggleRightIcon />{t('col_status')}
