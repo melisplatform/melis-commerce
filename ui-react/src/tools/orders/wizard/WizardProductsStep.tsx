@@ -82,10 +82,19 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
     const stock = basket.find((b) => b.variantId === variantId)?.stock ?? null
     const capped = stock != null ? Math.min(qty, stock) : qty
     if (capped < qty) notify('ko', t('checkout_step_products'), t('checkout_qty_capped', { n: capped }))
+    // Optimistic preview: the qty/line total update instantly instead of waiting on the round-trip.
+    if (capped > 0) {
+      setBasket((p) => p.map((b) => b.variantId === variantId
+        ? { ...b, quantity: capped, lineTotal: b.price != null ? b.price * capped : b.lineTotal }
+        : b))
+    }
     try {
       const r = capped <= 0 ? await checkoutBasketRemove(variantId) : await checkoutBasketSetQty(variantId, capped)
       setBasket(r.items)
-    } catch (e) { notify('ko', t('checkout_step_products'), e instanceof Error ? e.message : 'Error') }
+    } catch (e) {
+      notify('ko', t('checkout_step_products'), e instanceof Error ? e.message : 'Error')
+      refreshBasket()
+    }
   }
 
   function commitQtyDraft(variantId: number, raw: string) {

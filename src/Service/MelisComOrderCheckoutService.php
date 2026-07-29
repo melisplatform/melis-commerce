@@ -85,7 +85,12 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
 
         // Basket variant remaining stocks
         $variantCurrentStock = [];
-        
+        // Sum of every basket line's quantity — a basket can have rows but still be effectively
+        // empty (e.g. a line clamped down to 0 by a stock check upstream); guarded here too, not
+        // just at the point of mutation, so any other/legacy path that writes a 0-quantity line
+        // still can't check out as if it were a real item.
+        $totalQuantity = 0;
+
         if (!is_null($clientBasket))
         {
             // For each item in the basket, check if variant exists, if it's active and if quantity match the demand
@@ -95,6 +100,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 $variantId = $val->getVariantId();
                 $variant = $val->getVariant();
                 $variantQty = $val->getQuantity();
+                $totalQuantity += $variantQty;
             
                 // Checking if Variant exist on Database
                 if (!empty($variant))
@@ -186,7 +192,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             $results['basket']['ko'] = $koVariant;
         }
 
-        if (is_null($clientBasket))
+        if (is_null($clientBasket) || $totalQuantity <= 0)
         {
             // KO : basket is empty, there is nothing to checkout. Kept out of 'basket.ko' since
             // callers (e.g. MelisComOrderCheckoutController) assume every 'ko' entry carries a
@@ -734,6 +740,13 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             if ($basketValidity != true && !empty($basketResults['basket']['ko']))
                 foreach ($basketResults['basket']['ko'] As $key => $val)
                     $results['errors']['basket'][$key] = $val;
+
+            // A basket with zero (or zero-quantity) items never populates 'ko' — it's flagged via
+            // the dedicated 'empty' marker (see validateBasket()) — so forward that too, otherwise
+            // callers checking "does errors.basket have entries" (e.g. the React wizard's Payment
+            // step) see an empty array and fall back to a generic error instead of "basket is empty".
+            if ($basketValidity != true && !empty($basketResults['basket']['empty']))
+                $results['errors']['basket']['empty'] = true;
             
             if ($costsValidity != true)
                 foreach ($costsResults['costs'] As $key => $val) {

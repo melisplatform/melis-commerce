@@ -77,12 +77,24 @@ export function WizardSummaryStep({ clientId, billingId, deliveryId, onBack, onN
     const stock = summary?.items.find((l) => l.variantId === variantId)?.stock ?? null
     const capped = stock != null ? Math.min(qty, stock) : qty
     if (capped < qty) notify('ko', t('checkout_step_summary'), t('checkout_qty_capped', { n: capped }))
+    // Optimistic preview: the qty/line total update instantly instead of waiting on 2 sequential
+    // round-trips (set + refetch) — subtotal/discounts/total are left stale until the authoritative
+    // summary comes back, since those depend on server-side coupon/discount logic we must not guess.
+    if (capped > 0 && summary) {
+      setSummary({
+        ...summary,
+        items: summary.items.map((l) => l.variantId === variantId
+          ? { ...l, quantity: capped, lineTotal: l.price != null ? l.price * capped : l.lineTotal }
+          : l),
+      })
+    }
     try {
       await checkoutBasketSetQty(variantId, capped)
       const s = await fetchCheckoutSummary()
       setSummary(s)
     } catch (e) {
       notify('ko', t('checkout_step_summary'), e instanceof Error ? e.message : 'Error')
+      fetchCheckoutSummary().then(setSummary).catch(() => null)
     }
   }
 

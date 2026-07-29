@@ -31,7 +31,8 @@ export function WizardPaymentStep({ onBack, onConfirmed }: {
       const r = await checkoutConfirm()
       if (r.success === false) {
         const msgs: string[] = []
-        if (r.errors?.basket && Object.keys(r.errors.basket).length) msgs.push(t('checkout_error_basket'))
+        if (r.errors?.basket?.empty) msgs.push(t('checkout_basket_empty'))
+        else if (r.errors?.basket && Object.keys(r.errors.basket).length) msgs.push(t('checkout_error_basket'))
         if (r.errors?.addresses && Object.keys(r.errors.addresses as object).length) msgs.push(t('checkout_error_addresses'))
         if (r.errors?.costs && Object.keys(r.errors.costs as object).length) msgs.push(t('checkout_error_costs'))
         setErrors(msgs.length ? msgs : [t('checkout_error_generic')])

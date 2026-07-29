@@ -283,8 +283,16 @@ class MelisComBasketService extends MelisComGeneralService
         $melisEcomBasketPersistentTable = $this->getServiceManager()->get('MelisEcomBasketPersistentTable');
         // First check if the variantId already exists in the basket
         $persistentData = $this->getBasketItemByFields($arrayParameters['clientId'], null, $arrayParameters['variantId']);
-        
-        if (!empty($persistentData))
+
+        if ($arrayParameters['quantity'] <= 0)
+        {
+            // A quantity of 0 or less must never persist as a basket line (e.g. a caller clamped
+            // the requested quantity down to available stock) — delete instead, same as
+            // removeVariantToPersistentBasket(), so the basket can't end up with a phantom
+            // 0-quantity row that later passes validation/costing as if it were a real item.
+            $basketId = !empty($persistentData) ? $melisEcomBasketPersistentTable->deleteById($persistentData->getId()) : null;
+        }
+        else if (!empty($persistentData))
         {
             // If exists, then modify quantity of the existing entry
             $data = array(
@@ -292,7 +300,7 @@ class MelisComBasketService extends MelisComGeneralService
             );
             $basketId = $melisEcomBasketPersistentTable->save($data, $persistentData->getId());
         }
-        else 
+        else
         {
             // If doesn't exist, then add the entry in anonymous table
             $data = array(
@@ -303,7 +311,7 @@ class MelisComBasketService extends MelisComGeneralService
             );
             $basketId = $melisEcomBasketPersistentTable->save($data);
         }
-        
+
         $results = $basketId;
         
         // Adding results to parameters for events treatment if needed
@@ -334,7 +342,12 @@ class MelisComBasketService extends MelisComGeneralService
         $anonymousData = $this->getBasketItemByFields(null, $arrayParameters['clientKey'], $arrayParameters['variantId']);
 
         // First check if the variantId already exists in the basket
-        if (!empty($anonymousData))
+        if ($arrayParameters['quantity'] <= 0)
+        {
+            // Same guard as the persistent basket above — never persist a 0-or-less quantity line.
+            $basketId = !empty($anonymousData) ? $melisEcomBasketAnonymousTable->deleteById($anonymousData->getId()) : null;
+        }
+        else if (!empty($anonymousData))
         {
             // If exists, then modify quantity of the existing entry
             $data = array(
@@ -342,7 +355,7 @@ class MelisComBasketService extends MelisComGeneralService
             );
             $basketId = $melisEcomBasketAnonymousTable->save($data, $anonymousData->getId());
         }
-        else 
+        else
         {
             // If doesn't exist, then add the entry in anonymous table
             $data = array(
@@ -353,7 +366,7 @@ class MelisComBasketService extends MelisComGeneralService
             );
             $basketId = $melisEcomBasketAnonymousTable->save($data);
         }
-        
+
         $results = $basketId;
         
         // Adding results to parameters for events treatment if needed
