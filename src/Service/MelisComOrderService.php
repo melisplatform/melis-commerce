@@ -890,13 +890,13 @@ class MelisComOrderService extends MelisComGeneralService
 				$results['ord_id'] = $melisEcomOrderTable->save($arrayParameters['order'], $arrayParameters['orderId']);
 			}
 			catch(\Exception $e){
-				
+				error_log('MelisComOrderService::saveOrder() - order insert/update failed: ' . $e->getMessage());
 			}
 		}
 
 		if ($results['ord_id'])
 		{
-			
+
 			$basketData = $arrayParameters['basket'];
 			if(!empty($basketData)){
 				foreach ($basketData As $key => $val)
@@ -904,7 +904,17 @@ class MelisComOrderService extends MelisComGeneralService
 					$obasId = (!empty($val['obas_id'])) ? $val['obas_id'] : null;
 					unset($basketData[$key]['obas_id']);
 					$basketData[$key]['obas_order_id'] = $results['ord_id'];
-					$results['obas_id'] = $this->saveOrderBasket($basketData[$key], $obasId);
+					$savedObasId = $this->saveOrderBasket($basketData[$key], $obasId);
+					if (empty($savedObasId)) {
+						// saveOrderBasket() swallows its own exception (see below) and returns null on
+						// failure — without this check, a single failed line was previously silent: the
+						// loop just moved on to the next basket line as if nothing had gone wrong, so an
+						// order could get confirmed missing one of its products with zero trace anywhere.
+						error_log('MelisComOrderService::saveOrder() - basket line failed to persist for order '
+							. $results['ord_id'] . ' (variant ' . ($val['obas_variant_id'] ?? '?')
+							. ', sku ' . ($val['obas_sku'] ?? '?') . ')');
+					}
+					$results['obas_id'] = $savedObasId;
 				}
 			}
 			$billingAddressData = $arrayParameters['billingAddress'];
@@ -959,7 +969,7 @@ class MelisComOrderService extends MelisComGeneralService
 					$results['ord_id'] = $melisEcomOrderTable->save($orderUpdate,  $results['ord_id']);
 				}
 				catch(\Exception $e){
-				
+					error_log('MelisComOrderService::saveOrder() - billing/delivery address update failed: ' . $e->getMessage());
 				}
 			}	        
 			
@@ -1085,7 +1095,7 @@ class MelisComOrderService extends MelisComGeneralService
 			$results = $obasId;
 		}
 		catch(\Exception $e){
-			
+			error_log('MelisComOrderService::saveOrderBasket() - insert/update failed: ' . $e->getMessage());
 		}
 		// Service implementation end
 		
