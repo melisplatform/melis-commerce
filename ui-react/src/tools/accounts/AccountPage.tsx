@@ -28,10 +28,18 @@ import { CompanyTab, ContactsTab, AddressesTab, OrdersTab, FilesTab, EMPTY_CO } 
 /* Brique « Comptes clients » (MelisCommerce) — full React, montée à /melis-commerce/clients-list
  * (et /:id pour le formulaire, en sous-onglet in-tool). Toggle New/Old → iframe legacy. */
 const TOOL_MELIS_KEY = 'meliscommerce_clients_list_page'
-const COL_ORDER = ['id', 'name', 'status', 'group', 'country', 'created'] as const
-const COL_LABEL: Record<string, string> = { id: 'col_id', name: 'col_name', status: 'col_status', group: 'col_group', country: 'col_country', created: 'col_created' }
-const cols$ = makeColStore('melis-account-cols-v1', COL_ORDER)
+// Ordre/colonnes alignés sur la liste LEGACY des comptes :
+// ID · Statut · Groupe · Compte · Contact par défaut · Société · Commande(s) · Dernière commande · Création.
+const COL_ORDER = ['id', 'status', 'group', 'name', 'contact', 'company', 'orders', 'lastOrder', 'created'] as const
+const COL_LABEL: Record<string, string> = {
+  id: 'col_id', status: 'col_status', group: 'col_group', name: 'col_name',
+  contact: 'col_contact', company: 'col_company', orders: 'col_orders', lastOrder: 'col_last_order', created: 'col_created',
+}
+// v2 : jeu de colonnes changé (legacy) → on invalide les préférences persistées de v1.
+const cols$ = makeColStore('melis-account-cols-v2', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['name'])
+// Pagination : 30 comptes par page (découpage client — tri/recherche/filtres portent sur tout le jeu).
+const PAGE_SIZE = 30
 
 const listCache = makeCache<{
   items: AccountItem[]; stats: AccountStats | null
@@ -44,7 +52,10 @@ function getCellExport(a: AccountItem, id: string, t: (k: string) => string): st
     case 'name': return a.name || ''
     case 'status': return a.status === 1 ? t('status_active') : t('status_inactive')
     case 'group': return a.groupName || ''
-    case 'country': return a.countryName || ''
+    case 'contact': return a.contactName || ''
+    case 'company': return a.companyName || ''
+    case 'orders': return a.numOrders ?? 0
+    case 'lastOrder': return a.lastOrder || ''
     case 'created': return a.dateCreation || ''
     default: return ''
   }
@@ -199,7 +210,9 @@ function AccountList({ base }: { base: string }) {
   const sortVal = (a: AccountItem): string | number => {
     switch (sortCol) {
       case 'name': return a.name; case 'status': return a.status
-      case 'group': return a.groupName; case 'country': return a.countryName
+      case 'group': return a.groupName; case 'contact': return a.contactName
+      case 'company': return a.companyName; case 'orders': return a.numOrders
+      case 'lastOrder': return a.lastOrder ?? ''
       case 'created': return a.dateCreation ?? ''; default: return a.id
     }
   }
@@ -208,6 +221,15 @@ function AccountList({ base }: { base: string }) {
     const cmp = typeof va === 'number' && typeof vb === 'number' ? va - vb : String(va).localeCompare(String(vb))
     return sortAsc ? cmp : -cmp
   }), [items, sortCol, sortAsc])
+
+  // Pagination (client) : la page courante affiche PAGE_SIZE lignes du jeu trié/filtré complet.
+  const [page, setPage] = useState(1)
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE))
+  // Retour page 1 dès que le jeu change (recherche / filtres / tri).
+  useEffect(() => { setPage(1) }, [search, status, filterGroupId, sortCol, sortAsc])
+  // Clamp si la page dépasse (ex. suppression réduisant le nombre de pages).
+  useEffect(() => { if (page > totalPages) setPage(totalPages) }, [totalPages, page])
+  const paged = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
   function toggleSort(id: string) { if (sortCol === id) setSortAsc((v) => !v); else { setSortCol(id); setSortAsc(true) } }
   // Réinitialiser les filtres : recherche + statut + groupe + tri par défaut (id desc), puis refetch.
@@ -236,7 +258,10 @@ function AccountList({ base }: { base: string }) {
       case 'name': return <span style={{ fontWeight: 500 }}>{a.name || '—'}</span>
       case 'status': return <StatusBadge active={a.status === 1} t={t} />
       case 'group': return a.groupName || '—'
-      case 'country': return a.countryName || '—'
+      case 'contact': return a.contactName || '—'
+      case 'company': return a.companyName || '—'
+      case 'orders': return <span style={{ fontVariantNumeric: 'tabular-nums' }}>{a.numOrders ?? 0}</span>
+      case 'lastOrder': return <span style={{ color: 'var(--color-muted-foreground)' }}>{a.lastOrder ? fmtDate(a.lastOrder) : '—'}</span>
       case 'created': return <span style={{ color: 'var(--color-muted-foreground)' }}>{fmtDate(a.dateCreation)}</span>
       default: return null
     }
@@ -267,7 +292,7 @@ function AccountList({ base }: { base: string }) {
           <Kpi label={t('kpi_inactive')} value={stats?.inactive ?? null} icon={<BuildingKpiIcon />} iconBg="rgba(239,68,68,0.1)"   iconColor="#ef4444" />
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
-          <input style={{ ...inputCss, height: 36, flex: 1, minWidth: 180, maxWidth: narrow ? undefined : 384, flexBasis: narrow ? '100%' : undefined }} value={searchInput}
+          <input style={{ ...inputCss, height: 36, flex: narrow ? undefined : '0 1 200px', minWidth: narrow ? undefined : 120, maxWidth: narrow ? undefined : 200, flexBasis: narrow ? '100%' : undefined }} value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && setSearch(searchInput.trim())} placeholder={t('search')} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: 4, borderRadius: 8, border: '1px solid var(--color-border)', background: 'var(--color-muted,rgba(0,0,0,.04))', width: narrow ? '100%' : undefined, flexBasis: narrow ? '100%' : undefined }}>
             {FILTERS.map((f) => (
@@ -308,7 +333,7 @@ function AccountList({ base }: { base: string }) {
             <tbody>
               {sorted.length === 0 && !loading ? (
                 <tr><td style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: '40px 16px' }} colSpan={totalCols}>{t('empty')}</td></tr>
-              ) : sorted.map((a) => (
+              ) : paged.map((a) => (
                 <Fragment key={a.id}>
                   <tr>
                     {hasHidden && (
@@ -335,8 +360,23 @@ function AccountList({ base }: { base: string }) {
               ))}
             </tbody>
           </table>
-          <div style={{ padding: '10px 16px', textAlign: 'center', fontSize: 12, color: 'var(--color-muted-foreground)' }}>
-            {loading ? t('loading') : t('count', { n: items.length })}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', fontSize: 12, color: 'var(--color-muted-foreground)' }}>
+            <span>
+              {loading
+                ? t('loading')
+                : sorted.length === 0
+                  ? t('count', { n: 0 })
+                  : t('pg_range', { from: (page - 1) * PAGE_SIZE + 1, to: Math.min(page * PAGE_SIZE, sorted.length), n: sorted.length })}
+            </span>
+            {!loading && totalPages > 1 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <button style={{ ...btnGhost, height: 30, padding: '0 10px', opacity: page <= 1 ? 0.5 : 1, cursor: page <= 1 ? 'default' : 'pointer' }}
+                  disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>{t('pg_prev')}</button>
+                <span style={{ fontVariantNumeric: 'tabular-nums' }}>{t('pg_page', { cur: page, tot: totalPages })}</span>
+                <button style={{ ...btnGhost, height: 30, padding: '0 10px', opacity: page >= totalPages ? 0.5 : 1, cursor: page >= totalPages ? 'default' : 'pointer' }}
+                  disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>{t('pg_next')}</button>
+              </div>
+            )}
           </div>
         </div>
       </div>

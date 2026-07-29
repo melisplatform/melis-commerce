@@ -82,7 +82,9 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
                        c.cli_country_id, c.cli_tags, c.cli_date_creation, c.cli_date_edit,
                        g.cgroup_name, cp.ctry_name AS cli_country_name,
                        comp.ccomp_name AS dyn_company_name,
-                       dcp.cper_firstname AS dyn_contact_firstname, dcp.cper_name AS dyn_contact_name
+                       dcp.cper_firstname AS dyn_contact_firstname, dcp.cper_name AS dyn_contact_name,
+                       (SELECT COUNT(*) FROM melis_ecom_order o WHERE o.ord_client_id = c.cli_id) AS dyn_num_orders,
+                       (SELECT MAX(o.ord_date_creation) FROM melis_ecom_order o WHERE o.ord_client_id = c.cli_id) AS dyn_last_order
                 FROM melis_ecom_client c
                 LEFT JOIN melis_ecom_client_groups g ON g.cgroup_id = c.cli_group_id
                 LEFT JOIN melis_ecom_country cp ON cp.ctry_id = c.cli_country_id
@@ -970,6 +972,12 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
             'dateCreation' => $r['cli_date_creation'] ?? null,
             'dateEdit'     => $r['cli_date_edit'] ?? null,
             'nameMode'     => $mode,
+            // Colonnes alignées sur la liste legacy (Société / Contact par défaut / Commandes /
+            // Dernière commande). Défauts sûrs quand la requête ne les fournit pas (ex. fiche détail).
+            'companyName'  => (string) ($r['dyn_company_name'] ?? ''),
+            'contactName'  => trim(((string) ($r['dyn_contact_firstname'] ?? '')) . ' ' . ((string) ($r['dyn_contact_name'] ?? ''))),
+            'numOrders'    => (int)    ($r['dyn_num_orders'] ?? 0),
+            'lastOrder'    => $r['dyn_last_order'] ?? null,
         ];
     }
 

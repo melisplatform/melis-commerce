@@ -189,7 +189,7 @@ function ContactList({ base }: { base: string }) {
           <Kpi label={t('kpi_inactive')} value={stats?.inactive ?? null} icon={<UsersKpiIcon />} iconBg="rgba(239,68,68,0.1)"   iconColor="#ef4444" />
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
-          <input style={{ ...inputCss, height: 36, flex: 1, minWidth: 180, maxWidth: narrow ? undefined : 384, flexBasis: narrow ? '100%' : undefined }} value={searchInput}
+          <input style={{ ...inputCss, height: 36, flex: narrow ? undefined : '0 1 200px', minWidth: narrow ? undefined : 120, maxWidth: narrow ? undefined : 200, flexBasis: narrow ? '100%' : undefined }} value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && setSearch(searchInput.trim())} placeholder={t('search')} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: 4, borderRadius: 8, border: '1px solid var(--color-border)', background: 'var(--color-muted,rgba(0,0,0,.04))', width: narrow ? '100%' : undefined, flexBasis: narrow ? '100%' : undefined }}>
             {FILTERS.map((f) => (

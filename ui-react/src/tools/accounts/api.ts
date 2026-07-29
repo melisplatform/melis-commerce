@@ -4,6 +4,8 @@ export interface AccountItem {
   id: number; status: number; name: string
   groupId: number; groupName: string
   countryId: number; countryName: string
+  // Colonnes alignées sur la liste legacy des comptes.
+  companyName: string; contactName: string; numOrders: number; lastOrder: string | null
   tags: string; dateCreation: string | null; dateEdit: string | null
 }
 export type AccountStats = Stats
