@@ -6,7 +6,7 @@ import {
 } from './api'
 import { card, inputCss, th, td, label, btnPrimary, btnGhost } from '../../shared/styles'
 import { fmtDate, currentLang, fmtMoney, type T } from '../../shared/i18n'
-import { AccountLink } from '../../shared/openAccount'
+import { AccountLink, ProductLink } from '../../shared/openAccount'
 import { PackageIcon, MapPinIcon, TruckIcon, MessageSquareIcon, ChevronDownIcon, UserIcon } from '../../shared/icons'
 import { DatePicker } from '../../shared/DatePicker'
 import { ExpandToggle, HiddenColsRow } from '../../shared/ExpandableRow'
@@ -51,6 +51,7 @@ function dateParts(value: string | null | undefined): { day: string; month: stri
 // ── Basket ────────────────────────────────────────────────────────────────────
 export function BasketTab({ basket, t }: { basket: OrderBasketItem[]; t: T }) {
   const narrow = useIsNarrow()
+  const navigate = useNavigate()
   const [expanded, setExpanded] = useState<Set<number>>(new Set())
   function toggleExpand(id: number) {
     setExpanded((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
@@ -58,7 +59,7 @@ export function BasketTab({ basket, t }: { basket: OrderBasketItem[]; t: T }) {
   const total = basket.reduce((s, i) => s + i.qty * i.priceGross, 0)
   const BASKET_COLS: { id: string; label: string; render: (row: OrderBasketItem) => import('react').ReactNode; style?: import('react').CSSProperties }[] = [
     { id: 'sku', label: t('basket_col_sku'), render: (row) => <code style={{ fontSize: 12 }}>{row.sku}</code> },
-    { id: 'name', label: t('basket_col_name'), render: (row) => row.name },
+    { id: 'name', label: t('basket_col_name'), render: (row) => row.productId ? <ProductLink navigate={navigate} productId={row.productId} label={row.name || row.sku} style={{ fontWeight: 500 }}>{row.name}</ProductLink> : row.name },
     { id: 'category', label: t('basket_col_category'), render: (row) => row.category || '—' },
     { id: 'qty', label: t('basket_col_qty'), render: (row) => row.qty, style: { ...td, textAlign: 'center' } },
     { id: 'price_net', label: t('basket_col_price_net'), render: (row) => fmtMoney(row.priceNet, row.currency), style: { ...td, textAlign: 'right' } },
@@ -300,40 +301,41 @@ function ShippingModal({ orderId, onSaved, onClose, t }: {
   }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.55)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ background: '#fff', borderRadius: 6, width: 520, maxWidth: '95vw', overflow: 'hidden', boxShadow: '0 8px 40px rgba(0,0,0,.3)', color: '#333' }}>
-        <div style={{ background: '#337ab7', padding: '12px 18px', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ background: '#d9534f', color: '#fff', borderRadius: 4, padding: '2px 8px', fontWeight: 700, fontSize: 15 }}>+</span>
-          <span style={{ color: '#fff', fontWeight: 600, fontSize: 15 }}>{t('tab_shipping')}</span>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', backdropFilter: 'blur(2px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
+      onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()}
+        style={{ ...card, width: 480, maxWidth: '95vw', overflow: 'visible', boxShadow: '0 12px 40px rgba(0,0,0,.35)' }}>
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '16px 20px', borderBottom: '1px solid var(--color-border)' }}>
+          <span style={{ display: 'inline-flex', width: 30, height: 30, borderRadius: 8, alignItems: 'center', justifyContent: 'center', background: 'color-mix(in srgb, var(--color-primary) 14%, transparent)', color: 'var(--color-primary)', flexShrink: 0 }}>
+            <TruckIcon />
+          </span>
+          <span style={{ fontWeight: 600, fontSize: 15, color: 'var(--color-foreground)' }}>{t('tab_shipping')}</span>
         </div>
-        <div style={{ padding: '20px 22px 18px' }}>
+        <div style={{ padding: 20 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 18 }}>
             <div>
-              <label style={{ display: 'block', fontWeight: 700, fontSize: 13, color: '#333', marginBottom: 4 }}>{t('field_tracking')} *</label>
-              <input style={{ ...inputCss, border: err ? '1px solid #dc2626' : inputCss.border }}
+              <label style={{ display: 'block', fontWeight: 600, fontSize: 13, color: 'var(--color-foreground)', marginBottom: 5 }}>{t('field_tracking')} *</label>
+              <input style={{ ...inputCss, width: '100%', boxSizing: 'border-box', border: err ? '1px solid #ef4444' : inputCss.border }}
                 value={form.trackingCode} onChange={(e) => setForm({ ...form, trackingCode: e.target.value })} autoComplete="off" />
-              {err && <div style={{ color: '#dc2626', fontSize: 12, marginTop: 3 }}>{err}</div>}
+              {err && <div style={{ color: '#ef4444', fontSize: 12, marginTop: 4 }}>{err}</div>}
             </div>
             <div>
-              <label style={{ display: 'block', fontWeight: 700, fontSize: 13, color: '#333', marginBottom: 4 }}>{t('field_content')} *</label>
-              <textarea rows={4} style={{ ...inputCss, height: 'auto', minHeight: 90, padding: '8px 12px', resize: 'vertical', fontFamily: 'inherit' }}
+              <label style={{ display: 'block', fontWeight: 600, fontSize: 13, color: 'var(--color-foreground)', marginBottom: 5 }}>{t('field_content')} *</label>
+              <textarea rows={4} style={{ ...inputCss, width: '100%', boxSizing: 'border-box', height: 'auto', minHeight: 90, padding: '8px 12px', resize: 'vertical', fontFamily: 'inherit' }}
                 value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} />
             </div>
             <div>
-              <div style={{ ...labelRow, marginBottom: 4 }}>
-                <label style={{ fontWeight: 700, fontSize: 13, color: '#333' }}>{t('field_date_sent')} *</label>
+              <div style={{ ...labelRow, marginBottom: 5 }}>
+                <label style={{ fontWeight: 600, fontSize: 13, color: 'var(--color-foreground)' }}>{t('field_date_sent')} *</label>
                 <InfoDot text={t('tip_date_sent')} />
               </div>
               <DatePicker t={t} value={form.dateSent} onChange={(v) => setForm({ ...form, dateSent: v })} />
             </div>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 6, borderTop: '1px solid #eee' }}>
-            <button onClick={onClose} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 18px', fontSize: 13, borderRadius: 4, border: '1px solid #d9534f', background: '#fff', color: '#d9534f', cursor: 'pointer', fontWeight: 500 }}>
-              ✕ {t('cancel')}
-            </button>
-            <button onClick={submit} disabled={saving} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 18px', fontSize: 13, borderRadius: 4, border: '1px solid #5cb85c', background: '#fff', color: '#5cb85c', cursor: 'pointer', fontWeight: 500, opacity: saving ? 0.6 : 1 }}>
-              💾 {saving ? '…' : t('save')}
-            </button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, paddingTop: 14, borderTop: '1px solid var(--color-border)' }}>
+            <button onClick={onClose} style={{ ...btnGhost }}>{t('cancel')}</button>
+            <button onClick={submit} disabled={saving} style={{ ...btnPrimary, opacity: saving ? 0.6 : 1 }}>{saving ? '…' : t('save')}</button>
           </div>
         </div>
       </div>

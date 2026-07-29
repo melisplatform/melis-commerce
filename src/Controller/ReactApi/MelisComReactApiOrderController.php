@@ -252,9 +252,12 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             $basketRows = iterator_to_array($db->query(
                 "SELECT b.obas_id, b.obas_sku, b.obas_product_name, b.obas_category_name, b.obas_variant_id,
                         b.obas_quantity, b.obas_price_net, b.obas_price_gross, b.obas_attributes,
-                        cu.cur_symbol AS currency_symbol
+                        cu.cur_symbol AS currency_symbol,
+                        p.prd_id AS product_id
                  FROM melis_ecom_order_basket b
                  LEFT JOIN melis_ecom_currency cu ON cu.cur_id = b.obas_currency
+                 LEFT JOIN melis_ecom_variant v ON v.var_id = b.obas_variant_id
+                 LEFT JOIN melis_ecom_product p ON p.prd_id = v.var_prd_id
                  WHERE b.obas_order_id = ? ORDER BY b.obas_id ASC",
                 [$id]
             ));
@@ -267,6 +270,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                     'name'       => $r['obas_product_name'] ?? '',
                     'category'   => $r['obas_category_name'] ?? '',
                     'variantId'  => (int) ($r['obas_variant_id'] ?? 0),
+                    'productId'  => (int) ($r['product_id'] ?? 0), // 0 si le produit n'existe plus
                     'qty'        => (int) ($r['obas_quantity'] ?? 0),
                     'priceNet'   => (float) ($r['obas_price_net'] ?? 0),
                     'priceGross' => (float) ($r['obas_price_gross'] ?? 0),
