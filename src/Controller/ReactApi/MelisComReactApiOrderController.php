@@ -780,6 +780,11 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
     // bucket here used to nuke an in-progress session (selected contact/account, basket) every
     // time, which is what made the wizard "restart from the beginning" (Mantis 0010748). Only
     // initialize a fresh bucket if one doesn't already exist.
+    // A bucket that already has an orderId means the PREVIOUS checkout fully completed —
+    // resuming it would strand every subsequent "New order" open on that old order's
+    // Confirmation screen forever, since nothing else ever clears it (checkoutAbandonAction is
+    // only called by the frontend for a tab close BEFORE confirmation). Treat a finished bucket
+    // the same as no bucket at all: reset it so the wizard actually starts a new order.
     public function checkoutStartAction(): HttpResponse
     {
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
@@ -788,7 +793,8 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             if (empty($container['checkout']) || !is_array($container['checkout'])) {
                 $container['checkout'] = [];
             }
-            if (!isset($container['checkout'][self::WIZARD_SITE_ID]) || !is_array($container['checkout'][self::WIZARD_SITE_ID])) {
+            $existing = $container['checkout'][self::WIZARD_SITE_ID] ?? null;
+            if (!is_array($existing) || !empty($existing['orderId'])) {
                 $container['checkout'][self::WIZARD_SITE_ID] = ['countryId' => null];
             }
             return $this->ok(['started' => true]);
