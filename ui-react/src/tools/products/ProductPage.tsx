@@ -473,8 +473,11 @@ function ProductForm({ id, base }: { id: string; base: string }) {
         navigate(newPath, { replace: true, state: { tab } })
       } else {
         const stockLevelNum = stockLow.trim() === '' ? null : parseInt(stockLow, 10) || 0
+        // Unlike the new-product path, every pendingPrices entry here corresponds to an existing
+        // DB row the user actively edited (buffered onChange) — send it even when all fields end up
+        // null, otherwise clearing every field back to empty silently no-ops and the old values stick.
         await Promise.allSettled([
-          ...meaningfulPrices.map((p) => saveProductPrice(productId!, { id: p.id ?? null, countryId: p.countryId, currency: p.currency, net: p.net, gross: p.gross, vatPercent: p.vatPercent, vatPrice: p.vatPrice, otherTax: p.otherTax })),
+          ...pendingPrices.map((p) => saveProductPrice(productId!, { id: p.id ?? null, countryId: p.countryId, currency: p.currency, net: p.net, gross: p.gross, vatPercent: p.vatPercent, vatPrice: p.vatPrice, otherTax: p.otherTax })),
           ...pendingAttrIds.map((aid) => saveProductAttribute(productId!, aid)),
           ...pendingRecipientIds.map((uid) => saveProductRecipient(productId!, { userId: uid }, stockLevelNum)),
           ...pendingImages.map((m) => uploadProductMedia(productId!, { ...m, kind: 'image' })),
