@@ -8,7 +8,7 @@ export interface OrderItem {
   status: number; statusName: string; statusColor: string
   clientId: number; personId: number
   company: string; firstname: string; name: string; civility: string
-  productCount: number; totalAmount: number
+  productCount: number; totalAmount: number; currency: string
   dateCreation: string | null
 }
 
@@ -37,6 +37,7 @@ export interface OrderShipping { id: number; trackingCode: string; content: stri
 
 export interface OrderMessage {
   id: number; message: string; userId: number; userName: string; userEmail: string; clientId: number; dateCreation: string | null
+  fromAdmin?: boolean; type?: string
 }
 
 export interface OrderAttachment { id: number; name: string; path: string; url: string }
