@@ -12,7 +12,9 @@ export interface ContactItem {
   tags: string; dateCreation: string | null; dateEdit: string | null
 }
 export type ContactStats = Stats
-export interface ContactOptions { accounts: Option[]; civilities: Option[]; languages: Option[] }
+// Langue commerce avec drapeau (data URI PNG) pour le sélecteur.
+export interface LangOption { id: number; name: string; flag?: string | null }
+export interface ContactOptions { accounts: Option[]; civilities: Option[]; languages: LangOption[] }
 export interface ContactSavePayload {
   id?: number | null; status: boolean; type: string; civility: number
   firstname: string; name: string; middleName: string; langId: number; email: string

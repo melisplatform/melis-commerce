@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { card, inputCss } from './styles'
 import { ChevronDownIcon } from './icons'
 
-/** Liste déroulante RECHERCHABLE (combobox) — remplace un <select> natif quand la liste est longue. */
+/** Liste déroulante RECHERCHABLE (combobox) — remplace un <select> natif quand la liste est longue.
+ *  Chaque option peut porter une `icon` optionnelle (ex. drapeau pays) affichée avant le libellé. */
 export function SearchableSelect({ options, value, onChange, placeholder, searchPlaceholder, noResult }: {
-  options: { id: number; name: string }[]; value: number; onChange: (id: number) => void
+  options: { id: number; name: string; icon?: ReactNode }[]; value: number; onChange: (id: number) => void
   placeholder: string; searchPlaceholder?: string; noResult?: string
 }) {
   const [open, setOpen] = useState(false)
@@ -25,7 +26,10 @@ export function SearchableSelect({ options, value, onChange, placeholder, search
     <div ref={ref} style={{ position: 'relative', flex: 1, minWidth: 0 }}>
       <button type="button" onClick={() => setOpen((o) => !o)}
         style={{ ...inputCss, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, cursor: 'pointer', textAlign: 'left' }}>
-        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: selected ? 'var(--color-foreground)' : 'var(--color-muted-foreground)' }}>{selected ? selected.name : placeholder}</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden', color: selected ? 'var(--color-foreground)' : 'var(--color-muted-foreground)' }}>
+          {selected?.icon}
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selected ? selected.name : placeholder}</span>
+        </span>
         <ChevronDownIcon />
       </button>
       {open && (
@@ -42,7 +46,10 @@ export function SearchableSelect({ options, value, onChange, placeholder, search
                   background: o.id === value ? 'var(--color-primary)' : 'transparent', color: o.id === value ? 'var(--color-primary-foreground,#fff)' : 'var(--color-foreground)' }}
                 onMouseOver={(e) => { if (o.id !== value) e.currentTarget.style.background = 'var(--color-muted,rgba(0,0,0,.06))' }}
                 onMouseOut={(e) => { if (o.id !== value) e.currentTarget.style.background = 'transparent' }}>
-                {o.name}
+                <span style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
+                  {o.icon}
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.name}</span>
+                </span>
               </button>
             ))}
           </div>

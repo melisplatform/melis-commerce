@@ -10,7 +10,9 @@ export interface AccountItem {
 }
 export type AccountStats = Stats
 export type AccountNameMode = 'manual_input' | 'company_name' | 'contact_name'
-export interface AccountOptions { groups: Option[]; countries: Option[]; accountNameMode: AccountNameMode }
+// Pays avec drapeau (data URI PNG) pour le sélecteur.
+export interface CountryOption { id: number; name: string; flag?: string | null }
+export interface AccountOptions { groups: Option[]; countries: CountryOption[]; accountNameMode: AccountNameMode }
 export interface AccountSavePayload { id?: number | null; name: string; status: boolean; groupId: number; countryId: number; tags: string; contactId?: number }
 
 export function fetchAccounts(params: { search?: string; status?: number | null; groupId?: number | null } = {}): Promise<ListResult<AccountItem>> {
