@@ -5,10 +5,11 @@ import {
   type CouponClientOption, type CouponProductOption,
   type CouponOrderUsage, type CouponOrderStatus,
 } from './api'
-import { card, inputCss, th, td, iconBtn } from '../../shared/styles'
-import { fmtDate, currentLang, type T } from '../../shared/i18n'
+import { card, inputCss, th, td, iconBtn, btnGhost } from '../../shared/styles'
+import { fmtDate, fmtMoney, type T } from '../../shared/i18n'
 import { CartIcon, TrashIcon, PencilIcon, PlusIcon, RefreshIcon } from '../../shared/icons'
 import { AssignTable, type AssignCol } from './AssignTable'
+import { AccountLink, OrderLink } from '../../shared/openAccount'
 import { DateRangeFilter } from '../../shared/DateRangeFilter'
 import { ExpandToggle, HiddenColsRow } from '../../shared/ExpandableRow'
 import { useIsNarrow } from '../../shared/useIsNarrow'
@@ -36,7 +37,8 @@ export function CouponClientsTab({ directory, draftIds, onChange, t }: {
 
   const cols: AssignCol<CouponClientOption>[] = [
     { key: 'id', label: t('col_client_id'), value: (c) => c.clientId, width: 70 },
-    { key: 'name', label: t('col_account_name'), value: (c) => c.name, essential: true },
+    { key: 'name', label: t('col_account_name'), value: (c) => c.name, essential: true,
+      render: (c) => <AccountLink navigate={navigate} clientId={c.clientId} label={c.name} style={{ fontWeight: 500 }}>{c.name}</AccountLink> },
     { key: 'company', label: t('col_company'), value: (c) => c.company },
   ]
 
@@ -50,10 +52,7 @@ export function CouponClientsTab({ directory, draftIds, onChange, t }: {
       <AssignTable title={t('client_list_title')} columns={cols} rows={available} rowKey={(c) => c.clientId}
         emptyText={t('empty')} t={t}
         actions={(c) => (
-          <div style={{ display: 'inline-flex', gap: 6 }}>
-            <button onClick={() => navigate(`/melis-commerce/clients-list/${c.clientId}`)} style={iconBtn} title={t('edit')}><PencilIcon /></button>
-            <button onClick={() => add(c.clientId)} style={iconBtn} title={t('assign_clients_add')}><PlusIcon /></button>
-          </div>
+          <button onClick={() => add(c.clientId)} style={iconBtn} title={t('assign_clients_add')}><PlusIcon /></button>
         )} />
     </div>
   )
@@ -102,6 +101,7 @@ const ORDER_ESSENTIAL_COLS = new Set(['order'])
 
 export function CouponOrdersTab({ couponId, t }: { couponId: number; t: T }) {
   const narrow = useIsNarrow()
+  const navigate = useNavigate()
   const [expanded, setExpanded] = useState<Set<number>>(new Set())
   function toggleExpand(id: number) {
     setExpanded((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
@@ -114,23 +114,27 @@ export function CouponOrdersTab({ couponId, t }: { couponId: number; t: T }) {
   const [dateStart, setDateStart] = useState('')
   const [dateEnd, setDateEnd] = useState('')
   const [tick, setTick] = useState(0)
+  const [page, setPage] = useState(1)
+  const PAGE_SIZE = 30
 
   useEffect(() => {
     fetchCouponOrders(couponId, { search, status, dateStart, dateEnd })
-      .then((r) => { setItems(r.items); setStatuses(r.statuses) }).catch(() => null)
+      .then((r) => { setItems(r.items); setStatuses(r.statuses); setPage(1) }).catch(() => null)
   }, [couponId, search, status, dateStart, dateEnd, tick])
 
-  const fmtAmt = (v: number) => v.toLocaleString(currentLang() === 'fr' ? 'fr-FR' : 'en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE))
+  const curPage = Math.min(page, totalPages)
+  const pagedItems = items.slice((curPage - 1) * PAGE_SIZE, curPage * PAGE_SIZE)
 
   const ORDER_COLS: { id: string; label: string; render: (o: CouponOrderUsage) => import('react').ReactNode; style?: import('react').CSSProperties }[] = [
     { id: 'id', label: t('col_id'), render: (o) => o.orderId, style: { ...td, color: 'var(--color-muted-foreground)' } },
-    { id: 'order', label: t('orders_col_order'), render: (o) => <code style={{ fontSize: 12 }}>{o.orderReference}</code> },
+    { id: 'order', label: t('orders_col_order'), render: (o) => <OrderLink navigate={navigate} orderId={o.orderId} label={o.orderReference}><code style={{ fontSize: 12 }}>{o.orderReference}</code></OrderLink> },
     { id: 'status', label: t('orders_col_status'), render: (o) => <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 8px', borderRadius: 20, fontSize: 11, fontWeight: 600, color: '#fff', background: o.statusColor || '#6b7280' }}>{o.statusName || '—'}</span> },
     { id: 'products', label: t('orders_col_products'), render: (o) => o.productCount, style: { ...td, textAlign: 'center' } },
-    { id: 'price', label: t('orders_col_price'), render: (o) => fmtAmt(o.price), style: { ...td, textAlign: 'right', fontWeight: 600 } },
+    { id: 'price', label: t('orders_col_price'), render: (o) => fmtMoney(o.price, o.currency), style: { ...td, textAlign: 'right', fontWeight: 600 } },
     { id: 'civility', label: t('orders_col_civility'), render: (o) => o.civility || '—' },
-    { id: 'firstname', label: t('orders_col_firstname'), render: (o) => o.firstname || '—' },
-    { id: 'lastname', label: t('orders_col_lastname'), render: (o) => o.lastname || '—' },
+    { id: 'firstname', label: t('orders_col_firstname'), render: (o) => o.clientId ? <AccountLink navigate={navigate} clientId={o.clientId} label={`${o.firstname} ${o.lastname}`.trim()}>{o.firstname || '—'}</AccountLink> : (o.firstname || '—') },
+    { id: 'lastname', label: t('orders_col_lastname'), render: (o) => o.clientId ? <AccountLink navigate={navigate} clientId={o.clientId} label={`${o.firstname} ${o.lastname}`.trim()}>{o.lastname || '—'}</AccountLink> : (o.lastname || '—') },
     { id: 'date', label: t('orders_col_date'), render: (o) => o.dateCreation ? fmtDate(o.dateCreation) : '—', style: { ...td, color: 'var(--color-muted-foreground)' } },
   ]
   const visibleOrderCols = narrow ? ORDER_COLS.filter((c) => ORDER_ESSENTIAL_COLS.has(c.id)) : ORDER_COLS
@@ -168,7 +172,7 @@ export function CouponOrdersTab({ couponId, t }: { couponId: number; t: T }) {
           <tbody>
             {items.length === 0 ? (
               <tr><td colSpan={orderColSpan} style={{ ...td, textAlign: 'center', padding: '28px', color: 'var(--color-muted-foreground)' }}>{t('orders_empty')}</td></tr>
-            ) : items.map((o) => (
+            ) : pagedItems.map((o) => (
               <Fragment key={o.id}>
                 <tr>
                   {hasHiddenOrderCols && (
@@ -184,6 +188,17 @@ export function CouponOrdersTab({ couponId, t }: { couponId: number; t: T }) {
           </tbody>
         </table>
       </div>
+
+      {totalPages > 1 && (
+        <div style={{ display: 'flex', gap: 6, justifyContent: 'center', alignItems: 'center', marginTop: 14, flexWrap: 'wrap' }}>
+          <button style={btnGhost} disabled={curPage <= 1} onClick={() => setPage((p) => p - 1)}>←</button>
+          {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => i + 1).map((p) => (
+            <button key={p} style={{ ...btnGhost, fontWeight: p === curPage ? 700 : 400, opacity: p === curPage ? 1 : 0.6 }}
+              onClick={() => setPage(p)}>{p}</button>
+          ))}
+          <button style={btnGhost} disabled={curPage >= totalPages} onClick={() => setPage((p) => p + 1)}>→</button>
+        </div>
+      )}
     </div>
   )
 }

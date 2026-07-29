@@ -38,7 +38,7 @@ export function AssignTable<T>({ title, columns, rows, rowKey, emptyText, onRefr
   function toggleExpand(id: string | number) {
     setExpanded((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
   }
-  const LIMIT = 10
+  const LIMIT = 30
 
   const filtered = useMemo(() => {
     let out = rows

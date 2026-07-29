@@ -25,6 +25,9 @@ export function DatePicker({ value, onChange, t, style, disabled }: {
   value: string; onChange: (v: string) => void; t: T; style?: CSSProperties; disabled?: boolean
 }) {
   const [open, setOpen] = useState(false)
+  // Ouvre le calendrier vers le HAUT quand il n'y a pas la place en dessous (ex. champ en bas d'une
+  // modale) → il ne déborde plus/n'est plus rogné.
+  const [openUp, setOpenUp] = useState(false)
   const selected = parseValue(value)
   const [viewDate, setViewDate] = useState<Date>(selected ?? new Date())
   const ref = useRef<HTMLDivElement>(null)
@@ -33,6 +36,8 @@ export function DatePicker({ value, onChange, t, style, disabled }: {
   useEffect(() => {
     if (!open) return
     setViewDate(selected ?? new Date())
+    const r = ref.current?.getBoundingClientRect()
+    if (r) setOpenUp((window.innerHeight - r.bottom) < 330 && r.top > 330)
     const onDown = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false) }
     document.addEventListener('mousedown', onDown)
     return () => document.removeEventListener('mousedown', onDown)
@@ -59,7 +64,7 @@ export function DatePicker({ value, onChange, t, style, disabled }: {
         <CalendarIcon />
       </button>
       {open && !disabled && (
-        <div style={{ ...card, position: 'absolute', top: '100%', left: 0, marginTop: 6, zIndex: 60, padding: 10, width: 260 }}>
+        <div style={{ ...card, position: 'absolute', left: 0, zIndex: 60, padding: 10, width: 260, ...(openUp ? { bottom: '100%', marginBottom: 6 } : { top: '100%', marginTop: 6 }) }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <button type="button" onClick={() => setViewDate(new Date(y, m - 1, 1))} style={navBtn}>‹</button>
             <span style={{ fontSize: 13, fontWeight: 600, textTransform: 'capitalize' }}>{monthLabel}</span>

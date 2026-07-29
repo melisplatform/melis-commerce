@@ -158,9 +158,15 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
 
             $countries = [];
             // Seuls les pays ACTIFS (ctry_status=1) — comme le back-office (EcomCountriesSelectFactory).
-            foreach ($db->query('SELECT ctry_id, ctry_name FROM melis_ecom_country WHERE ctry_status = 1 ORDER BY ctry_name', []) as $r) {
+            // ctry_flag = PNG base64 (sans préfixe) → on renvoie un data URI directement affichable.
+            foreach ($db->query('SELECT ctry_id, ctry_name, ctry_flag FROM melis_ecom_country WHERE ctry_status = 1 ORDER BY ctry_name', []) as $r) {
                 $r = (array) $r;
-                $countries[] = ['id' => (int) $r['ctry_id'], 'name' => (string) $r['ctry_name']];
+                $flag = trim((string) ($r['ctry_flag'] ?? ''));
+                $countries[] = [
+                    'id'   => (int) $r['ctry_id'],
+                    'name' => (string) $r['ctry_name'],
+                    'flag' => $flag !== '' ? 'data:image/png;base64,' . $flag : null,
+                ];
             }
 
             return $this->jsonResponse(['success' => true, 'data' => ['groups' => $groups, 'countries' => $countries, 'accountNameMode' => $this->accountNameMode()]]);

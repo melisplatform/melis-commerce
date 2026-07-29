@@ -4,8 +4,9 @@ import {
   deleteAccount, fetchAccountById, fetchAccountOptions, fetchAccounts, fetchAccountStats,
   saveAccount, fetchCompany, saveCompany, fetchAccountAddresses, saveAccountAddresses,
   fetchAccountContacts, linkAccountContact, testImportAccounts, importAccounts, ACCOUNT_IMPORT_TEMPLATE_URL,
-  type AccountItem, type AccountStats, type CompanyData, type AccountAddress, type AccountContact, type AccountNameMode,
+  type AccountItem, type AccountStats, type CompanyData, type AccountAddress, type AccountContact, type AccountNameMode, type CountryOption,
 } from './api'
+import { SearchableSelect } from '../../shared/SearchableSelect'
 import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
 import { makeT, fmtDate, type T } from '../../shared/i18n'
@@ -274,12 +275,12 @@ function AccountList({ base }: { base: string }) {
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{t('title')}</h1>
           <p style={{ fontSize: 14, color: 'var(--color-muted-foreground)', margin: '2px 0 0' }}>{t('subtitle')}</p>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <ViewModeToggle mode={mode} onReact={() => setMode('react')} onOld={() => { setMode('old'); setOldLoaded(true) }} />
             <button style={{ ...btnGhost, width: 36, padding: 0, justifyContent: 'center', flexShrink: 0 }} onClick={() => setTick((x) => x + 1)} title={t('refresh')}>↻</button>
           </div>
-          {can('create') && <button style={{ ...btnPrimary, width: '100%', justifyContent: 'center', whiteSpace: 'normal', textAlign: 'center', height: 'auto', minHeight: 36, padding: '8px 14px' }} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>}
+          {can('create') && <button style={btnPrimary} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>}
         </div>
       </div>
 
@@ -406,7 +407,7 @@ function AccountForm({ id, base }: { id: string; base: string }) {
   const subTabPath = `${base}/${id}`
 
   const [groups, setGroups] = useState<AccountOptionT[]>([])
-  const [countries, setCountries] = useState<AccountOptionT[]>([])
+  const [countries, setCountries] = useState<CountryOption[]>([])
   const [accountNameMode, setAccountNameMode] = useState<AccountNameMode>('manual_input')
   const [name, setName] = useState('')
   const [active, setActive] = useState(true)
@@ -593,10 +594,20 @@ function AccountForm({ id, base }: { id: string; base: string }) {
                 <label style={{ ...label, display: 'flex', alignItems: 'center', gap: 5 }}>
                   <GlobeIcon /><span>{t('f_country')} <span style={{ color: '#ef4444' }}>*</span></span>
                 </label>
-                <select style={inputCss} value={countryId} onChange={(e) => { setCountryId(Number(e.target.value)); if (countryError) setCountryError('') }}>
-                  <option value={0}>{t('f_country_ph')}</option>
-                  {countries.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
+                <SearchableSelect
+                  options={countries.map((c) => ({
+                    id: c.id,
+                    name: c.name,
+                    icon: c.flag
+                      ? <img src={c.flag} alt="" style={{ width: 20, height: 14, objectFit: 'cover', borderRadius: 2, boxShadow: '0 0 0 1px rgba(0,0,0,.12)', flexShrink: 0 }} />
+                      : undefined,
+                  }))}
+                  value={countryId}
+                  onChange={(id) => { setCountryId(id); if (countryError) setCountryError('') }}
+                  placeholder={t('f_country_ph')}
+                  searchPlaceholder={t('f_country_search')}
+                  noResult={t('f_country_none')}
+                />
                 {countryError && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{countryError}</p>}
               </div>
               <div>

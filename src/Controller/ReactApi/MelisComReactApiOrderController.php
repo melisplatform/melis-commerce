@@ -130,7 +130,13 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                        ostt.ostt_status_name AS status_name,
                        osta.osta_color_code AS status_color,
                        (SELECT COALESCE(SUM(obas_quantity), 0) FROM melis_ecom_order_basket WHERE obas_order_id = o.ord_id) AS product_count,
-                       (SELECT COALESCE(SUM(opay_price_total), 0) FROM melis_ecom_order_payment WHERE opay_order_id = o.ord_id) AS total_amount
+                       (SELECT COALESCE(SUM(opay_price_total), 0) FROM melis_ecom_order_payment WHERE opay_order_id = o.ord_id) AS total_amount,
+                       COALESCE(
+                         (SELECT cu.cur_symbol FROM melis_ecom_order_payment op
+                            JOIN melis_ecom_currency cu ON cu.cur_id = op.opay_currency_id
+                           WHERE op.opay_order_id = o.ord_id LIMIT 1),
+                         (SELECT cur_symbol FROM melis_ecom_currency WHERE cur_default = 1 LIMIT 1)
+                       ) AS currency_symbol
                 FROM melis_ecom_order o
                 LEFT JOIN melis_ecom_client c ON c.cli_id = o.ord_client_id
                 LEFT JOIN melis_ecom_client_person p ON p.cper_id = o.ord_client_person_id
@@ -158,6 +164,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                     'name'         => $r['cper_name'] ?? '',
                     'productCount' => (int) ($r['product_count'] ?? 0),
                     'totalAmount'  => (float) ($r['total_amount'] ?? 0),
+                    'currency'     => (string) ($r['currency_symbol'] ?? ''),
                     'dateCreation' => $r['ord_date_creation'] ?? null,
                 ];
             }
@@ -243,9 +250,15 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             $o = (array) $orderRows[0];
 
             $basketRows = iterator_to_array($db->query(
-                "SELECT obas_id, obas_sku, obas_product_name, obas_category_name, obas_variant_id,
-                        obas_quantity, obas_price_net, obas_price_gross, obas_attributes, obas_currency
-                 FROM melis_ecom_order_basket WHERE obas_order_id = ? ORDER BY obas_id ASC",
+                "SELECT b.obas_id, b.obas_sku, b.obas_product_name, b.obas_category_name, b.obas_variant_id,
+                        b.obas_quantity, b.obas_price_net, b.obas_price_gross, b.obas_attributes,
+                        cu.cur_symbol AS currency_symbol,
+                        p.prd_id AS product_id
+                 FROM melis_ecom_order_basket b
+                 LEFT JOIN melis_ecom_currency cu ON cu.cur_id = b.obas_currency
+                 LEFT JOIN melis_ecom_variant v ON v.var_id = b.obas_variant_id
+                 LEFT JOIN melis_ecom_product p ON p.prd_id = v.var_prd_id
+                 WHERE b.obas_order_id = ? ORDER BY b.obas_id ASC",
                 [$id]
             ));
             $basket = [];
@@ -257,11 +270,12 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                     'name'       => $r['obas_product_name'] ?? '',
                     'category'   => $r['obas_category_name'] ?? '',
                     'variantId'  => (int) ($r['obas_variant_id'] ?? 0),
+                    'productId'  => (int) ($r['product_id'] ?? 0), // 0 si le produit n'existe plus
                     'qty'        => (int) ($r['obas_quantity'] ?? 0),
                     'priceNet'   => (float) ($r['obas_price_net'] ?? 0),
                     'priceGross' => (float) ($r['obas_price_gross'] ?? 0),
                     'attributes' => $r['obas_attributes'] ?? '',
-                    'currency'   => $r['obas_currency'] ?? '',
+                    'currency'   => $r['currency_symbol'] ?? '',
                 ];
             }
 
@@ -308,7 +322,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             }
 
             $payRows = iterator_to_array($db->query(
-                "SELECT p.*, pt.opty_name AS payment_type_name, cu.cur_code AS currency_code
+                "SELECT p.*, pt.opty_name AS payment_type_name, cu.cur_symbol AS currency_symbol
                  FROM melis_ecom_order_payment p
                  LEFT JOIN melis_ecom_order_payment_type pt ON pt.opty_id = p.opay_payment_type_id
                  LEFT JOIN melis_ecom_currency cu ON cu.cur_id = p.opay_currency_id
@@ -321,7 +335,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                 $payments[] = [
                     'id' => (int) $r['opay_id'], 'total' => (float) ($r['opay_price_total'] ?? 0),
                     'orderPrice' => (float) ($r['opay_price_order'] ?? 0), 'shipping' => (float) ($r['opay_price_shipping'] ?? 0),
-                    'currency' => $r['currency_code'] ?? '', 'paymentType' => $r['payment_type_name'] ?? '',
+                    'currency' => $r['currency_symbol'] ?? '', 'paymentType' => $r['payment_type_name'] ?? '',
                     'transacId' => $r['opay_transac_id'] ?? '', 'confirmed' => (float) ($r['opay_transac_price_paid_confirm'] ?? 0),
                     'datePay' => $r['opay_date_payment'] ?? null, 'coupons' => $orderCoupons,
                 ];
@@ -337,19 +351,28 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             }
 
             $msgRows = iterator_to_array($db->query(
-                "SELECT m.*, u.usr_firstname, u.usr_lastname, u.usr_email FROM melis_ecom_order_message m
+                "SELECT m.*, u.usr_firstname, u.usr_lastname, u.usr_email,
+                        cp.cper_firstname AS cli_firstname, cp.cper_name AS cli_name, cp.cper_email AS cli_email
+                 FROM melis_ecom_order_message m
                  LEFT JOIN melis_core_user u ON u.usr_id = m.omsg_user_id
+                 LEFT JOIN melis_ecom_client_person cp ON cp.cper_id = m.omsg_client_person_id
                  WHERE m.omsg_order_id = ? ORDER BY m.omsg_id DESC",
                 [$id]
             ));
             $messages = [];
             foreach ($msgRows as $row) {
                 $r = (array) $row;
+                // Expéditeur : ADMIN (omsg_user_id renseigné = utilisateur BO) sinon CLIENT (contact).
+                $fromAdmin  = !empty($r['omsg_user_id']);
+                $adminName  = trim(($r['usr_firstname'] ?? '') . ' ' . ($r['usr_lastname'] ?? ''));
+                $clientName = trim(($r['cli_firstname'] ?? '') . ' ' . ($r['cli_name'] ?? ''));
                 $messages[] = [
                     'id' => (int) $r['omsg_id'], 'message' => $r['omsg_message'] ?? '',
                     'userId' => (int) ($r['omsg_user_id'] ?? 0),
-                    'userName' => trim(($r['usr_firstname'] ?? '') . ' ' . ($r['usr_lastname'] ?? '')) ?: 'Admin',
-                    'userEmail' => $r['usr_email'] ?? '',
+                    'fromAdmin' => $fromAdmin,
+                    'type' => $r['omsg_type'] ?? 'MSG',
+                    'userName' => $fromAdmin ? ($adminName ?: 'Admin') : ($clientName ?: 'Client'),
+                    'userEmail' => $fromAdmin ? ($r['usr_email'] ?? '') : ($r['cli_email'] ?? ''),
                     'clientId' => (int) ($r['omsg_client_id'] ?? 0),
                     'dateCreation' => $r['omsg_date_creation'] ?? null,
                 ];
@@ -381,12 +404,16 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             $rows = iterator_to_array($db->query(
                 "SELECT pr.pret_id, pr.pret_date_creation,
                         pd.pretd_id, pd.pretd_sku, pd.pretd_quantity, pd.pretd_variant_id,
-                        COALESCE(pt.ptxt_field_short, pd.pretd_sku) AS product_name
+                        COALESCE(
+                          (SELECT ptxt_field_short FROM melis_ecom_product_text
+                             WHERE ptxt_prd_id = p.prd_id AND ptxt_lang_id = 1 AND ptxt_field_short IS NOT NULL
+                             ORDER BY ptxt_id LIMIT 1),
+                          pd.pretd_sku
+                        ) AS product_name
                  FROM melis_ecom_order_product_return pr
                  LEFT JOIN melis_ecom_order_product_return_details pd ON pd.pretd_pret_id = pr.pret_id
                  LEFT JOIN melis_ecom_variant v ON v.var_id = pd.pretd_variant_id
                  LEFT JOIN melis_ecom_product p ON p.prd_id = v.var_prd_id
-                 LEFT JOIN melis_ecom_product_text pt ON pt.ptxt_prd_id = p.prd_id AND pt.ptxt_lang_id = 1
                  WHERE pr.pret_order_id = ?
                  ORDER BY pr.pret_id DESC",
                 [$id]
@@ -407,8 +434,12 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
     // ─── Upload directory ─────────────────────────────────────────────────────
     private function uploadDir(int $orderId): string
     {
-        $dir = dirname(__DIR__, 5) . '/public/MelisCommerce/documents/orders/' . $orderId . '/';
-        if (!is_dir($dir)) { mkdir($dir, 0775, true); }
+        // Base = racine web servie (public/), inscriptible et servie par Apache sous /MelisCommerce/…
+        // DOCUMENT_ROOT est le plus fiable ; repli sur la racine app (dirname 6 = /var/www/melis).
+        // (Avant : dirname(__DIR__, 5) pointait sur vendor/public — dossier inexistant → « File move failed ».)
+        $public = rtrim((string) ($_SERVER['DOCUMENT_ROOT'] ?? ''), '/') ?: (dirname(__DIR__, 6) . '/public');
+        $dir = $public . '/MelisCommerce/documents/orders/' . $orderId . '/';
+        if (!is_dir($dir)) { @mkdir($dir, 0775, true); }
         return $dir;
     }
 

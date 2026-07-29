@@ -88,3 +88,10 @@ export function fmtDate(value: string | null | undefined): string {
   if (isNaN(d.getTime())) return '—'
   return d.toLocaleDateString(currentLang() === 'fr' ? 'fr-FR' : 'en-GB', { year: 'numeric', month: 'short', day: '2-digit' })
 }
+
+/** Formate un montant dans la langue affichée du BO (séparateurs fr/en, 2 décimales)
+ *  et ajoute la devise À LA FIN (symbole ou code), ex. « 1 234,56 € » (fr) / « 1,234.56 € » (en). */
+export function fmtMoney(amount: number | null | undefined, currency?: string | null): string {
+  const n = Number(amount ?? 0).toLocaleString(currentLang() === 'fr' ? 'fr-FR' : 'en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  return currency ? `${n} ${currency}` : n
+}

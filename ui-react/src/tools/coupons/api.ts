@@ -4,6 +4,7 @@ export interface CouponItem {
   id: number; code: string; status: number
   assignClients: boolean; assignProducts: boolean
   percentage: number | null; discountValue: number | null
+  currencySymbol: string
   maxUseNumber: number | null; currentUseNumber: number
   dateValidStart: string | null; dateValidEnd: string | null
   dateCreation: string | null
@@ -23,7 +24,8 @@ export interface CouponOrderUsage {
   id: number; orderId: number; orderReference: string
   status: number | null; statusName: string; statusColor: string
   civility: string; firstname: string; lastname: string
-  productCount: number; price: number
+  clientId: number
+  productCount: number; price: number; currency: string
   quantityUsed: number; dateCreation: string | null
 }
 export interface CouponOrderStatus { id: number; name: string; color: string }

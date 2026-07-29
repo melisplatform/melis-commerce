@@ -195,9 +195,17 @@ class MelisComReactApiContactController extends MelisAbstractActionController
             }
 
             $languages = [];
-            foreach ($db->query('SELECT lang_id, lang_name FROM melis_core_lang ORDER BY lang_name', []) as $r) {
+            // Langues COMMERCE actives (melis_ecom_lang, comme les selects legacy EcomLanguageSelectFactory)
+            // — avec drapeau (elang_flag = PNG base64 → data URI). Les ids 1/2 = en/fr coïncident avec les
+            // valeurs déjà stockées dans cper_lang_id (aucune migration nécessaire).
+            foreach ($db->query('SELECT elang_id, elang_name, elang_flag FROM melis_ecom_lang WHERE elang_status = 1 ORDER BY elang_name', []) as $r) {
                 $r = (array) $r;
-                $languages[] = ['id' => (int) $r['lang_id'], 'name' => (string) $r['lang_name']];
+                $flag = trim((string) ($r['elang_flag'] ?? ''));
+                $languages[] = [
+                    'id'   => (int) $r['elang_id'],
+                    'name' => (string) $r['elang_name'],
+                    'flag' => $flag !== '' ? 'data:image/png;base64,' . $flag : null,
+                ];
             }
 
             return $this->jsonResponse(['success' => true, 'data' => ['accounts' => $accounts, 'civilities' => $civilities, 'languages' => $languages]]);

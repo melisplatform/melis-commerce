@@ -3,8 +3,9 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   deleteContact, fetchContactById, fetchContactOptions, fetchContacts, fetchContactStats,
   saveContact, fetchContactAddresses, saveContactAddresses,
-  type ContactItem, type ContactStats, type ContactAddress,
+  type ContactItem, type ContactStats, type ContactAddress, type LangOption,
 } from './api'
+import { SearchableSelect } from '../../shared/SearchableSelect'
 import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
 import { makeT, fmtDate } from '../../shared/i18n'
@@ -171,12 +172,12 @@ function ContactList({ base }: { base: string }) {
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{t('title')}</h1>
           <p style={{ fontSize: 14, color: 'var(--color-muted-foreground)', margin: '2px 0 0' }}>{t('subtitle')}</p>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <ViewModeToggle mode={mode} onReact={() => setMode('react')} onOld={() => { setMode('old'); setOldLoaded(true) }} />
             <button style={{ ...btnGhost, width: 36, padding: 0, justifyContent: 'center', flexShrink: 0 }} onClick={() => setTick((x) => x + 1)} title={t('refresh')}>↻</button>
           </div>
-          {can('create') && <button style={{ ...btnPrimary, width: '100%', justifyContent: 'center', whiteSpace: 'normal', textAlign: 'center', height: 'auto', minHeight: 36, padding: '8px 14px' }} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>}
+          {can('create') && <button style={btnPrimary} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>}
         </div>
       </div>
 
@@ -288,7 +289,7 @@ function ContactForm({ id, base }: { id: string; base: string }) {
 
   const [accounts, setAccounts] = useState<Option[]>([])
   const [civilities, setCivilities] = useState<Option[]>([])
-  const [languages, setLanguages] = useState<Option[]>([])
+  const [languages, setLanguages] = useState<LangOption[]>([])
   const [civility, setCivility] = useState<number>(0)
   const [firstname, setFirstname] = useState('')
   const [name, setName] = useState('')
@@ -436,9 +437,9 @@ function ContactForm({ id, base }: { id: string; base: string }) {
       {loading ? (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '40vh', color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: narrow ? 'column' : 'row', gap: 20, alignItems: 'start' }}>
-          {/* Main content */}
-          <div style={{ flex: 1, width: narrow ? '100%' : undefined, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ display: narrow ? 'flex' : 'grid', flexDirection: narrow ? 'column' : undefined, gridTemplateColumns: narrow ? undefined : 'minmax(0,1fr) minmax(0,1fr)', gap: 20, alignItems: 'start' }}>
+          {/* Colonne 1 — Identité (infos personnelles) */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minWidth: 0 }}>
             <div style={{ ...card, padding: 24 }}>
               <h3 style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 20px' }}>
                 <UserIcon />{t('f_identity')}
@@ -488,20 +489,24 @@ function ContactForm({ id, base }: { id: string; base: string }) {
                     <input style={inputCss} value={middleName} onChange={(e) => setMiddleName(e.target.value)} placeholder={t('f_middle_name_ph')} autoComplete="off" />
                   </div>
                 )}
-                {/* Language */}
+                {/* Language (langues commerce — avec drapeaux) */}
                 <div>
                   <label style={label}>{t('f_language')} <span style={{ color: '#ef4444' }}>*</span></label>
-                  <select style={inputCss} value={langId} onChange={(e) => { setLangId(Number(e.target.value)); if (langError) setLangError('') }}>
-                    <option value={0}>{t('f_language_ph')}</option>
-                    {languages.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
-                  </select>
+                  <SearchableSelect
+                    options={languages.map((l) => ({
+                      id: l.id,
+                      name: l.name,
+                      icon: l.flag
+                        ? <img src={l.flag} alt="" style={{ width: 20, height: 14, objectFit: 'cover', borderRadius: 2, boxShadow: '0 0 0 1px rgba(0,0,0,.12)', flexShrink: 0 }} />
+                        : undefined,
+                    }))}
+                    value={langId}
+                    onChange={(id) => { setLangId(id); if (langError) setLangError('') }}
+                    placeholder={t('f_language_ph')}
+                    searchPlaceholder={t('f_language_search')}
+                    noResult={t('f_language_none')}
+                  />
                   {langError && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{langError}</p>}
-                </div>
-                {/* Email */}
-                <div>
-                  <label style={label}>{t('f_email')} <span style={{ color: '#ef4444' }}>*</span></label>
-                  <input style={inputCss} value={email} onChange={(e) => { setEmail(e.target.value); if (emailError) setEmailError('') }} placeholder={t('f_email_ph')} autoComplete="off" />
-                  {emailError && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{emailError}</p>}
                 </div>
                 {/* Job title + Job service (masqués en mode company) */}
                 {!isCompany && (
@@ -534,29 +539,38 @@ function ContactForm({ id, base }: { id: string; base: string }) {
                 </div>
               </div>
             </div>
-
-            {/* Password card */}
-            <div style={{ ...card, padding: 24 }}>
-              <h3 style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 20px' }}>
-                <KeyIcon />{t('f_section_password')}
-              </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={label}>{isEdit ? t('f_password_edit') : t('f_password')} <span style={{ color: '#ef4444' }}>*</span></label>
-                  <input type="password" style={inputCss} value={password} onChange={(e) => { setPassword(e.target.value); if (passwordError) setPasswordError('') }} placeholder="******" autoComplete="new-password" />
-                </div>
-                <div>
-                  <label style={label}>{t('f_confirm_password')} <span style={{ color: '#ef4444' }}>*</span></label>
-                  <input type="password" style={inputCss} value={confirmPassword} onChange={(e) => { setConfirmPassword(e.target.value); if (passwordError) setPasswordError('') }} placeholder="******" autoComplete="new-password" />
-                </div>
-              </div>
-              {passwordError && <p style={{ margin: '8px 0 0', fontSize: 12, color: '#ef4444' }}>{passwordError}</p>}
-            </div>
           </div>
 
-          {/* Right sidebar */}
-          <div style={{ width: narrow ? '100%' : 256, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ ...card, padding: 16 }}>
+          {/* Colonne 2 — Connexion (email regroupé avec la zone mot de passe) + Statut */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minWidth: 0 }}>
+            <div style={{ ...card, padding: 24 }}>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 20px' }}>
+                <KeyIcon />{t('f_section_login')}
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {/* Email = identifiant de connexion */}
+                <div>
+                  <label style={label}>{t('f_email')} <span style={{ color: '#ef4444' }}>*</span></label>
+                  <input style={inputCss} value={email} onChange={(e) => { setEmail(e.target.value); if (emailError) setEmailError('') }} placeholder={t('f_email_ph')} autoComplete="off" />
+                  {emailError && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{emailError}</p>}
+                </div>
+                {/* Mot de passe + confirmation */}
+                <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: 16 }}>
+                  <div>
+                    <label style={label}>{isEdit ? t('f_password_edit') : t('f_password')} <span style={{ color: '#ef4444' }}>*</span></label>
+                    <input type="password" style={inputCss} value={password} onChange={(e) => { setPassword(e.target.value); if (passwordError) setPasswordError('') }} placeholder="******" autoComplete="new-password" />
+                  </div>
+                  <div>
+                    <label style={label}>{t('f_confirm_password')} <span style={{ color: '#ef4444' }}>*</span></label>
+                    <input type="password" style={inputCss} value={confirmPassword} onChange={(e) => { setConfirmPassword(e.target.value); if (passwordError) setPasswordError('') }} placeholder="******" autoComplete="new-password" />
+                  </div>
+                </div>
+                {passwordError && <p style={{ margin: 0, fontSize: 12, color: '#ef4444' }}>{passwordError}</p>}
+              </div>
+            </div>
+
+            {/* Statut — placé au-dessus de la zone email/mot de passe (order flex) */}
+            <div style={{ ...card, padding: 16, order: -1 }}>
               <h3 style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 12px' }}>
                 <ToggleRightIcon />{t('col_status')}
               </h3>

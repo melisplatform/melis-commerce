@@ -9,10 +9,13 @@ import { useIsNarrow } from './useIsNarrow'
 export function StatusBadge({ active, t }: { active: boolean; t: T }) {
   return (
     <span style={{
-      display: 'inline-block', fontSize: 12, fontWeight: 500, padding: '2px 8px', borderRadius: 999,
+      display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 500, padding: '2px 8px 2px 7px', borderRadius: 999, whiteSpace: 'nowrap',
       background: active ? 'color-mix(in srgb, #10b981 14%, transparent)' : 'var(--color-muted,rgba(0,0,0,.05))',
       color: active ? '#059669' : 'var(--color-muted-foreground)',
-    }}>{active ? t('status_active') : t('status_inactive')}</span>
+    }}>
+      <span style={{ width: 6, height: 6, borderRadius: '50%', flexShrink: 0, background: active ? '#10b981' : 'var(--color-muted-foreground)' }} />
+      {active ? t('status_active') : t('status_inactive')}
+    </span>
   )
 }
 

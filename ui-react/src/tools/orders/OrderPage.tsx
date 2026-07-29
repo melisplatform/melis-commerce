@@ -8,7 +8,7 @@ import {
 } from './api'
 import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
-import { makeT, fmtDate, currentLang } from '../../shared/i18n'
+import { makeT, fmtDate, fmtMoney } from '../../shared/i18n'
 import { card, inputCss, btnGhost, btnPrimary, th, td, iconBtn } from '../../shared/styles'
 import { CartIcon, ShoppingCartKpiIcon, PackageIcon, CalendarIcon, PlusIcon, RefreshIcon, PencilIcon, ResetIcon, TrashIcon } from '../../shared/icons'
 import { Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
@@ -21,6 +21,7 @@ import { ExportModal } from '../../shared/ExportModal'
 import { ColManager } from '../../shared/ColManager'
 import { openSubTab, updateSubLabel } from '../../shared/subtabs'
 import { Tabs } from '../../shared/Tabs'
+import { AccountLink } from '../../shared/openAccount'
 import { BasketTab, AddressesTab, PaymentTab, ShippingTab, MessagesTab, ReturnsTab } from './OrderTabs'
 import OrderCheckoutWizard from './wizard/OrderCheckoutWizard'
 import { FileDownIcon, GripIcon } from '../../shared/icons'
@@ -155,10 +156,10 @@ function OrderList({ base }: { base: string }) {
       case 'reference': return <code style={{ fontSize: 12 }}>{o.reference}</code>
       case 'status': return <StatusPill color={o.statusColor} name={o.statusName} size="xs" />
       case 'products': return o.productCount
-      case 'total': return fmtAmt(o.totalAmount)
-      case 'firstname': return o.firstname || '—'
-      case 'name': return o.name || '—'
-      case 'company': return o.company || '—'
+      case 'total': return fmtMoney(o.totalAmount, o.currency)
+      case 'firstname': return o.firstname ? <AccountLink navigate={navigate} clientId={o.clientId} label={`${o.firstname} ${o.name}`.trim() || o.company}>{o.firstname}</AccountLink> : '—'
+      case 'name': return o.name ? <AccountLink navigate={navigate} clientId={o.clientId} label={`${o.firstname} ${o.name}`.trim() || o.company}>{o.name}</AccountLink> : '—'
+      case 'company': return o.company ? <AccountLink navigate={navigate} clientId={o.clientId} label={o.company}>{o.company}</AccountLink> : '—'
       case 'date': return o.dateCreation ? fmtDate(o.dateCreation) : '—'
       default: return '—'
     }
@@ -185,7 +186,6 @@ function OrderList({ base }: { base: string }) {
 
   const onSort = (col: string) => { if (sortCol === col) setSortAsc((p) => !p); else { setSortCol(col); setSortAsc(true) } }
   const arrow  = (col: string) => sortCol === col ? (sortAsc ? ' ↑' : ' ↓') : ''
-  const fmtAmt = (v: number) => v.toLocaleString(currentLang() === 'fr' ? 'fr-FR' : 'en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   const totalPages = Math.max(1, Math.ceil(total / LIMIT))
 
   const openOrder = (o: OrderItem) => {
@@ -215,12 +215,12 @@ function OrderList({ base }: { base: string }) {
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{t('title')}</h1>
           <p style={{ fontSize: 14, color: 'var(--color-muted-foreground)', margin: '2px 0 0' }}>{t('subtitle')}</p>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <ViewModeToggle mode={mode} onReact={() => setMode('react')} onOld={() => { setMode('old'); setOldLoaded(true) }} />
             <button style={{ ...btnGhost, width: 36, padding: 0, justifyContent: 'center', flexShrink: 0 }} title={t('refresh')} onClick={() => setTick((x) => x + 1)}><RefreshIcon /></button>
           </div>
-          {can('create') && <button style={{ ...btnPrimary, width: '100%', justifyContent: 'center', whiteSpace: 'normal', textAlign: 'center', height: 'auto', minHeight: 36, padding: '8px 14px' }} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>}
+          {can('create') && <button style={btnPrimary} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>}
         </div>
       </div>
 
@@ -456,6 +456,7 @@ function OrderForm({ id, base }: { id: string; base: string }) {
                 localStatus={localStatus} setLocalStatus={setLocalStatus}
                 localReference={localReference} setLocalReference={setLocalReference}
                 errReference={errReference} setErrReference={setErrReference}
+                customer={order ? { clientId: order.clientId, company: order.company, firstname: order.firstname, name: order.name } : null}
                 t={t}
               />
             )}
@@ -532,49 +533,44 @@ function UploadModal({ orderId, onUploaded, onClose, t }: {
   }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.55)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ background: '#fff', borderRadius: 6, width: 520, maxWidth: '95vw', overflow: 'hidden', boxShadow: '0 8px 40px rgba(0,0,0,.35)', color: '#333', fontFamily: 'inherit' }}>
-        {/* Title bar */}
-        <div style={{ background: '#337ab7', padding: '12px 18px', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ background: '#d9534f', color: '#fff', borderRadius: 4, padding: '2px 8px', fontWeight: 700, fontSize: 15, lineHeight: 1.4 }}>+</span>
-          <span style={{ color: '#fff', fontWeight: 600, fontSize: 15 }}>{t('upload_title')}</span>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', backdropFilter: 'blur(2px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
+      onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()}
+        style={{ ...card, width: 480, maxWidth: '95vw', overflow: 'hidden', boxShadow: '0 12px 40px rgba(0,0,0,.35)' }}>
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '16px 20px', borderBottom: '1px solid var(--color-border)' }}>
+          <span style={{ display: 'inline-flex', width: 30, height: 30, borderRadius: 8, alignItems: 'center', justifyContent: 'center', background: 'color-mix(in srgb, var(--color-primary) 14%, transparent)', color: 'var(--color-primary)', flexShrink: 0 }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 17, height: 17 }}><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          </span>
+          <span style={{ fontWeight: 600, fontSize: 15, color: 'var(--color-foreground)' }}>{t('upload_title')}</span>
         </div>
 
-        <div style={{ padding: '20px 22px 18px', background: '#fff' }}>
-          <p style={{ margin: '0 0 18px', fontSize: 13, color: '#666' }}>{t('upload_subtitle')}</p>
+        <div style={{ padding: 20 }}>
+          <p style={{ margin: '0 0 16px', fontSize: 13, color: 'var(--color-muted-foreground)' }}>{t('upload_subtitle')}</p>
 
-          {/* File picker */}
-          <div style={{ background: '#f5f5f5', border: '1px solid #e0e0e0', borderRadius: 4, padding: '10px 14px', marginBottom: 18 }}>
+          {/* File picker (drop-zone) */}
+          <div style={{ marginBottom: 16 }}>
             <input ref={inputRef} type="file" style={{ display: 'none' }} onChange={(e) => { if (e.target.files?.[0]) pickFile(e.target.files[0]) }} />
             <button onClick={() => inputRef.current?.click()}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '5px 14px', fontSize: 13, border: '1px solid #ccc', borderRadius: 4, background: '#fff', color: '#333', cursor: 'pointer' }}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" style={{ width: 16, height: 16 }}><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-              <span style={{ color: '#333' }}>{file ? file.name : t('upload_select')}</span>
+              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '14px', fontSize: 14, border: '1.5px dashed var(--color-border)', borderRadius: 8, background: 'var(--color-muted,rgba(0,0,0,.03))', color: 'var(--color-foreground)', cursor: 'pointer' }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 17, height: 17, color: 'var(--color-muted-foreground)' }}><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              <span style={{ color: file ? 'var(--color-foreground)' : 'var(--color-muted-foreground)', fontWeight: file ? 600 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file ? file.name : t('upload_select')}</span>
             </button>
           </div>
 
           {/* Name */}
-          <div style={{ marginBottom: 18 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-              <label style={{ fontWeight: 700, fontSize: 13, color: '#333' }}>{t('upload_name_label')}</label>
-              <span style={{ width: 16, height: 16, borderRadius: '50%', border: '1.5px solid #999', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: '#999', fontWeight: 700, flexShrink: 0 }}>i</span>
-            </div>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: 'block', fontWeight: 600, fontSize: 13, color: 'var(--color-foreground)', marginBottom: 6 }}>{t('upload_name_label')}</label>
             <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('upload_name_label')}
-              style={{ width: '100%', boxSizing: 'border-box', padding: '7px 10px', fontSize: 13, border: '1px solid #ccc', borderRadius: 4, outline: 'none', background: '#fff', color: '#333' }} />
+              style={{ ...inputCss, width: '100%', boxSizing: 'border-box' }} />
           </div>
 
-          {err && <p style={{ color: '#d9534f', fontSize: 12, margin: '0 0 12px' }}>{err}</p>}
+          {err && <p style={{ color: '#ef4444', fontSize: 12, margin: '0 0 12px' }}>{err}</p>}
 
           {/* Footer */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 6, borderTop: '1px solid #eee', marginTop: 4 }}>
-            <button onClick={onClose}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 18px', fontSize: 13, borderRadius: 4, border: '1px solid #d9534f', background: '#fff', color: '#d9534f', cursor: 'pointer', fontWeight: 500 }}>
-              ✕ {t('upload_close')}
-            </button>
-            <button onClick={save} disabled={saving}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 18px', fontSize: 13, borderRadius: 4, border: '1px solid #5cb85c', background: '#fff', color: '#5cb85c', cursor: 'pointer', fontWeight: 500, opacity: saving ? 0.6 : 1 }}>
-              💾 {saving ? t('upload_saving') : t('upload_save')}
-            </button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, paddingTop: 14, borderTop: '1px solid var(--color-border)', marginTop: 4 }}>
+            <button onClick={onClose} style={{ ...btnGhost }}>{t('upload_close')}</button>
+            <button onClick={save} disabled={saving} style={{ ...btnPrimary, opacity: saving ? 0.6 : 1 }}>{saving ? t('upload_saving') : t('upload_save')}</button>
           </div>
         </div>
       </div>
@@ -583,14 +579,16 @@ function UploadModal({ orderId, onUploaded, onClose, t }: {
 }
 
 // ── Information tab ─── fully controlled, no internal saves ───────────────────
-function InformationTab({ orderId, statuses, locked, localStatus, setLocalStatus, localReference, setLocalReference, errReference, setErrReference, t }: {
+function InformationTab({ orderId, statuses, locked, localStatus, setLocalStatus, localReference, setLocalReference, errReference, setErrReference, customer, t }: {
   orderId: number | null; statuses: OrderStatus[]; locked: boolean
   localStatus: number; setLocalStatus: (s: number) => void
   localReference: string; setLocalReference: (r: string) => void
   errReference: boolean; setErrReference: (v: boolean) => void
+  customer: { clientId: number; company: string; firstname: string; name: string } | null
   t: (k: string) => string
 }) {
   const narrow = useIsNarrow()
+  const navigate = useNavigate()
   const [attachments, setAttachments] = useState<OrderAttachment[]>([])
   const [showUpload, setShowUpload]   = useState(false)
   const [toDelete, setToDelete]       = useState<OrderAttachment | null>(null)
@@ -627,24 +625,38 @@ function InformationTab({ orderId, statuses, locked, localStatus, setLocalStatus
           {errReference && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_reference_required')}</p>}
         </InfoCard>
 
-        {/* Invoice */}
-        <InfoCard icon={iconSvg(<><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></>)} title={t('section_invoice')}>
-          <div style={{ fontSize: 13, color: 'var(--color-muted-foreground)', padding: '4px 0', fontStyle: 'italic' }}>
-            {t('section_invoice')}
-          </div>
-        </InfoCard>
+        {/* Client — infos minimales ; nom/prénom (et société) cliquables → compte client */}
+        {customer && (customer.company || customer.firstname || customer.name) && (
+          <InfoCard icon={iconSvg(<><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>)} title={t('section_customer')}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 14 }}>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'baseline' }}>
+                <span style={{ color: 'var(--color-muted-foreground)', minWidth: 92, flexShrink: 0 }}>{t('cust_name')}</span>
+                {(customer.firstname || customer.name)
+                  ? <AccountLink navigate={navigate} clientId={customer.clientId} label={`${customer.firstname} ${customer.name}`.trim() || customer.company} style={{ fontWeight: 600 }}>{`${customer.firstname} ${customer.name}`.trim()}</AccountLink>
+                  : <span>—</span>}
+              </div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'baseline' }}>
+                <span style={{ color: 'var(--color-muted-foreground)', minWidth: 92, flexShrink: 0 }}>{t('cust_company')}</span>
+                {customer.company
+                  ? <AccountLink navigate={navigate} clientId={customer.clientId} label={customer.company} style={{ fontWeight: 500 }}>{customer.company}</AccountLink>
+                  : <span style={{ color: 'var(--color-muted-foreground)' }}>—</span>}
+              </div>
+            </div>
+          </InfoCard>
+        )}
 
-        {/* Attachments */}
+        {/* Documents — zone UNIQUE fourre-tout (factures, bons de livraison, et tout autre document) */}
         <InfoCard
           icon={iconSvg(<path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>)}
-          title={t('section_attachments')}
+          title={t('section_documents')}
           action={orderId ? (
             <button onClick={() => setShowUpload(true)}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 12px', fontSize: 12, fontWeight: 600, border: '1.5px solid #5cb85c', borderRadius: 6, background: 'transparent', color: '#5cb85c', cursor: 'pointer' }}>
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 12px', fontSize: 12, fontWeight: 600, borderRadius: 6, cursor: 'pointer', border: '1px solid color-mix(in srgb, var(--color-primary) 45%, transparent)', background: 'color-mix(in srgb, var(--color-primary) 12%, transparent)', color: 'var(--color-primary)' }}>
               <span style={{ fontSize: 16, lineHeight: 1 }}>+</span> {t('btn_add_file')}
             </button>
           ) : undefined}
         >
+          <p style={{ margin: '0 0 12px', fontSize: 13, color: 'var(--color-muted-foreground)' }}>{t('documents_hint')}</p>
           {attachments.length === 0 ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderRadius: 6, border: '1px dashed var(--color-border)', fontSize: 13, color: 'var(--color-muted-foreground)' }}>
               {t('no_attachments')}
@@ -654,7 +666,7 @@ function InformationTab({ orderId, statuses, locked, localStatus, setLocalStatus
               {attachments.map((a) => (
                 <div key={a.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: 'var(--color-accent)', borderRadius: 6, fontSize: 13 }}>
                   <a href={`/melis/react-api/orders/${orderId}/attachments/${a.id}/download`}
-                    style={{ color: '#60a5fa', textDecoration: 'none', fontWeight: 500 }}
+                    style={{ color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 500 }}
                     onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
                     onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}>
                     {a.name}
@@ -675,35 +687,43 @@ function InformationTab({ orderId, statuses, locked, localStatus, setLocalStatus
         icon={iconSvg(<><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>)}
         title={t('section_status')}
       >
-        {/* Active badge */}
+        {/* Statut courant — pastille discrète (fond teinté, pas de couleur pleine) */}
         {activeStatus && (
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 12px', borderRadius: 20, background: activeStatus.color || '#6b7280', marginBottom: 6 }}>
-            <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'rgba(255,255,255,.7)', flexShrink: 0 }} />
-            <span style={{ color: '#fff', fontWeight: 700, fontSize: 12 }}>{activeStatus.name}</span>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 12px', borderRadius: 8, marginBottom: 10,
+            background: `color-mix(in srgb, ${activeStatus.color || '#6b7280'} 12%, transparent)`,
+            border: `1px solid color-mix(in srgb, ${activeStatus.color || '#6b7280'} 45%, transparent)` }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: activeStatus.color || '#6b7280', flexShrink: 0 }} />
+            <span style={{ fontWeight: 600, fontSize: 12, color: 'var(--color-foreground)' }}>{activeStatus.name}</span>
           </div>
         )}
-        {/* All status buttons */}
+        {/* Boutons de statut — sobres mais colorés (fond carte, bordure fine, pastille colorée ;
+            fond légèrement teinté + bordure colorée pour l'actif). */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {statuses.map((s) => {
             const isActive = s.id === localStatus
+            const color = s.color || '#6b7280'
             return (
               <button key={s.id}
+                type="button"
                 disabled={locked && !isActive}
                 onClick={() => !locked && setLocalStatus(s.id)}
                 style={{
-                  padding: '7px 14px', borderRadius: 6, fontSize: 13, fontWeight: 600, textAlign: 'left',
-                  border: `2px solid ${s.color || '#6b7280'}`,
-                  background: isActive ? s.color : 'transparent',
-                  color: isActive ? '#fff' : (s.color || '#6b7280'),
+                  display: 'flex', alignItems: 'center', gap: 10, width: '100%',
+                  padding: '9px 12px', borderRadius: 8, fontSize: 13, textAlign: 'left',
+                  fontWeight: isActive ? 600 : 500,
+                  border: `1px solid ${isActive ? color : 'var(--color-border)'}`,
+                  background: isActive ? `color-mix(in srgb, ${color} 12%, transparent)` : 'var(--color-card)',
+                  color: 'var(--color-foreground)',
                   cursor: locked ? 'default' : 'pointer',
-                  opacity: locked && !isActive ? 0.35 : 1,
-                  transition: 'all .15s',
-                  boxShadow: isActive ? `0 0 0 3px ${s.color}33` : 'none',
-                  display: 'flex', alignItems: 'center', gap: 8,
-                }}>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: isActive ? 'rgba(255,255,255,.8)' : (s.color || '#6b7280'), flexShrink: 0 }} />
-                {s.name}
-                {isActive && <span style={{ marginLeft: 'auto', fontSize: 11 }}>✓</span>}
+                  opacity: locked && !isActive ? 0.4 : 1,
+                  transition: 'background .12s, border-color .12s',
+                }}
+                onMouseEnter={(e) => { if (!isActive && !locked) e.currentTarget.style.background = 'var(--color-accent)' }}
+                onMouseLeave={(e) => { if (!isActive && !locked) e.currentTarget.style.background = 'var(--color-card)' }}>
+                <span style={{ width: 10, height: 10, borderRadius: '50%', background: color, flexShrink: 0,
+                  boxShadow: isActive ? `0 0 0 3px color-mix(in srgb, ${color} 22%, transparent)` : 'none' }} />
+                <span style={{ flex: 1 }}>{s.name}</span>
+                {isActive && <span style={{ color, fontWeight: 700, fontSize: 13 }}>✓</span>}
               </button>
             )
           })}
