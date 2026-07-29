@@ -57,6 +57,9 @@ class MelisComReactApiCouponController extends MelisAbstractActionController
             'assignProducts' => (int) ($r['coup_product_assign'] ?? 0) === 1,
             'percentage' => $r['coup_percentage'] !== null ? (float) $r['coup_percentage'] : null,
             'discountValue' => $r['coup_discount_value'] !== null ? (float) $r['coup_discount_value'] : null,
+            // Le coupon n'a pas de devise propre : la valeur fixe est exprimée dans la devise
+            // par défaut de la plateforme (cur_default = 1), comme les commandes.
+            'currencySymbol' => (string) ($r['currency_symbol'] ?? ''),
             'maxUseNumber' => $r['coup_max_use_number'] !== null ? (int) $r['coup_max_use_number'] : null,
             'currentUseNumber' => (int) ($r['coup_current_use_number'] ?? 0),
             'dateValidStart' => $r['coup_date_valid_start'] ?? null,
@@ -84,7 +87,8 @@ class MelisComReactApiCouponController extends MelisAbstractActionController
 
             $total = (int) ((array) iterator_to_array($db->query("SELECT COUNT(*) AS t FROM melis_ecom_coupon $wc", $params))[0])['t'];
 
-            $rows = $db->query("SELECT * FROM melis_ecom_coupon $wc ORDER BY coup_id DESC LIMIT ?", array_merge($params, [$limit]));
+            $curSym = "(SELECT cur_symbol FROM melis_ecom_currency WHERE cur_default = 1 LIMIT 1)";
+            $rows = $db->query("SELECT *, $curSym AS currency_symbol FROM melis_ecom_coupon $wc ORDER BY coup_id DESC LIMIT ?", array_merge($params, [$limit]));
 
             $items = [];
             foreach ($rows as $r) { $items[] = $this->formatCoupon((array) $r); }
@@ -117,7 +121,7 @@ class MelisComReactApiCouponController extends MelisAbstractActionController
         if ($id <= 0) { return $this->jsonResponse(['success' => false, 'error' => 'Invalid ID'], 400); }
         try {
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
-            $rows = iterator_to_array($db->query('SELECT * FROM melis_ecom_coupon WHERE coup_id = ? LIMIT 1', [$id]));
+            $rows = iterator_to_array($db->query('SELECT *, (SELECT cur_symbol FROM melis_ecom_currency WHERE cur_default = 1 LIMIT 1) AS currency_symbol FROM melis_ecom_coupon WHERE coup_id = ? LIMIT 1', [$id]));
             if (empty($rows)) { return $this->jsonResponse(['success' => false, 'error' => 'Coupon not found'], 404); }
             return $this->jsonResponse(['success' => true, 'data' => $this->formatCoupon((array) $rows[0])]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
@@ -421,11 +425,15 @@ class MelisComReactApiCouponController extends MelisAbstractActionController
 
             $items = [];
             foreach ($db->query("SELECT cord.cord_id, cord.cord_order_id, cord.cord_quantity_used,
-                    o.ord_reference, o.ord_status AS order_status, o.ord_date_creation,
+                    o.ord_reference, o.ord_status AS order_status, o.ord_date_creation, o.ord_client_id,
                     p.cper_firstname, p.cper_name, civ.civt_min_name AS civility_name,
                     ostt.ostt_status_name AS status_name, osta.osta_color_code AS status_color,
                     (SELECT COALESCE(SUM(obas_quantity), 0) FROM melis_ecom_order_basket WHERE obas_order_id = o.ord_id) AS product_count,
-                    (SELECT COALESCE(SUM(opay_price_total), 0) FROM melis_ecom_order_payment WHERE opay_order_id = o.ord_id) AS total_amount
+                    (SELECT COALESCE(SUM(opay_price_total), 0) FROM melis_ecom_order_payment WHERE opay_order_id = o.ord_id) AS total_amount,
+                    COALESCE(
+                        (SELECT cu.cur_symbol FROM melis_ecom_order_payment op JOIN melis_ecom_currency cu ON cu.cur_id = op.opay_currency_id WHERE op.opay_order_id = o.ord_id ORDER BY op.opay_id DESC LIMIT 1),
+                        (SELECT cur_symbol FROM melis_ecom_currency WHERE cur_default = 1 LIMIT 1)
+                    ) AS currency_symbol
                 FROM melis_ecom_coupon_order cord
                 LEFT JOIN melis_ecom_order o ON o.ord_id = cord.cord_order_id
                 LEFT JOIN melis_ecom_client_person p ON p.cper_id = o.ord_client_person_id
@@ -444,8 +452,10 @@ class MelisComReactApiCouponController extends MelisAbstractActionController
                     'civility' => (string) ($r['civility_name'] ?? ''),
                     'firstname' => (string) ($r['cper_firstname'] ?? ''),
                     'lastname' => (string) ($r['cper_name'] ?? ''),
+                    'clientId' => (int) ($r['ord_client_id'] ?? 0),
                     'productCount' => (int) ($r['product_count'] ?? 0),
                     'price' => (float) ($r['total_amount'] ?? 0),
+                    'currency' => (string) ($r['currency_symbol'] ?? ''),
                     'quantityUsed' => (int) ($r['cord_quantity_used'] ?? 0),
                     'dateCreation' => $r['ord_date_creation'] ?? null,
                 ];

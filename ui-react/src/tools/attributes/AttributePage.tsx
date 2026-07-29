@@ -81,10 +81,12 @@ function StatusBadge({ active, onClick, t }: { active: boolean; onClick: () => v
 function StatusPill({ active, t }: { active: boolean; t: (k: string) => string }) {
   return (
     <span style={{
-      display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 8px',
-      borderRadius: 20, fontSize: 11, fontWeight: 600, color: '#fff',
-      background: active ? '#16a34a' : '#6b7280', whiteSpace: 'nowrap',
+      display: 'inline-flex', alignItems: 'center', gap: 6, padding: '2px 8px 2px 7px',
+      borderRadius: 999, fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap',
+      background: active ? 'color-mix(in srgb, #10b981 14%, transparent)' : 'var(--color-muted,rgba(0,0,0,.05))',
+      color: active ? '#059669' : 'var(--color-muted-foreground)',
     }}>
+      <span style={{ width: 6, height: 6, borderRadius: '50%', flexShrink: 0, background: active ? '#10b981' : 'var(--color-muted-foreground)' }} />
       {active ? t('status_active') : t('status_inactive')}
     </span>
   )
