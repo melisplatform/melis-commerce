@@ -115,6 +115,7 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
         <select style={{ ...inputCss, height: 36, width: 'auto', minWidth: 200 }} value={country ?? ''}
           onChange={(e) => e.target.value && onCountryChange(Number(e.target.value))}>
           <option value="">{t('checkout_choose_country')}</option>
+          <option value={-1}>{t('checkout_country_general')}</option>
           {countries.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
         {country && (
