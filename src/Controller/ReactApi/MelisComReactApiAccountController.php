@@ -628,23 +628,72 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
     {
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
         try {
-            $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
-            $rows = $db->query(
-                'SELECT o.ord_id, o.ord_reference, o.ord_status, o.ord_date_creation, s.ostt_status_name
-                 FROM melis_ecom_order o
-                 LEFT JOIN melis_ecom_order_status_trans s ON s.ostt_status_id = o.ord_status AND s.ostt_lang_id = ?
-                 WHERE o.ord_client_id = ? ORDER BY o.ord_id DESC', [$this->langId(), $this->routeId()]
-            );
-            $items = [];
-            foreach ($rows as $r) {
+            $db       = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
+            $lang     = (int) $this->langId();
+            $clientId = (int) $this->routeId();
+
+            $limit = (int) $this->params()->fromQuery('limit', 25);
+            if ($limit < 1) { $limit = 25; } elseif ($limit > 500) { $limit = 500; }
+
+            // La trad du statut (utf8mb4_bin) → COLLATE pour eviter le mix de collations en tri/recherche.
+            $statusName = "s.ostt_status_name COLLATE utf8mb4_general_ci";
+            $join = "FROM melis_ecom_order o LEFT JOIN melis_ecom_order_status_trans s ON s.ostt_status_id = o.ord_status AND s.ostt_lang_id = $lang";
+
+            $filterWhere  = ['o.ord_client_id = ?'];
+            $filterParams = [$clientId];
+            $status = $this->params()->fromQuery('status', null);
+            if ($status !== null && $status !== '') { $filterWhere[] = 'o.ord_status = ?'; $filterParams[] = (int) $status; }
+            $from = trim((string) ($this->params()->fromQuery('from', '') ?? ''));
+            if ($from !== '') { $filterWhere[] = 'DATE(o.ord_date_creation) >= ?'; $filterParams[] = $from; }
+            $to = trim((string) ($this->params()->fromQuery('to', '') ?? ''));
+            if ($to !== '') { $filterWhere[] = 'DATE(o.ord_date_creation) <= ?'; $filterParams[] = $to; }
+            $search = trim((string) ($this->params()->fromQuery('search', '') ?? ''));
+            if ($search !== '') { $like = '%' . $search . '%'; $filterWhere[] = "(o.ord_reference LIKE ? OR $statusName LIKE ?)"; $filterParams[] = $like; $filterParams[] = $like; }
+
+            $sortMap = [
+                'id'     => 'o.ord_id',
+                'ref'    => "COALESCE(o.ord_reference,'')",
+                'status' => "COALESCE($statusName,'')",
+                'date'   => "COALESCE(o.ord_date_creation,'')",
+            ];
+            $sortKey = (string) $this->params()->fromQuery('sort', 'id');
+            if (!isset($sortMap[$sortKey])) { $sortKey = 'id'; }
+            $sortExpr = $sortMap[$sortKey];
+            $dir = strtolower((string) $this->params()->fromQuery('dir', 'desc')) === 'asc' ? 'ASC' : 'DESC';
+            $op  = $dir === 'ASC' ? '>' : '<';
+
+            $countWhere = 'WHERE ' . implode(' AND ', $filterWhere);
+            $total = (int) ((array) iterator_to_array($db->query("SELECT COUNT(*) AS t $join $countWhere", $filterParams))[0])['t'];
+
+            $dataWhere = $filterWhere; $dataParams = $filterParams;
+            $after = (string) ($this->params()->fromQuery('after', '') ?? '');
+            if ($after !== '') {
+                $cur = json_decode((string) base64_decode($after, true), true);
+                if (is_array($cur) && array_key_exists('v', $cur) && array_key_exists('id', $cur)) {
+                    $dataWhere[]  = "($sortExpr $op ? OR ($sortExpr = ? AND o.ord_id $op ?))";
+                    $dataParams[] = $cur['v']; $dataParams[] = $cur['v']; $dataParams[] = (int) $cur['id'];
+                }
+            }
+            $dataWhereClause = 'WHERE ' . implode(' AND ', $dataWhere);
+            $sql = "SELECT o.ord_id, o.ord_reference, o.ord_status, o.ord_date_creation, s.ostt_status_name, $sortExpr AS __sortval
+                    $join $dataWhereClause ORDER BY $sortExpr $dir, o.ord_id $dir LIMIT ?";
+            $dataParams[] = $limit;
+
+            $items = []; $lastSortVal = null; $lastId = null;
+            foreach ($db->query($sql, $dataParams) as $r) {
                 $r = (array) $r;
+                $lastSortVal = $r['__sortval'] ?? null; $lastId = (int) $r['ord_id'];
                 $items[] = [
                     'id' => (int) $r['ord_id'], 'reference' => (string) ($r['ord_reference'] ?? ''),
                     'status' => (int) $r['ord_status'], 'statusName' => (string) ($r['ostt_status_name'] ?? ''),
                     'dateCreation' => $r['ord_date_creation'] ?? null,
                 ];
             }
-            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items]]);
+            $nextCursor = null;
+            if (count($items) === $limit && $lastId !== null) {
+                $nextCursor = base64_encode((string) json_encode(['v' => $lastSortVal, 'id' => $lastId]));
+            }
+            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items, 'total' => $total, 'nextCursor' => $nextCursor, 'limit' => $limit]]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
 
