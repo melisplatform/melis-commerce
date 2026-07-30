@@ -41,70 +41,93 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
 
         try {
-            $page      = max(1, (int) $this->params()->fromQuery('page', 1));
             $limit     = min(9999, max(1, (int) $this->params()->fromQuery('limit', 25)));
             $search    = trim((string) ($this->params()->fromQuery('search', '') ?? ''));
             $rawStatus = $this->params()->fromQuery('status', '');
             $status    = ($rawStatus !== '' && $rawStatus !== null) ? (int) $rawStatus : null;
             $rawGroup  = $this->params()->fromQuery('groupId', '');
             $groupId   = ($rawGroup !== '' && $rawGroup !== null) ? (int) $rawGroup : null;
-            $offset    = ($page - 1) * $limit;
 
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
-
-            $where  = [];
-            $params = [];
-
-            if ($status !== null) {
-                $where[]  = 'c.cli_status = ?';
-                $params[] = $status;
-            }
-            if ($groupId !== null) {
-                $where[]  = 'c.cli_group_id = ?';
-                $params[] = $groupId;
-            }
-            if ($search !== '') {
-                $like     = '%' . $search . '%';
-                $where[]  = '(c.cli_name LIKE ? OR c.cli_tags LIKE ?)';
-                $params   = array_merge($params, [$like, $like]);
-            }
-
-            $whereClause = $where ? 'WHERE ' . implode(' AND ', $where) : '';
-
-            $countRow = iterator_to_array(
-                $db->query("SELECT COUNT(*) AS total FROM melis_ecom_client c $whereClause", $params)
-            );
-            $total = (int) ($countRow[0]['total'] ?? 0);
-
             $mode = $this->accountNameMode();
-            $dataSql = "
+
+            // Filtres (communs au COUNT sur `client` seul et à la requête data).
+            $filterWhere = []; $filterParams = [];
+            if ($status !== null)  { $filterWhere[] = 'c.cli_status = ?';   $filterParams[] = $status; }
+            if ($groupId !== null) { $filterWhere[] = 'c.cli_group_id = ?'; $filterParams[] = $groupId; }
+            if ($search !== '')    { $like = '%' . $search . '%'; $filterWhere[] = '(c.cli_name LIKE ? OR c.cli_tags LIKE ?)'; $filterParams = array_merge($filterParams, [$like, $like]); }
+
+            $countWhere = $filterWhere ? 'WHERE ' . implode(' AND ', $filterWhere) : '';
+            $total = (int) (iterator_to_array($db->query("SELECT COUNT(*) AS total FROM melis_ecom_client c $countWhere", $filterParams))[0]['total'] ?? 0);
+
+            // Nom affiché selon le mode (société / contact par défaut / manuel). Tri server-side
+            // whitelisté ; « orders »/« lastOrder » (sous-requêtes agrégées) non triables serveur.
+            $nameExpr = "COALESCE(c.cli_name,'')";
+            if ($mode === 'company_name')     { $nameExpr = "COALESCE(comp.ccomp_name,'')"; }
+            elseif ($mode === 'contact_name') { $nameExpr = "CONCAT(COALESCE(dcp.cper_firstname,''),' ',COALESCE(dcp.cper_name,''))"; }
+            $sortMap = [
+                'id'      => 'c.cli_id',
+                'status'  => 'c.cli_status',
+                'group'   => "COALESCE(g.cgroup_name,'')",
+                'name'    => $nameExpr,
+                'contact' => "CONCAT(COALESCE(dcp.cper_firstname,''),' ',COALESCE(dcp.cper_name,''))",
+                'company' => "COALESCE(comp.ccomp_name,'')",
+                'created' => "COALESCE(c.cli_date_creation,'1000-01-01 00:00:00')",
+            ];
+            $sortKey  = (string) $this->params()->fromQuery('sort', 'id');
+            if (!isset($sortMap[$sortKey])) { $sortKey = 'id'; }
+            $sortExpr = $sortMap[$sortKey];
+            $dir = strtolower((string) $this->params()->fromQuery('dir', 'desc')) === 'asc' ? 'ASC' : 'DESC';
+            $op  = $dir === 'ASC' ? '>' : '<';
+
+            $joins = "LEFT JOIN melis_ecom_client_groups g ON g.cgroup_id = c.cli_group_id
+                      LEFT JOIN melis_ecom_country cp ON cp.ctry_id = c.cli_country_id
+                      LEFT JOIN melis_ecom_client_company comp ON comp.ccomp_client_id = c.cli_id
+                      LEFT JOIN melis_ecom_client_account_rel dcar ON dcar.car_client_id = c.cli_id AND dcar.car_default_person = 1
+                      LEFT JOIN melis_ecom_client_person dcp ON dcp.cper_id = dcar.car_client_person_id";
+
+            $dataWhere = $filterWhere; $dataParams = $filterParams;
+            $after = (string) ($this->params()->fromQuery('after', '') ?? '');
+            if ($after !== '') {
+                $cur = json_decode((string) base64_decode($after, true), true);
+                if (is_array($cur) && array_key_exists('v', $cur) && array_key_exists('id', $cur)) {
+                    $dataWhere[]  = "($sortExpr $op ? OR ($sortExpr = ? AND c.cli_id $op ?))";
+                    $dataParams[] = $cur['v']; $dataParams[] = $cur['v']; $dataParams[] = (int) $cur['id'];
+                }
+            }
+            $dataWhereClause = $dataWhere ? 'WHERE ' . implode(' AND ', $dataWhere) : '';
+
+            $rows = iterator_to_array($db->query("
                 SELECT c.cli_id, c.cli_status, c.cli_name, c.cli_group_id,
                        c.cli_country_id, c.cli_tags, c.cli_date_creation, c.cli_date_edit,
                        g.cgroup_name, cp.ctry_name AS cli_country_name,
                        comp.ccomp_name AS dyn_company_name,
                        dcp.cper_firstname AS dyn_contact_firstname, dcp.cper_name AS dyn_contact_name,
                        (SELECT COUNT(*) FROM melis_ecom_order o WHERE o.ord_client_id = c.cli_id) AS dyn_num_orders,
-                       (SELECT MAX(o.ord_date_creation) FROM melis_ecom_order o WHERE o.ord_client_id = c.cli_id) AS dyn_last_order
+                       (SELECT MAX(o.ord_date_creation) FROM melis_ecom_order o WHERE o.ord_client_id = c.cli_id) AS dyn_last_order,
+                       $sortExpr AS __sortval
                 FROM melis_ecom_client c
-                LEFT JOIN melis_ecom_client_groups g ON g.cgroup_id = c.cli_group_id
-                LEFT JOIN melis_ecom_country cp ON cp.ctry_id = c.cli_country_id
-                LEFT JOIN melis_ecom_client_company comp ON comp.ccomp_client_id = c.cli_id
-                LEFT JOIN melis_ecom_client_account_rel dcar ON dcar.car_client_id = c.cli_id AND dcar.car_default_person = 1
-                LEFT JOIN melis_ecom_client_person dcp ON dcp.cper_id = dcar.car_client_person_id
-                $whereClause
-                ORDER BY c.cli_id DESC
-                LIMIT ? OFFSET ?
-            ";
-            $rows = $db->query($dataSql, array_merge($params, [$limit, $offset]));
+                $joins
+                $dataWhereClause
+                ORDER BY $sortExpr $dir, c.cli_id $dir
+                LIMIT ?
+            ", array_merge($dataParams, [$limit])));
 
-            $items = [];
+            $items = []; $lastSortVal = null; $lastId = null;
             foreach ($rows as $row) {
-                $items[] = $this->formatAccount((array) $row, $mode);
+                $a           = (array) $row;
+                $lastSortVal = $a['__sortval'] ?? null;
+                $lastId      = (int) ($a['cli_id'] ?? 0);
+                $items[]     = $this->formatAccount($a, $mode);
+            }
+            $nextCursor = null;
+            if (count($rows) === $limit && $lastId !== null) {
+                $nextCursor = base64_encode((string) json_encode(['v' => $lastSortVal, 'id' => $lastId]));
             }
 
             return $this->jsonResponse([
                 'success' => true,
-                'data'    => ['items' => $items, 'total' => $total, 'page' => $page, 'limit' => $limit],
+                'data'    => ['items' => $items, 'total' => $total, 'nextCursor' => $nextCursor, 'limit' => $limit],
             ]);
         } catch (\Throwable $e) {
             return $this->errorResponse($e);

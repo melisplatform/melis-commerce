@@ -15,13 +15,36 @@ export interface CountryOption { id: number; name: string; flag?: string | null 
 export interface AccountOptions { groups: Option[]; countries: CountryOption[]; accountNameMode: AccountNameMode }
 export interface AccountSavePayload { id?: number | null; name: string; status: boolean; groupId: number; countryId: number; tags: string; contactId?: number }
 
-export function fetchAccounts(params: { search?: string; status?: number | null; groupId?: number | null } = {}): Promise<ListResult<AccountItem>> {
+export type AccountSortKey = 'id' | 'status' | 'group' | 'name' | 'contact' | 'company' | 'created'
+export interface AccountListResult { items: AccountItem[]; total: number; nextCursor: string | null }
+
+export function fetchAccounts(
+  params: { search?: string; status?: number | null; groupId?: number | null
+            limit?: number; sort?: AccountSortKey; dir?: 'asc' | 'desc'; after?: string | null } = {},
+): Promise<AccountListResult> {
   const qs = new URLSearchParams()
-  qs.set('limit', '9999')
+  if (params.limit) qs.set('limit', String(params.limit))
   if (params.search) qs.set('search', params.search)
   if (params.status !== undefined && params.status !== null) qs.set('status', String(params.status))
   if (params.groupId) qs.set('groupId', String(params.groupId))
-  return apiFetch<ListResult<AccountItem>>(`/melis/react-api/accounts?${qs}`)
+  if (params.sort) qs.set('sort', params.sort)
+  if (params.dir) qs.set('dir', params.dir)
+  if (params.after) qs.set('after', params.after)
+  return apiFetch<AccountListResult>(`/melis/react-api/accounts?${qs}`)
+}
+
+/** Tous les comptes filtrés (export) via boucle de curseur keyset. */
+export async function fetchAllAccounts(
+  params: { search?: string; status?: number | null; groupId?: number | null } = {},
+): Promise<AccountItem[]> {
+  const all: AccountItem[] = []
+  let after: string | null = null
+  do {
+    const r: AccountListResult = await fetchAccounts({ ...params, limit: 200, after })
+    all.push(...r.items)
+    after = r.nextCursor
+  } while (after)
+  return all
 }
 export const fetchAccountById = (id: number) => apiFetch<AccountItem>(`/melis/react-api/accounts/${id}`)
 export const fetchAccountStats = () => apiFetch<AccountStats>('/melis/react-api/accounts/stats')

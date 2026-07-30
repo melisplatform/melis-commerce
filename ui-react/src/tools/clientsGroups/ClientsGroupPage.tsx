@@ -1,13 +1,14 @@
-import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react'
 import {
-  fetchClientsGroups, fetchClientsGroupStats, saveClientsGroup, deleteClientsGroup,
-  type ClientsGroupItem, type ClientsGroupStats,
+  fetchClientsGroups, fetchAllClientsGroups, fetchClientsGroupStats, saveClientsGroup, deleteClientsGroup,
+  type ClientsGroupItem, type ClientsGroupStats, type ClientsGroupSortKey,
 } from './api'
+import { useKeysetList } from '../../shared/use-keyset-list'
 import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
 import { makeT } from '../../shared/i18n'
 import { card, inputCss, label, btnGhost, btnPrimary, th, td, iconBtn } from '../../shared/styles'
-import { UsersIcon, CheckIcon, ListIcon, RefreshIcon, PlusIcon, PencilIcon, TrashIcon, FileDownIcon, GripIcon, ResetIcon } from '../../shared/icons'
+import { UsersIcon, CheckIcon, ListIcon, RefreshIcon, PlusIcon, PencilIcon, TrashIcon, FileDownIcon, GripIcon, ResetIcon, SortIcon, Spinner } from '../../shared/icons'
 import { Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { makeColStore, visibleCols, effectiveCols, type ColDef } from '../../shared/columns'
@@ -28,9 +29,11 @@ const COL_LABEL: Record<string, string> = { id: 'col_id', name: 'col_name', stat
 const cols$ = makeColStore('melis-clients-group-cols-v1', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['name'])
 
+const SORTABLE = new Set<ClientsGroupSortKey>(['id', 'name', 'status'])
+
 const listCache = makeCache<{
-  items: ClientsGroupItem[]; stats: ClientsGroupStats | null; total: number; page: number
-  search: string; searchInput: string; filterStatus: number | null; sortCol: string; sortAsc: boolean; mode: 'react' | 'old'
+  items: ClientsGroupItem[]; stats: ClientsGroupStats | null; total: number; cursor: string | null; hasMore: boolean
+  search: string; searchInput: string; filterStatus: number | null; sortCol: string; sortDir: 'asc' | 'desc'; mode: 'react' | 'old'
 }>()
 
 function StatusPill({ active, t }: { active: boolean; t: (k: string) => string }) {
@@ -88,21 +91,17 @@ export default function ClientsGroupPage() {
   // view: a blank tab. Derive the initial value from `mode` so a remount picks the legacy
   // iframe back up immediately, same as `mode` itself does.
   const [oldLoaded, setOldLoaded] = useState(() => (listCache.get()?.mode ?? 'react') === 'old')
-  const [items, setItems] = useState<ClientsGroupItem[]>(listCache.get()?.items ?? [])
-  const [stats, setStats] = useState<ClientsGroupStats | null>(listCache.get()?.stats ?? null)
-  const [loading, setLoading] = useState(false)
-  const [total, setTotal] = useState(listCache.get()?.total ?? 0)
-  const [page, setPage] = useState(listCache.get()?.page ?? 1)
-  const LIMIT = 50
-  const [searchInput, setSearchInput] = useState(listCache.get()?.searchInput ?? '')
-  const [search, setSearch] = useState(listCache.get()?.search ?? '')
-  const [filterStatus, setFilterStatus] = useState<number | null>(listCache.get()?.filterStatus ?? null)
-  const [sortCol, setSortCol] = useState(listCache.get()?.sortCol ?? 'id')
-  const [sortAsc, setSortAsc] = useState(listCache.get()?.sortAsc ?? false)
+  const cached = listCache.get()
+  const [stats, setStats] = useState<ClientsGroupStats | null>(cached?.stats ?? null)
+  const [searchInput, setSearchInput] = useState(cached?.searchInput ?? '')
+  const [search, setSearch] = useState(cached?.search ?? '')
+  const [filterStatus, setFilterStatus] = useState<number | null>(cached?.filterStatus ?? null)
   const [tick, setTick] = useState(0)
   const [cols, setCols] = useState<ColDef[]>(cols$.load)
   const [showCols, setShowCols] = useState(false)
   const [showExport, setShowExport] = useState(false)
+  const [exportItems, setExportItems] = useState<ClientsGroupItem[]>([])
+  const [exporting, setExporting] = useState(false)
   const [toDelete, setToDelete] = useState<ClientsGroupItem | null>(null)
   const [editing, setEditing] = useState<ClientsGroupItem | 'new' | null>(null)
   const [expanded, setExpanded] = useState<Set<number>>(new Set())
@@ -110,18 +109,23 @@ export default function ClientsGroupPage() {
     setExpanded((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
   }
 
-  const cacheRef = useRef({ items, stats, total, page, search, searchInput, filterStatus, sortCol, sortAsc, mode })
-  useEffect(() => { cacheRef.current = { items, stats, total, page, search, searchInput, filterStatus, sortCol, sortAsc, mode } })
+  // Scroll infini + tri server-side + keyset (mutualisé). Ordre legacy = id desc.
+  const {
+    items, setItems, total, loading, hasMore, sentinelRef, sortCol, sortDir, setSortCol, setSortDir, toggleSort, snapshot,
+  } = useKeysetList<ClientsGroupItem>({
+    fetcher: (a) => fetchClientsGroups({ ...a, sort: a.sort as ClientsGroupSortKey, search, status: filterStatus }),
+    deps: [search, filterStatus, tick],
+    defaultSort: 'id',
+    defaultDir: 'desc',
+    initial: cached ? { items: cached.items, total: cached.total, cursor: cached.cursor, hasMore: cached.hasMore, sortCol: cached.sortCol, sortDir: cached.sortDir } : undefined,
+    skipInitial: !!(cached && cached.items.length),
+  })
+
+  const cacheRef = useRef({ ...snapshot(), stats, search, searchInput, filterStatus, mode })
+  useEffect(() => { cacheRef.current = { ...snapshot(), stats, search, searchInput, filterStatus, mode } })
   useEffect(() => () => listCache.set(cacheRef.current), [])
 
   useEffect(() => { fetchClientsGroupStats().then(setStats).catch(() => null) }, [tick])
-  useEffect(() => {
-    setLoading(true)
-    fetchClientsGroups({ search, status: filterStatus, page, limit: LIMIT })
-      .then((r) => { setItems(r.items); setTotal(r.total) })
-      .catch(() => null)
-      .finally(() => setLoading(false))
-  }, [search, filterStatus, page, tick])
 
   const eCols = effectiveCols(cols, ESSENTIAL_COLS, narrow)
   const visible = visibleCols(eCols)
@@ -140,23 +144,12 @@ export default function ClientsGroupPage() {
       default: return '—'
     }
   }
-  const sorted = useMemo(() => {
-    const arr = [...items]
-    arr.sort((a, b) => {
-      let va: string | number = '', vb: string | number = ''
-      if (sortCol === 'id')     { va = a.id; vb = b.id }
-      if (sortCol === 'name')   { va = a.name; vb = b.name }
-      if (sortCol === 'status') { va = a.status; vb = b.status }
-      if (va < vb) return sortAsc ? -1 : 1
-      if (va > vb) return sortAsc ? 1 : -1
-      return 0
-    })
-    return arr
-  }, [items, sortCol, sortAsc])
-
-  const onSort = (col: string) => { if (sortCol === col) setSortAsc((p) => !p); else { setSortCol(col); setSortAsc(true) } }
-  const arrow  = (col: string) => sortCol === col ? (sortAsc ? ' ↑' : ' ↓') : ''
-  const totalPages = Math.max(1, Math.ceil(total / LIMIT))
+  // Export : le keyset ne charge qu'une page → on récupère TOUT le jeu filtré via curseur.
+  async function openExport() {
+    setExporting(true)
+    try { const all = await fetchAllClientsGroups({ search, status: filterStatus }); setExportItems(all); setShowExport(true) }
+    catch { /* ignore */ } finally { setExporting(false) }
+  }
 
   async function confirmDelete() {
     if (!toDelete) return
@@ -184,9 +177,8 @@ export default function ClientsGroupPage() {
   function resetFilters() {
     setSearchInput(''); setSearch('')
     setFilterStatus(null)
-    setSortCol('id'); setSortAsc(false)
+    setSortCol('id'); setSortDir('desc')
     setItems([])
-    setPage(1)
     setTick((x) => x + 1)
   }
 
@@ -219,9 +211,9 @@ export default function ClientsGroupPage() {
           <input style={{ ...inputCss, height: 36, flex: 1, minWidth: 180, maxWidth: narrow ? undefined : 360, flexBasis: narrow ? '100%' : undefined }}
             placeholder={t('search_placeholder')} value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') { setSearch(searchInput); setPage(1) } }} />
+            onKeyDown={(e) => { if (e.key === 'Enter') setSearch(searchInput) }} />
           <select style={{ ...inputCss, height: 36, width: narrow ? '100%' : 'auto', minWidth: 160, flexBasis: narrow ? '100%' : undefined }}
-            value={filterStatus ?? ''} onChange={(e) => { setFilterStatus(e.target.value === '' ? null : Number(e.target.value)); setPage(1) }}>
+            value={filterStatus ?? ''} onChange={(e) => setFilterStatus(e.target.value === '' ? null : Number(e.target.value))}>
             <option value="">{t('filter_status')}</option>
             <option value={1}>{t('status_active')}</option>
             <option value={0}>{t('status_inactive')}</option>
@@ -235,7 +227,7 @@ export default function ClientsGroupPage() {
                   onClose={() => setShowCols(false)} save={cols$.save} defaults={cols$.DEFAULT} t={t} />
               )}
             </div>
-            {can('export') && <button style={{ ...btnGhost, height: narrow ? 'auto' : 36, minHeight: narrow ? 36 : undefined, opacity: sorted.length === 0 ? 0.4 : 1, flex: narrow ? 1 : undefined, minWidth: narrow ? 0 : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} disabled={sorted.length === 0} onClick={() => setShowExport(true)}><FileDownIcon />{t('btn_export')}</button>}
+            {can('export') && <button style={{ ...btnGhost, height: narrow ? 'auto' : 36, minHeight: narrow ? 36 : undefined, opacity: exporting || items.length === 0 ? 0.6 : 1, flex: narrow ? 1 : undefined, minWidth: narrow ? 0 : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} disabled={exporting || items.length === 0} onClick={openExport}>{exporting ? <Spinner /> : <FileDownIcon />}{t('btn_export')}</button>}
           </div>
         </div>
 
@@ -244,22 +236,25 @@ export default function ClientsGroupPage() {
             <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}>
               <tr>
                 {hasHidden && <th style={{ ...th, width: 32 }} />}
-                {visible.map((c) => (
-                  <th key={c.id} style={{ ...th, cursor: 'pointer', userSelect: 'none' }} onClick={() => onSort(c.id)}>
-                    {t(COL_LABEL[c.id])}{arrow(c.id)}
-                  </th>
-                ))}
+                {visible.map((c) => {
+                  const sortable = SORTABLE.has(c.id as ClientsGroupSortKey)
+                  return (
+                    <th key={c.id} style={{ ...th, cursor: sortable ? 'pointer' : 'default', userSelect: 'none' }} onClick={sortable ? () => toggleSort(c.id) : undefined}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>{t(COL_LABEL[c.id])}{sortable && <SortIcon dir={sortCol === c.id ? sortDir : null} />}</span>
+                    </th>
+                  )
+                })}
                 <th style={{ ...th, width: 90, textAlign: 'center', position: 'sticky', right: 0, background: 'var(--color-muted,rgba(0,0,0,.03))' }}>{t('col_action')}</th>
               </tr>
             </thead>
             <tbody>
-              {loading && sorted.length === 0 && (
+              {loading && items.length === 0 && (
                 <tr><td colSpan={totalCols} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('loading')}</td></tr>
               )}
-              {!loading && sorted.length === 0 && (
+              {!loading && items.length === 0 && (
                 <tr><td colSpan={totalCols} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('no_items')}</td></tr>
               )}
-              {sorted.map((g) => (
+              {items.map((g) => (
                 <Fragment key={g.id}>
                   <tr style={{ cursor: 'pointer' }}
                     onClick={() => setEditing(g)}
@@ -290,26 +285,20 @@ export default function ClientsGroupPage() {
               ))}
             </tbody>
           </table>
-          <div style={{ padding: '10px 16px', textAlign: 'center', fontSize: 12, color: 'var(--color-muted-foreground)' }}>
-            {loading ? t('loading') : t('count', { n: total })}
-          </div>
+          <div ref={sentinelRef} style={{ height: 1 }} />
+          {loading && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '14px 16px', fontSize: 12, color: 'var(--color-muted-foreground)' }}>
+              <Spinner />{t('loading')}
+            </div>
+          )}
+          {!hasMore && items.length > 0 && (
+            <div style={{ padding: '10px 16px', textAlign: 'center', fontSize: 12, color: 'var(--color-muted-foreground)' }}>{t('count', { n: total })}</div>
+          )}
         </div>
-
-        {totalPages > 1 && (
-          <div style={{ display: 'flex', gap: 6, justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
-            <button style={btnGhost} disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>←</button>
-            {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => i + 1).map((p) => (
-              <button key={p} style={{ ...btnGhost, fontWeight: p === page ? 700 : 400, opacity: p === page ? 1 : 0.6 }}
-                onClick={() => setPage(p)}>{p}</button>
-            ))}
-            {totalPages > 10 && <span style={{ fontSize: 12, color: 'var(--color-muted-foreground)' }}>…{totalPages}</span>}
-            <button style={btnGhost} disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>→</button>
-          </div>
-        )}
       </div>
 
       {showExport && (
-        <ExportModal cols={cols} items={sorted} getCell={(g, id) => getCellExport(g, id)}
+        <ExportModal cols={cols} items={exportItems} getCell={(g, id) => getCellExport(g, id)}
           labelFor={(id) => t(COL_LABEL[id])} filename={t('exp_filename')}
           sheetTitle={t('title')} t={t} onClose={() => setShowExport(false)} />
       )}

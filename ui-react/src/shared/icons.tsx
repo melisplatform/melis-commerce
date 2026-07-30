@@ -2,6 +2,15 @@
 const s = { width: 15, height: 15, flexShrink: 0 } as const
 const sm = { width: 14, height: 14, flexShrink: 0 } as const
 
+// Icône de tri (neutre quand la colonne n'est pas triée) — unifiée avec les autres outils.
+export function SortIcon({ dir }: { dir: 'asc' | 'desc' | null }) {
+  const p = { width: 12, height: 12, viewBox: '0 0 24 24', fill: 'none' as const, stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, style: { flexShrink: 0, opacity: dir ? 1 : 0.3 } }
+  if (dir === 'asc') return <svg {...p}><path d="m5 12 7-7 7 7" /><path d="M12 19V5" /></svg>
+  if (dir === 'desc') return <svg {...p}><path d="M12 5v14" /><path d="m19 12-7 7-7-7" /></svg>
+  return <svg {...p}><path d="m21 16-4 4-4-4" /><path d="M17 20V4" /><path d="m3 8 4-4 4 4" /><path d="M7 4v16" /></svg>
+}
+export const Spinner = () => <svg style={{ width: 14, height: 14, animation: 'melis-com-spin 0.8s linear infinite' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><style>{'@keyframes melis-com-spin { to { transform: rotate(360deg) } }'}</style><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+
 export const PencilIcon = () => <svg style={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
 export const EyeIcon = () => <svg style={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /><circle cx="12" cy="12" r="3" /></svg>
 export const TrashIcon = () => <svg style={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /></svg>

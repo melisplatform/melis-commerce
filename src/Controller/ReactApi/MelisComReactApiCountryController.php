@@ -51,8 +51,7 @@ class MelisComReactApiCountryController extends MelisAbstractActionController
     {
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
         try {
-            $page   = max(1, (int) $this->params()->fromQuery('page', 1));
-            $limit  = min(9999, max(1, (int) $this->params()->fromQuery('limit', 50)));
+            $limit  = min(9999, max(1, (int) $this->params()->fromQuery('limit', 25)));
             $search = trim((string) ($this->params()->fromQuery('search', '') ?? ''));
             $rawSt  = $this->params()->fromQuery('status', '');
             $status = ($rawSt !== '' && $rawSt !== null) ? (int) $rawSt : null;
@@ -61,27 +60,59 @@ class MelisComReactApiCountryController extends MelisAbstractActionController
 
             $join = 'FROM melis_ecom_country c LEFT JOIN melis_ecom_currency cu ON cu.cur_id = c.ctry_currency_id';
 
-            $where = []; $params = [];
-            if ($status !== null) { $where[] = 'c.ctry_status = ?'; $params[] = $status; }
+            $filterWhere = []; $filterParams = [];
+            if ($status !== null) { $filterWhere[] = 'c.ctry_status = ?'; $filterParams[] = $status; }
             if ($search !== '') {
                 $like = '%' . $search . '%';
-                $where[] = '(c.ctry_id LIKE ? OR c.ctry_name LIKE ? OR cu.cur_name LIKE ? OR cu.cur_symbol LIKE ?)';
-                $params = array_merge($params, [$like, $like, $like, $like]);
+                $filterWhere[] = '(c.ctry_id LIKE ? OR c.ctry_name LIKE ? OR cu.cur_name LIKE ? OR cu.cur_symbol LIKE ?)';
+                $filterParams = array_merge($filterParams, [$like, $like, $like, $like]);
             }
-            $wc = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
-            $total = (int) ((array) iterator_to_array($db->query("SELECT COUNT(*) AS t $join $wc", $params))[0])['t'];
+            // Tri server-side (whitelist non-null). « flag » non triable.
+            $sortMap = [
+                'id'       => 'c.ctry_id',
+                'status'   => 'c.ctry_status',
+                'name'     => "COALESCE(c.ctry_name,'')",
+                'currency' => "COALESCE(cu.cur_name,'')",
+            ];
+            $sortKey  = (string) $this->params()->fromQuery('sort', 'id');
+            if (!isset($sortMap[$sortKey])) { $sortKey = 'id'; }
+            $sortExpr = $sortMap[$sortKey];
+            $dir = strtolower((string) $this->params()->fromQuery('dir', 'desc')) === 'asc' ? 'ASC' : 'DESC';
+            $op  = $dir === 'ASC' ? '>' : '<';
 
-            $offset = ($page - 1) * $limit;
-            $rows = $db->query(
-                "SELECT c.*, cu.cur_name, cu.cur_symbol $join $wc ORDER BY c.ctry_id DESC LIMIT ? OFFSET ?",
-                array_merge($params, [$limit, $offset])
-            );
+            $countWhere = $filterWhere ? 'WHERE ' . implode(' AND ', $filterWhere) : '';
+            $total = (int) ((array) iterator_to_array($db->query("SELECT COUNT(*) AS t $join $countWhere", $filterParams))[0])['t'];
 
-            $items = [];
-            foreach ($rows as $r) { $items[] = $this->formatCountry((array) $r); }
+            $dataWhere = $filterWhere; $dataParams = $filterParams;
+            $after = (string) ($this->params()->fromQuery('after', '') ?? '');
+            if ($after !== '') {
+                $cur = json_decode((string) base64_decode($after, true), true);
+                if (is_array($cur) && array_key_exists('v', $cur) && array_key_exists('id', $cur)) {
+                    $dataWhere[]  = "($sortExpr $op ? OR ($sortExpr = ? AND c.ctry_id $op ?))";
+                    $dataParams[] = $cur['v']; $dataParams[] = $cur['v']; $dataParams[] = (int) $cur['id'];
+                }
+            }
+            $dataWhereClause = $dataWhere ? 'WHERE ' . implode(' AND ', $dataWhere) : '';
 
-            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items, 'total' => $total, 'page' => $page, 'limit' => $limit]]);
+            $rows = iterator_to_array($db->query(
+                "SELECT c.*, cu.cur_name, cu.cur_symbol, $sortExpr AS __sortval $join $dataWhereClause ORDER BY $sortExpr $dir, c.ctry_id $dir LIMIT ?",
+                array_merge($dataParams, [$limit])
+            ));
+
+            $items = []; $lastSortVal = null; $lastId = null;
+            foreach ($rows as $r) {
+                $a           = (array) $r;
+                $lastSortVal = $a['__sortval'] ?? null;
+                $lastId      = (int) ($a['ctry_id'] ?? 0);
+                $items[]     = $this->formatCountry($a);
+            }
+            $nextCursor = null;
+            if (count($rows) === $limit && $lastId !== null) {
+                $nextCursor = base64_encode((string) json_encode(['v' => $lastSortVal, 'id' => $lastId]));
+            }
+
+            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items, 'total' => $total, 'nextCursor' => $nextCursor, 'limit' => $limit]]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
 

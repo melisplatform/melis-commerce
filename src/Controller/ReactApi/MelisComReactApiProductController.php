@@ -73,44 +73,88 @@ class MelisComReactApiProductController extends MelisAbstractActionController
     {
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
         try {
-            $limit  = min(9999, max(1, (int) $this->params()->fromQuery('limit', 50)));
+            $limit  = min(9999, max(1, (int) $this->params()->fromQuery('limit', 25)));
             $search = trim((string) ($this->params()->fromQuery('search', '') ?? ''));
             $rawSt  = $this->params()->fromQuery('status', '');
             $status = ($rawSt !== '' && $rawSt !== null) ? (int) $rawSt : null;
             $rawCat = $this->params()->fromQuery('categoryId', '');
             $catId  = ($rawCat !== '' && $rawCat !== null) ? (int) $rawCat : null;
-            $lang   = $this->langId();
+            $lang   = (int) $this->langId();
 
             $db   = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
-            $ttId = $this->titleTypeId($db);
+            $ttId = (int) $this->titleTypeId($db);
 
-            $where = []; $params = [];
-            if ($status !== null) { $where[] = 'p.prd_status = ?'; $params[] = $status; }
-            if ($catId !== null)  { $where[] = 'EXISTS (SELECT 1 FROM melis_ecom_product_category pc WHERE pc.pcat_prd_id = p.prd_id AND pc.pcat_cat_id = ?)'; $params[] = $catId; }
+            // Tri server-side : whitelist clé → expression SQL NON-NULL (keyset fiable). ttId/lang
+            // (des ENTIERS validés) sont inlinés en littéraux → aucun paramètre dans le SELECT/ORDER,
+            // ce qui garde l'ordre des binds compatible avec le keyset. « image »/« categories »
+            // ne sont pas triables côté serveur (image binaire, catégories = jointure n-n).
+            $nameExpr = "COALESCE(NULLIF((SELECT pt.ptxt_field_short FROM melis_ecom_product_text pt WHERE pt.ptxt_prd_id = p.prd_id AND pt.ptxt_type = $ttId AND pt.ptxt_lang_id = $lang LIMIT 1),''),"
+                      . "(SELECT pt2.ptxt_field_short FROM melis_ecom_product_text pt2 WHERE pt2.ptxt_prd_id = p.prd_id AND pt2.ptxt_type = $ttId AND pt2.ptxt_field_short <> '' LIMIT 1),'')";
+            $sortMap = [
+                'id'        => 'p.prd_id',
+                'status'    => 'p.prd_status',
+                'reference' => "COALESCE(p.prd_reference,'')",
+                'name'      => $nameExpr,
+                'created'   => "COALESCE(p.prd_date_creation,'1000-01-01 00:00:00')",
+            ];
+            $sortKey  = (string) $this->params()->fromQuery('sort', 'id');
+            if (!isset($sortMap[$sortKey])) { $sortKey = 'id'; }
+            $sortExpr = $sortMap[$sortKey];
+            $dir = strtolower((string) $this->params()->fromQuery('dir', 'desc')) === 'asc' ? 'ASC' : 'DESC';
+            $op  = $dir === 'ASC' ? '>' : '<';
+
+            // Filtres (communs au COUNT et à la requête data).
+            $filterWhere = []; $filterParams = [];
+            if ($status !== null) { $filterWhere[] = 'p.prd_status = ?'; $filterParams[] = $status; }
+            if ($catId !== null)  { $filterWhere[] = 'EXISTS (SELECT 1 FROM melis_ecom_product_category pc WHERE pc.pcat_prd_id = p.prd_id AND pc.pcat_cat_id = ?)'; $filterParams[] = $catId; }
             if ($search !== '') {
                 $like = '%' . $search . '%';
-                $where[] = '(p.prd_reference LIKE ? OR EXISTS (SELECT 1 FROM melis_ecom_product_text pt WHERE pt.ptxt_prd_id = p.prd_id AND pt.ptxt_field_short LIKE ?))';
-                $params = array_merge($params, [$like, $like]);
+                $filterWhere[] = '(p.prd_reference LIKE ? OR EXISTS (SELECT 1 FROM melis_ecom_product_text pt WHERE pt.ptxt_prd_id = p.prd_id AND pt.ptxt_field_short LIKE ?))';
+                $filterParams = array_merge($filterParams, [$like, $like]);
             }
-            $wc = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
-            $total = (int) ((array) iterator_to_array($db->query("SELECT COUNT(*) AS t FROM melis_ecom_product p $wc", $params))[0])['t'];
+            $countWhere = $filterWhere ? 'WHERE ' . implode(' AND ', $filterWhere) : '';
+            $total = (int) ((array) iterator_to_array($db->query("SELECT COUNT(*) AS t FROM melis_ecom_product p $countWhere", $filterParams))[0])['t'];
 
-            $rows = $db->query("
+            // Keyset : reprendre STRICTEMENT après (valeur de tri, prd_id) du dernier élément.
+            $dataWhere = $filterWhere; $dataParams = $filterParams;
+            $after = (string) ($this->params()->fromQuery('after', '') ?? '');
+            if ($after !== '') {
+                $cur = json_decode((string) base64_decode($after, true), true);
+                if (is_array($cur) && array_key_exists('v', $cur) && array_key_exists('id', $cur)) {
+                    $dataWhere[]  = "($sortExpr $op ? OR ($sortExpr = ? AND p.prd_id $op ?))";
+                    $dataParams[] = $cur['v'];
+                    $dataParams[] = $cur['v'];
+                    $dataParams[] = (int) $cur['id'];
+                }
+            }
+            $dataWhereClause = $dataWhere ? 'WHERE ' . implode(' AND ', $dataWhere) : '';
+
+            $rows = iterator_to_array($db->query("
                 SELECT p.prd_id, p.prd_reference, p.prd_status, p.prd_date_creation, p.prd_date_edit,
-                       (SELECT pt.ptxt_field_short FROM melis_ecom_product_text pt WHERE pt.ptxt_prd_id = p.prd_id AND pt.ptxt_type = ? AND pt.ptxt_lang_id = ? LIMIT 1) AS name_cur,
-                       (SELECT pt2.ptxt_field_short FROM melis_ecom_product_text pt2 WHERE pt2.ptxt_prd_id = p.prd_id AND pt2.ptxt_type = ? AND pt2.ptxt_field_short <> '' LIMIT 1) AS name_any,
-                       (SELECT d.doc_path FROM melis_ecom_doc_relations dr JOIN melis_ecom_document d ON d.doc_id = dr.rdoc_doc_id WHERE dr.rdoc_product_id = p.prd_id AND d.doc_type_id != 2 ORDER BY d.doc_id ASC LIMIT 1) AS image_path
+                       (SELECT pt.ptxt_field_short FROM melis_ecom_product_text pt WHERE pt.ptxt_prd_id = p.prd_id AND pt.ptxt_type = $ttId AND pt.ptxt_lang_id = $lang LIMIT 1) AS name_cur,
+                       (SELECT pt2.ptxt_field_short FROM melis_ecom_product_text pt2 WHERE pt2.ptxt_prd_id = p.prd_id AND pt2.ptxt_type = $ttId AND pt2.ptxt_field_short <> '' LIMIT 1) AS name_any,
+                       (SELECT d.doc_path FROM melis_ecom_doc_relations dr JOIN melis_ecom_document d ON d.doc_id = dr.rdoc_doc_id WHERE dr.rdoc_product_id = p.prd_id AND d.doc_type_id != 2 ORDER BY d.doc_id ASC LIMIT 1) AS image_path,
+                       $sortExpr AS __sortval
                 FROM melis_ecom_product p
-                $wc
-                ORDER BY p.prd_id DESC
+                $dataWhereClause
+                ORDER BY $sortExpr $dir, p.prd_id $dir
                 LIMIT ?
-            ", array_merge([$ttId, $lang, $ttId], $params, [$limit]));
+            ", array_merge($dataParams, [$limit])));
 
-            $items = [];
-            foreach ($rows as $r) { $items[] = $this->formatProduct((array) $r, $db, $lang); }
+            $items = []; $lastSortVal = null; $lastId = null;
+            foreach ($rows as $r) {
+                $a           = (array) $r; // ignore la colonne technique __sortval
+                $lastSortVal = $a['__sortval'] ?? null;
+                $lastId      = (int) ($a['prd_id'] ?? 0);
+                $items[]     = $this->formatProduct($a, $db, $lang);
+            }
+            $nextCursor = null;
+            if (count($rows) === $limit && $lastId !== null) {
+                $nextCursor = base64_encode((string) json_encode(['v' => $lastSortVal, 'id' => $lastId]));
+            }
 
-            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items, 'total' => $total]]);
+            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items, 'total' => $total, 'nextCursor' => $nextCursor]]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
 

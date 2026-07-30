@@ -67,50 +67,80 @@ class MelisComReactApiAttributeController extends MelisAbstractActionController
     {
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
         try {
-            $limit  = min(9999, max(1, (int) $this->params()->fromQuery('limit', 50)));
-            $page   = max(1, (int) $this->params()->fromQuery('page', 1));
+            $limit  = min(9999, max(1, (int) $this->params()->fromQuery('limit', 25)));
             $search = trim((string) ($this->params()->fromQuery('search', '') ?? ''));
             $rawSt  = $this->params()->fromQuery('status', '');
             $status = ($rawSt !== '' && $rawSt !== null) ? (int) $rawSt : null;
             $rawTy  = $this->params()->fromQuery('typeId', '');
             $typeId = ($rawTy !== '' && $rawTy !== null) ? (int) $rawTy : null;
-            $lang   = $this->langId();
+            $lang   = (int) $this->langId();
 
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
 
-            $where = []; $params = [];
-            if ($status !== null) { $where[] = 'a.attr_status = ?'; $params[] = $status; }
-            if ($typeId !== null) { $where[] = 'a.attr_type_id = ?'; $params[] = $typeId; }
+            $filterWhere = []; $filterParams = [];
+            if ($status !== null) { $filterWhere[] = 'a.attr_status = ?'; $filterParams[] = $status; }
+            if ($typeId !== null) { $filterWhere[] = 'a.attr_type_id = ?'; $filterParams[] = $typeId; }
             if ($search !== '') {
                 $like = '%' . $search . '%';
-                $where[] = '(a.attr_reference LIKE ? OR EXISTS (SELECT 1 FROM melis_ecom_attribute_trans t2 WHERE t2.atrans_attribute_id = a.attr_id AND t2.atrans_name LIKE ?))';
-                $params[] = $like; $params[] = $like;
+                $filterWhere[] = '(a.attr_reference LIKE ? OR EXISTS (SELECT 1 FROM melis_ecom_attribute_trans t2 WHERE t2.atrans_attribute_id = a.attr_id AND t2.atrans_name LIKE ?))';
+                $filterParams[] = $like; $filterParams[] = $like;
             }
-            $wc = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
-            $total = (int) ((array) iterator_to_array($db->query("SELECT COUNT(*) AS t FROM melis_ecom_attribute a $wc", $params))[0])['t'];
+            // Nom traduit ($lang inliné). Tri server-side whitelisté.
+            $nameExpr = "COALESCE("
+                      . "(SELECT atrans_name FROM melis_ecom_attribute_trans WHERE atrans_attribute_id = a.attr_id AND atrans_lang_id = $lang LIMIT 1),"
+                      . "(SELECT atrans_name FROM melis_ecom_attribute_trans WHERE atrans_attribute_id = a.attr_id ORDER BY atrans_id LIMIT 1),"
+                      . "a.attr_reference)";
+            $valuesExpr = '(SELECT COUNT(*) FROM melis_ecom_attribute_value WHERE atval_attribute_id = a.attr_id)';
+            $sortMap = [
+                'id'         => 'a.attr_id',
+                'name'       => $nameExpr,
+                'reference'  => "COALESCE(a.attr_reference,'')",
+                'type'       => "COALESCE(at.atype_name,'')",
+                'status'     => 'a.attr_status',
+                'visible'    => 'a.attr_visible',
+                'searchable' => 'a.attr_searchable',
+                'values'     => $valuesExpr,
+            ];
+            $sortKey  = (string) $this->params()->fromQuery('sort', 'id');
+            if (!isset($sortMap[$sortKey])) { $sortKey = 'id'; }
+            $sortExpr = $sortMap[$sortKey];
+            $dir = strtolower((string) $this->params()->fromQuery('dir', 'desc')) === 'asc' ? 'ASC' : 'DESC';
+            $op  = $dir === 'ASC' ? '>' : '<';
 
-            $offset = ($page - 1) * $limit;
-            $rows = $db->query(
+            $countWhere = $filterWhere ? 'WHERE ' . implode(' AND ', $filterWhere) : '';
+            $total = (int) ((array) iterator_to_array($db->query("SELECT COUNT(*) AS t FROM melis_ecom_attribute a $countWhere", $filterParams))[0])['t'];
+
+            $dataWhere = $filterWhere; $dataParams = $filterParams;
+            $after = (string) ($this->params()->fromQuery('after', '') ?? '');
+            if ($after !== '') {
+                $cur = json_decode((string) base64_decode($after, true), true);
+                if (is_array($cur) && array_key_exists('v', $cur) && array_key_exists('id', $cur)) {
+                    $dataWhere[]  = "($sortExpr $op ? OR ($sortExpr = ? AND a.attr_id $op ?))";
+                    $dataParams[] = $cur['v']; $dataParams[] = $cur['v']; $dataParams[] = (int) $cur['id'];
+                }
+            }
+            $dataWhereClause = $dataWhere ? 'WHERE ' . implode(' AND ', $dataWhere) : '';
+
+            $rows = iterator_to_array($db->query(
                 "SELECT a.attr_id, a.attr_reference, a.attr_type_id, a.attr_status, a.attr_visible, a.attr_searchable,
                     at.atype_name,
-                    COALESCE(
-                        (SELECT atrans_name FROM melis_ecom_attribute_trans WHERE atrans_attribute_id = a.attr_id AND atrans_lang_id = ? LIMIT 1),
-                        (SELECT atrans_name FROM melis_ecom_attribute_trans WHERE atrans_attribute_id = a.attr_id ORDER BY atrans_id LIMIT 1),
-                        a.attr_reference
-                    ) AS name,
-                    (SELECT COUNT(*) FROM melis_ecom_attribute_value WHERE atval_attribute_id = a.attr_id) AS values_count
+                    $nameExpr AS name,
+                    $valuesExpr AS values_count,
+                    $sortExpr AS __sortval
                 FROM melis_ecom_attribute a
                 LEFT JOIN melis_ecom_attribute_type at ON at.atype_id = a.attr_type_id
-                $wc
-                ORDER BY a.attr_id DESC
-                LIMIT ? OFFSET ?",
-                array_merge([$lang], $params, [$limit, $offset])
-            );
+                $dataWhereClause
+                ORDER BY $sortExpr $dir, a.attr_id $dir
+                LIMIT ?",
+                array_merge($dataParams, [$limit])
+            ));
 
-            $items = [];
+            $items = []; $lastSortVal = null; $lastId = null;
             foreach ($rows as $r) {
-                $r = (array) $r;
+                $r           = (array) $r;
+                $lastSortVal = $r['__sortval'] ?? null;
+                $lastId      = (int) ($r['attr_id'] ?? 0);
                 $items[] = [
                     'id' => (int) $r['attr_id'],
                     'reference' => (string) ($r['attr_reference'] ?? ''),
@@ -123,8 +153,12 @@ class MelisComReactApiAttributeController extends MelisAbstractActionController
                     'valuesCount' => (int) ($r['values_count'] ?? 0),
                 ];
             }
+            $nextCursor = null;
+            if (count($rows) === $limit && $lastId !== null) {
+                $nextCursor = base64_encode((string) json_encode(['v' => $lastSortVal, 'id' => $lastId]));
+            }
 
-            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items, 'total' => $total, 'page' => $page, 'limit' => $limit]]);
+            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items, 'total' => $total, 'nextCursor' => $nextCursor, 'limit' => $limit]]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
 

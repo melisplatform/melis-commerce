@@ -4,6 +4,7 @@ namespace MelisCommerce\Controller\ReactApi;
 
 use Laminas\Http\PhpEnvironment\Response as HttpResponse;
 use MelisCore\Controller\MelisAbstractActionController;
+use MelisCore\Controller\MelisReactKeysetListTrait;
 
 /**
  * API REST pour la gestion des commandes MelisCommerce (table melis_ecom_order).
@@ -20,6 +21,8 @@ use MelisCore\Controller\MelisAbstractActionController;
  */
 class MelisComReactApiOrderController extends MelisAbstractActionController
 {
+    use MelisReactKeysetListTrait;
+
     private const MELIS_KEY = 'meliscommerce_order_list_page';
 
     private function langId(): int
@@ -90,15 +93,13 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
     {
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
         try {
-            $page      = max(1, (int) $this->params()->fromQuery('page', 1));
             $limit     = min(9999, max(1, (int) $this->params()->fromQuery('limit', 25)));
             $search    = trim((string) ($this->params()->fromQuery('search', '') ?? ''));
             $rawStatus = $this->params()->fromQuery('status', '');
             $status    = ($rawStatus !== '' && $rawStatus !== null) ? (int) $rawStatus : null;
             $dateStart = $this->params()->fromQuery('dateStart', '');
             $dateEnd   = $this->params()->fromQuery('dateEnd', '');
-            $offset    = ($page - 1) * $limit;
-            $lang      = $this->langId();
+            $lang      = (int) $this->langId();
 
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
 
@@ -112,41 +113,48 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                 $where[] = '(o.ord_reference LIKE ? OR p.cper_firstname LIKE ? OR p.cper_name LIKE ? OR c.cli_name LIKE ?)';
                 $params  = array_merge($params, [$like, $like, $like, $like]);
             }
-            $whereClause = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
-            $countRow = iterator_to_array($db->query(
-                "SELECT COUNT(*) AS total FROM melis_ecom_order o
-                 LEFT JOIN melis_ecom_client c ON c.cli_id = o.ord_client_id
-                 LEFT JOIN melis_ecom_client_person p ON p.cper_id = o.ord_client_person_id
-                 $whereClause", $params
-            ));
-            $total = (int) ($countRow[0]['total'] ?? 0);
+            // $lang inliné en littéral (int validé) → aucun paramètre dans le SELECT/JOIN, compatible
+            // avec l'ordre des binds du keyset. Jointures 1:1 → COUNT fiable.
+            $joins = "LEFT JOIN melis_ecom_client c ON c.cli_id = o.ord_client_id
+                      LEFT JOIN melis_ecom_client_person p ON p.cper_id = o.ord_client_person_id
+                      LEFT JOIN melis_ecom_order_status_trans ostt ON ostt.ostt_status_id = o.ord_status AND ostt.ostt_lang_id = $lang
+                      LEFT JOIN melis_ecom_order_status osta ON osta.osta_id = o.ord_status";
 
-            $dataSql = "
-                SELECT o.ord_id, o.ord_reference, o.ord_status, o.ord_client_id, o.ord_client_person_id,
-                       o.ord_date_creation,
-                       c.cli_name AS company,
-                       p.cper_firstname, p.cper_name,
-                       ostt.ostt_status_name AS status_name,
-                       osta.osta_color_code AS status_color,
-                       (SELECT COALESCE(SUM(obas_quantity), 0) FROM melis_ecom_order_basket WHERE obas_order_id = o.ord_id) AS product_count,
-                       (SELECT COALESCE(SUM(opay_price_total), 0) FROM melis_ecom_order_payment WHERE opay_order_id = o.ord_id) AS total_amount,
-                       COALESCE(
-                         (SELECT cu.cur_symbol FROM melis_ecom_order_payment op
-                            JOIN melis_ecom_currency cu ON cu.cur_id = op.opay_currency_id
-                           WHERE op.opay_order_id = o.ord_id LIMIT 1),
-                         (SELECT cur_symbol FROM melis_ecom_currency WHERE cur_default = 1 LIMIT 1)
-                       ) AS currency_symbol
-                FROM melis_ecom_order o
-                LEFT JOIN melis_ecom_client c ON c.cli_id = o.ord_client_id
-                LEFT JOIN melis_ecom_client_person p ON p.cper_id = o.ord_client_person_id
-                LEFT JOIN melis_ecom_order_status_trans ostt ON ostt.ostt_status_id = o.ord_status AND ostt.ostt_lang_id = ?
-                LEFT JOIN melis_ecom_order_status osta ON osta.osta_id = o.ord_status
-                $whereClause
-                ORDER BY o.ord_id DESC
-                LIMIT ? OFFSET ?
-            ";
-            $rows = $db->query($dataSql, array_merge([$lang], $params, [$limit, $offset]));
+            // Tri server-side (whitelist non-null). « products »/« total » (agrégats) non triables serveur.
+            $sortMap = [
+                'id'        => 'o.ord_id',
+                'reference' => "COALESCE(o.ord_reference,'')",
+                'status'    => "COALESCE(ostt.ostt_status_name,'')",
+                'firstname' => "COALESCE(p.cper_firstname,'')",
+                'name'      => "COALESCE(p.cper_name,'')",
+                'company'   => "COALESCE(c.cli_name,'')",
+                'date'      => "COALESCE(o.ord_date_creation,'1000-01-01 00:00:00')",
+            ];
+
+            [$rows, $total, $nextCursor] = $this->keysetList([
+                'db'           => $db,
+                'from'         => 'melis_ecom_order o',
+                'joins'        => $joins,
+                'selectCols'   => "o.ord_id, o.ord_reference, o.ord_status, o.ord_client_id, o.ord_client_person_id, o.ord_date_creation,
+                                   c.cli_name AS company, p.cper_firstname, p.cper_name,
+                                   ostt.ostt_status_name AS status_name, osta.osta_color_code AS status_color,
+                                   (SELECT COALESCE(SUM(obas_quantity), 0) FROM melis_ecom_order_basket WHERE obas_order_id = o.ord_id) AS product_count,
+                                   (SELECT COALESCE(SUM(opay_price_total), 0) FROM melis_ecom_order_payment WHERE opay_order_id = o.ord_id) AS total_amount,
+                                   COALESCE(
+                                     (SELECT cu.cur_symbol FROM melis_ecom_order_payment op JOIN melis_ecom_currency cu ON cu.cur_id = op.opay_currency_id WHERE op.opay_order_id = o.ord_id LIMIT 1),
+                                     (SELECT cur_symbol FROM melis_ecom_currency WHERE cur_default = 1 LIMIT 1)
+                                   ) AS currency_symbol",
+                'filterWhere'  => $where,
+                'filterParams' => $params,
+                'sortMap'      => $sortMap,
+                'idCol'        => 'o.ord_id',
+                'idAlias'      => 'ord_id',
+                'sortKey'      => (string) $this->params()->fromQuery('sort', 'id'),
+                'dir'          => (string) $this->params()->fromQuery('dir', 'desc'),
+                'after'        => (string) ($this->params()->fromQuery('after', '') ?? ''),
+                'limit'        => $limit,
+            ]);
 
             $items = [];
             foreach ($rows as $row) {
@@ -168,7 +176,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                     'dateCreation' => $r['ord_date_creation'] ?? null,
                 ];
             }
-            return $this->ok(['items' => $items, 'total' => $total, 'page' => $page, 'limit' => $limit]);
+            return $this->ok(['items' => $items, 'total' => $total, 'nextCursor' => $nextCursor, 'limit' => $limit]);
         } catch (\Throwable $e) {
             return $this->err($e);
         }

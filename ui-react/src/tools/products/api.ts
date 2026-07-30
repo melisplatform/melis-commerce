@@ -29,12 +29,36 @@ export interface ProductSavePayload {
   pageLinks?: PageLinks
 }
 
-export function fetchProducts(params: { search?: string; status?: number | null; categoryId?: number | null } = {}) {
-  const qs = new URLSearchParams(); qs.set('limit', '9999')
+export type ProductSortKey = 'id' | 'status' | 'reference' | 'name' | 'created'
+export interface ProductListResult { items: ProductItem[]; total: number; nextCursor: string | null }
+
+export function fetchProducts(
+  params: { search?: string; status?: number | null; categoryId?: number | null
+            limit?: number; sort?: ProductSortKey; dir?: 'asc' | 'desc'; after?: string | null } = {},
+): Promise<ProductListResult> {
+  const qs = new URLSearchParams()
+  if (params.limit) qs.set('limit', String(params.limit))
   if (params.search) qs.set('search', params.search)
   if (params.status !== undefined && params.status !== null) qs.set('status', String(params.status))
   if (params.categoryId) qs.set('categoryId', String(params.categoryId))
-  return apiFetch<{ items: ProductItem[]; total: number }>(`/melis/react-api/products?${qs}`)
+  if (params.sort) qs.set('sort', params.sort)
+  if (params.dir) qs.set('dir', params.dir)
+  if (params.after) qs.set('after', params.after)
+  return apiFetch<ProductListResult>(`/melis/react-api/products?${qs}`)
+}
+
+/** Tous les produits filtrés (export) via boucle de curseur keyset. */
+export async function fetchAllProducts(
+  params: { search?: string; status?: number | null; categoryId?: number | null } = {},
+): Promise<ProductItem[]> {
+  const all: ProductItem[] = []
+  let after: string | null = null
+  do {
+    const r: ProductListResult = await fetchProducts({ ...params, limit: 200, after })
+    all.push(...r.items)
+    after = r.nextCursor
+  } while (after)
+  return all
 }
 export const fetchProductById = (id: number) => apiFetch<ProductDetail>(`/melis/react-api/products/${id}`)
 export interface TooltipVariant { id: number; sku: string; image: string; attributes: string; price: number | null; stock: number | null }

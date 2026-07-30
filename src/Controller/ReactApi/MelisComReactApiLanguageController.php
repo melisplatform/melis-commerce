@@ -49,35 +49,66 @@ class MelisComReactApiLanguageController extends MelisAbstractActionController
     {
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
         try {
-            $limit  = min(9999, max(1, (int) $this->params()->fromQuery('limit', 50)));
-            $page   = max(1, (int) $this->params()->fromQuery('page', 1));
+            $limit  = min(9999, max(1, (int) $this->params()->fromQuery('limit', 25)));
             $search = trim((string) ($this->params()->fromQuery('search', '') ?? ''));
             $rawSt  = $this->params()->fromQuery('status', '');
             $status = ($rawSt !== '' && $rawSt !== null) ? (int) $rawSt : null;
 
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
 
-            $where = []; $params = [];
-            if ($status !== null) { $where[] = 'elang_status = ?'; $params[] = $status; }
+            $filterWhere = []; $filterParams = [];
+            if ($status !== null) { $filterWhere[] = 'elang_status = ?'; $filterParams[] = $status; }
             if ($search !== '') {
                 $like = '%' . $search . '%';
-                $where[] = '(elang_id LIKE ? OR elang_locale LIKE ? OR elang_name LIKE ?)';
-                $params[] = $like; $params[] = $like; $params[] = $like;
+                $filterWhere[] = '(elang_id LIKE ? OR elang_locale LIKE ? OR elang_name LIKE ?)';
+                $filterParams[] = $like; $filterParams[] = $like; $filterParams[] = $like;
             }
-            $wc = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
-            $total = (int) ((array) iterator_to_array($db->query("SELECT COUNT(*) AS t FROM melis_ecom_lang $wc", $params))[0])['t'];
+            // Tri server-side (whitelist non-null). « flag » non triable.
+            $sortMap = [
+                'id'     => 'elang_id',
+                'status' => 'elang_status',
+                'locale' => "COALESCE(elang_locale,'')",
+                'name'   => "COALESCE(elang_name,'')",
+            ];
+            $sortKey  = (string) $this->params()->fromQuery('sort', 'id');
+            if (!isset($sortMap[$sortKey])) { $sortKey = 'id'; }
+            $sortExpr = $sortMap[$sortKey];
+            $dir = strtolower((string) $this->params()->fromQuery('dir', 'desc')) === 'asc' ? 'ASC' : 'DESC';
+            $op  = $dir === 'ASC' ? '>' : '<';
 
-            $offset = ($page - 1) * $limit;
-            $rows = $db->query(
-                "SELECT elang_id, elang_locale, elang_name, elang_status, elang_flag FROM melis_ecom_lang $wc ORDER BY elang_id DESC LIMIT ? OFFSET ?",
-                array_merge($params, [$limit, $offset])
-            );
+            $countWhere = $filterWhere ? 'WHERE ' . implode(' AND ', $filterWhere) : '';
+            $total = (int) ((array) iterator_to_array($db->query("SELECT COUNT(*) AS t FROM melis_ecom_lang $countWhere", $filterParams))[0])['t'];
 
-            $items = [];
-            foreach ($rows as $r) { $items[] = $this->formatLanguage((array) $r); }
+            $dataWhere = $filterWhere; $dataParams = $filterParams;
+            $after = (string) ($this->params()->fromQuery('after', '') ?? '');
+            if ($after !== '') {
+                $cur = json_decode((string) base64_decode($after, true), true);
+                if (is_array($cur) && array_key_exists('v', $cur) && array_key_exists('id', $cur)) {
+                    $dataWhere[]  = "($sortExpr $op ? OR ($sortExpr = ? AND elang_id $op ?))";
+                    $dataParams[] = $cur['v']; $dataParams[] = $cur['v']; $dataParams[] = (int) $cur['id'];
+                }
+            }
+            $dataWhereClause = $dataWhere ? 'WHERE ' . implode(' AND ', $dataWhere) : '';
 
-            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items, 'total' => $total, 'page' => $page, 'limit' => $limit]]);
+            $rows = iterator_to_array($db->query(
+                "SELECT elang_id, elang_locale, elang_name, elang_status, elang_flag, $sortExpr AS __sortval FROM melis_ecom_lang $dataWhereClause ORDER BY $sortExpr $dir, elang_id $dir LIMIT ?",
+                array_merge($dataParams, [$limit])
+            ));
+
+            $items = []; $lastSortVal = null; $lastId = null;
+            foreach ($rows as $r) {
+                $a           = (array) $r;
+                $lastSortVal = $a['__sortval'] ?? null;
+                $lastId      = (int) ($a['elang_id'] ?? 0);
+                $items[]     = $this->formatLanguage($a);
+            }
+            $nextCursor = null;
+            if (count($rows) === $limit && $lastId !== null) {
+                $nextCursor = base64_encode((string) json_encode(['v' => $lastSortVal, 'id' => $lastId]));
+            }
+
+            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items, 'total' => $total, 'nextCursor' => $nextCursor, 'limit' => $limit]]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
 

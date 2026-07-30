@@ -9,17 +9,32 @@ export interface ClientsGroupItem {
 
 export interface ClientsGroupStats { total: number; active: number; inactive: number }
 
-export type ClientsGroupListResult = ListResult<ClientsGroupItem>
+export type ClientsGroupSortKey = 'id' | 'name' | 'status'
+export interface ClientsGroupListResult { items: ClientsGroupItem[]; total: number; nextCursor: string | null }
 
 export function fetchClientsGroups(params: {
-  search?: string; status?: number | null; page?: number; limit?: number
+  search?: string; status?: number | null; limit?: number; sort?: ClientsGroupSortKey; dir?: 'asc' | 'desc'; after?: string | null
 } = {}): Promise<ClientsGroupListResult> {
   const qs = new URLSearchParams()
   if (params.search) qs.set('search', params.search)
   if (params.status !== undefined && params.status !== null) qs.set('status', String(params.status))
-  qs.set('page', String(params.page ?? 1))
-  qs.set('limit', String(params.limit ?? 50))
+  if (params.limit) qs.set('limit', String(params.limit))
+  if (params.sort) qs.set('sort', params.sort)
+  if (params.dir) qs.set('dir', params.dir)
+  if (params.after) qs.set('after', params.after)
   return apiFetch<ClientsGroupListResult>(`/melis/react-api/clients-groups?${qs}`)
+}
+
+/** Tous les éléments filtrés (export) via boucle de curseur keyset. */
+export async function fetchAllClientsGroups(params: { search?: string; status?: number | null } = {}): Promise<ClientsGroupItem[]> {
+  const all: ClientsGroupItem[] = []
+  let after: string | null = null
+  do {
+    const rr: ClientsGroupListResult = await fetchClientsGroups({ ...params, limit: 200, after })
+    all.push(...rr.items)
+    after = rr.nextCursor
+  } while (after)
+  return all
 }
 
 export const fetchClientsGroupStats = () => apiFetch<ClientsGroupStats>('/melis/react-api/clients-groups/stats')
