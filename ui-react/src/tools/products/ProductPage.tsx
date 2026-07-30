@@ -512,16 +512,19 @@ function ProductForm({ id, base }: { id: string; base: string }) {
   }
 
   // After save navigates new→edit, apply the intended tab/state.
-  const stateApplied = useRef(false)
+  // Applique l'état de navigation (onglet + éditeur de variant à ouvrir) à CHAQUE navigation
+  // (clé de location), pas une seule fois : les liens « nom produit / SKU » du picker
+  // d'association naviguent produit→produit et doivent rouvrir l'onglet/variant ciblé.
   useEffect(() => {
-    if (!isEdit) { stateApplied.current = false; return }
-    if (stateApplied.current) return
-    stateApplied.current = true
+    if (!isEdit) return
     const s = (location.state as { tab?: string; openVariantEditor?: boolean | number }) ?? {}
     if (s.tab) setTab(s.tab)
+    // Naviguer sans variant ciblé (ex. lien « nom produit ») ferme tout éditeur de variant
+    // resté ouvert du produit précédent → on retombe sur la LISTE des variants.
     if (typeof s.openVariantEditor === 'number') setVariantEdit(s.openVariantEditor)
     else if (s.openVariantEditor) setVariantEdit('new')
-  }, [isEdit]) // eslint-disable-line react-hooks/exhaustive-deps
+    else setVariantEdit(null)
+  }, [isEdit, location.key]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const secTitle = { fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 12px' } as const
   const labelRow = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 } as const

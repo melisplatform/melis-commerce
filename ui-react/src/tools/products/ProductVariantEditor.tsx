@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import type React from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import {
   saveProductVariant, fetchVariant, fetchVariantMedia,
   fetchVariantPrices, saveVariantPrice,
@@ -511,6 +512,10 @@ function VarAssoc({ productId, variantId, t, onNeedVid }: { productId: number; v
 
 // Liste des PRODUITS (keyset + recherche) : chaque produit se déplie sur ses variants.
 function AssocProductPicker({ t, narrow, excluded, onAdd }: { t: TFn; narrow: boolean; excluded: Set<number>; onAdd: (variantId: number) => void }) {
+  const navigate = useNavigate()
+  const loc = useLocation()
+  const base = loc.pathname.slice(0, loc.pathname.lastIndexOf('/'))
+  const openProduct = (pid: number) => navigate(`${base}/${pid}`, { state: { tab: 'variants' } })
   const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
   const [expanded, setExpanded] = useState<Set<number>>(new Set())
@@ -552,7 +557,10 @@ function AssocProductPicker({ t, narrow, excluded, onAdd }: { t: TFn; narrow: bo
                   onMouseLeave={(e) => (e.currentTarget.style.background = '')}>
                   <td style={{ ...td, color: 'var(--color-muted-foreground)', fontVariantNumeric: 'tabular-nums' }}>{pr.id}</td>
                   <td style={td}>{dot(pr.status === 1)}</td>
-                  <td style={{ ...td, fontWeight: 500 }}>{pr.name || `#${pr.id}`}</td>
+                  <td style={{ ...td, fontWeight: 500 }}>
+                    <button onClick={(e) => { e.stopPropagation(); openProduct(pr.id) }} title={t('assoc_open_product')}
+                      style={{ border: 0, background: 'transparent', color: 'var(--color-primary)', cursor: 'pointer', fontWeight: 500, fontSize: 14, padding: 0, textDecoration: 'underline', textAlign: 'left' }}>{pr.name || `#${pr.id}`}</button>
+                  </td>
                   <td style={td}><button style={iconBtn} title={t('assoc_show_variants')} onClick={(e) => { e.stopPropagation(); toggleExpand(pr.id) }}><EyeIcon /></button></td>
                 </tr>
                 {expanded.has(pr.id) && (
@@ -578,6 +586,10 @@ function AssocProductPicker({ t, narrow, excluded, onAdd }: { t: TFn; narrow: bo
 
 // Variants d'un produit déplié : ligne indentée par variant + bouton « + » (sauf exclus).
 function ProductVariantsInline({ productId, excluded, onAdd, t, colSpan }: { productId: number; excluded: Set<number>; onAdd: (variantId: number) => void; t: TFn; colSpan: number }) {
+  const navigate = useNavigate()
+  const loc = useLocation()
+  const base = loc.pathname.slice(0, loc.pathname.lastIndexOf('/'))
+  const openVariant = (vid: number) => navigate(`${base}/${productId}`, { state: { tab: 'variants', openVariantEditor: vid } })
   const [rows, setRows] = useState<ProductVariant[] | null>(null)
   useEffect(() => {
     let ok = true
@@ -599,7 +611,8 @@ function ProductVariantsInline({ productId, excluded, onAdd, t, colSpan }: { pro
               return (
                 <div key={v.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px 8px 32px', borderTop: '1px solid var(--color-border)' }}>
                   {dot(v.status === 1)}
-                  <span style={{ fontWeight: 500, fontSize: 13 }}>{v.sku || `#${v.id}`}</span>
+                  <button onClick={() => openVariant(v.id)} title={t('assoc_open_variant')}
+                    style={{ border: 0, background: 'transparent', color: 'var(--color-primary)', cursor: 'pointer', fontWeight: 500, fontSize: 13, padding: 0, textDecoration: 'underline', textAlign: 'left' }}>{v.sku || `#${v.id}`}</button>
                   {v.attributes && <span style={{ fontSize: 12, color: 'var(--color-muted-foreground)' }}>{v.attributes}</span>}
                   <span style={{ marginLeft: 'auto' }}>
                     {isExcluded
