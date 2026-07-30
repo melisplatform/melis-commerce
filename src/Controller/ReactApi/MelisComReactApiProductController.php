@@ -311,8 +311,79 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         $id = (int) $this->params()->fromRoute('id', 0);
         if ($id <= 0) { return $this->jsonResponse(['success' => false, 'error' => 'Invalid ID'], 400); }
         try {
-            $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
-            return $this->jsonResponse(['success' => true, 'data' => ['items' => $this->variantList($db, $id)]]);
+            $db      = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
+            $lang    = $this->langId();
+            $valName = $this->attributeValueNameSql();
+
+            $limit = (int) $this->params()->fromQuery('limit', 25);
+            if ($limit < 1) { $limit = 25; } elseif ($limit > 500) { $limit = 500; }
+
+            // Filtres : produit + recherche (SKU / id / valeurs d'attributs).
+            $filterWhere  = ['v.var_prd_id = ?'];
+            $filterParams = [$id];
+            $search = trim((string) ($this->params()->fromQuery('search', '') ?? ''));
+            if ($search !== '') {
+                $like = '%' . $search . '%';
+                $filterWhere[] = "(v.var_sku LIKE ? OR CAST(v.var_id AS CHAR) LIKE ? OR EXISTS ("
+                    . "SELECT 1 FROM melis_ecom_variant_attribute_value vatv "
+                    . "JOIN melis_ecom_attribute_value av ON av.atval_id = vatv.vatv_attribute_value_id "
+                    . "LEFT JOIN melis_ecom_attribute_value_trans tr ON tr.av_attribute_value_id = av.atval_id AND tr.avt_lang_id = $lang "
+                    . "WHERE vatv.vatv_variant_id = v.var_id AND ($valName) COLLATE utf8mb4_general_ci LIKE ?))";
+                $filterParams[] = $like; $filterParams[] = $like; $filterParams[] = $like;
+            }
+
+            // Tri server-side (whitelist). Défaut = variante principale d'abord (legacy).
+            $sortMap = [
+                'id'     => 'v.var_id',
+                'main'   => 'v.var_main_variant',
+                'status' => 'v.var_status',
+                'sku'    => "COALESCE(v.var_sku,'')",
+            ];
+            $sortKey = (string) $this->params()->fromQuery('sort', 'main');
+            if (!isset($sortMap[$sortKey])) { $sortKey = 'main'; }
+            $sortExpr = $sortMap[$sortKey];
+            $dir = strtolower((string) $this->params()->fromQuery('dir', 'desc')) === 'asc' ? 'ASC' : 'DESC';
+            $op  = $dir === 'ASC' ? '>' : '<';
+
+            $countWhere = 'WHERE ' . implode(' AND ', $filterWhere);
+            $total = (int) ((array) iterator_to_array($db->query("SELECT COUNT(*) AS t FROM melis_ecom_variant v $countWhere", $filterParams))[0])['t'];
+
+            // Curseur keyset : (sortExpr, var_id).
+            $dataWhere = $filterWhere; $dataParams = $filterParams;
+            $after = (string) ($this->params()->fromQuery('after', '') ?? '');
+            if ($after !== '') {
+                $cur = json_decode((string) base64_decode($after, true), true);
+                if (is_array($cur) && array_key_exists('v', $cur) && array_key_exists('id', $cur)) {
+                    $dataWhere[]  = "($sortExpr $op ? OR ($sortExpr = ? AND v.var_id $op ?))";
+                    $dataParams[] = $cur['v']; $dataParams[] = $cur['v']; $dataParams[] = (int) $cur['id'];
+                }
+            }
+            $dataWhereClause = 'WHERE ' . implode(' AND ', $dataWhere);
+            $sql = "SELECT v.var_id, v.var_sku, v.var_status, v.var_main_variant, v.var_date_creation,
+                    (SELECT d.doc_path FROM melis_ecom_doc_relations dr JOIN melis_ecom_document d ON d.doc_id = dr.rdoc_doc_id WHERE dr.rdoc_variant_id = v.var_id AND d.doc_type_id <> 2 LIMIT 1) AS image,
+                    (SELECT GROUP_CONCAT($valName SEPARATOR ', ') FROM melis_ecom_variant_attribute_value vatv
+                      JOIN melis_ecom_attribute_value av ON av.atval_id = vatv.vatv_attribute_value_id
+                      LEFT JOIN melis_ecom_attribute_value_trans tr ON tr.av_attribute_value_id = av.atval_id AND tr.avt_lang_id = $lang
+                      WHERE vatv.vatv_variant_id = v.var_id) AS attrs,
+                    $sortExpr AS __sortval
+                FROM melis_ecom_variant v $dataWhereClause ORDER BY $sortExpr $dir, v.var_id $dir LIMIT ?";
+            $dataParams[] = $limit;
+
+            $items = []; $lastSortVal = null; $lastId = null;
+            foreach ($db->query($sql, $dataParams) as $r) {
+                $r = (array) $r;
+                $lastSortVal = $r['__sortval'] ?? null; $lastId = (int) $r['var_id'];
+                $items[] = [
+                    'id' => (int) $r['var_id'], 'sku' => (string) ($r['var_sku'] ?? ''), 'status' => (int) $r['var_status'], 'isMain' => (int) ($r['var_main_variant'] ?? 0),
+                    'image' => isset($r['image']) && $r['image'] !== null ? (string) $r['image'] : '', 'attributes' => (string) ($r['attrs'] ?? ''),
+                    'dateCreation' => $r['var_date_creation'] ?? null,
+                ];
+            }
+            $nextCursor = null;
+            if (count($items) === $limit && $lastId !== null) {
+                $nextCursor = base64_encode((string) json_encode(['v' => $lastSortVal, 'id' => $lastId]));
+            }
+            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items, 'total' => $total, 'nextCursor' => $nextCursor, 'limit' => $limit]]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
 

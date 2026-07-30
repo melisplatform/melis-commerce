@@ -73,7 +73,20 @@ export const duplicateProduct = (id: number, opts: DuplicateOpts & { reference: 
   apiFetch<{ id: number }>(`/melis/react-api/products/${id}/duplicate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(opts) })
 
 // ── Variants ──────────────────────────────────────────────────────────────────
-export const fetchProductVariants = (id: number) => apiFetch<{ items: ProductVariant[] }>(`/melis/react-api/products/${id}/variants`)
+export type ProductVariantSortKey = 'id' | 'main' | 'status' | 'sku'
+export const fetchProductVariants = (
+  id: number,
+  params: { limit?: number; sort?: ProductVariantSortKey; dir?: 'asc' | 'desc'; after?: string | null; search?: string } = {},
+) => {
+  const qs = new URLSearchParams()
+  if (params.limit) qs.set('limit', String(params.limit))
+  if (params.sort) qs.set('sort', params.sort)
+  if (params.dir) qs.set('dir', params.dir)
+  if (params.after) qs.set('after', params.after)
+  if (params.search) qs.set('search', params.search)
+  const q = qs.toString()
+  return apiFetch<{ items: ProductVariant[]; total: number; nextCursor: string | null }>(`/melis/react-api/products/${id}/variants${q ? `?${q}` : ''}`)
+}
 export const saveProductVariant = (id: number, v: { variantId?: number | null; sku: string; status: boolean; isMain: boolean }) =>
   apiFetch<{ id: number }>(`/melis/react-api/products/${id}/variants/save`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(v) })
 export const deleteProductVariant = (id: number, variantId: number) =>
