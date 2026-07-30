@@ -10,8 +10,10 @@ import type { Option } from './api'
  * intégralement par l'appelant (petites listes) : le filtrage se fait donc côté client,
  * pas de nouvel appel réseau par frappe.
  */
-export function LinkHeader({ options, placeholder, linkLabel, onLink }: {
+export function LinkHeader({ options, placeholder, linkLabel, onLink, inline }: {
   options: Option[]; placeholder: string; linkLabel: string; onLink: (id: number) => Promise<void> | void
+  /** true → pas de wrapper flottant (display:contents) : s'intègre dans une barre d'outils parente. */
+  inline?: boolean
 }) {
   const [query, setQuery] = useState('')
   const [selectedId, setSelectedId] = useState(0)
@@ -47,8 +49,8 @@ export function LinkHeader({ options, placeholder, linkLabel, onLink }: {
   }
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
-      <div ref={ref} style={{ position: 'relative', width: 260 }}>
+    <div style={inline ? { display: 'contents' } : { display: 'flex', justifyContent: 'flex-end', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+      <div ref={ref} style={{ position: 'relative', width: inline ? 220 : 260 }}>
         <input style={{ ...inputCss, height: 36 }} value={query} placeholder={placeholder}
           onChange={(e) => onQueryChange(e.target.value)}
           onFocus={() => { if (query.trim()) setOpen(true) }} />
