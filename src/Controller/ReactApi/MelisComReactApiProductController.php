@@ -861,12 +861,12 @@ class MelisComReactApiProductController extends MelisAbstractActionController
                 WHERE a.avar_one = ? ORDER BY a.avar_id", [$lang, $varId]) as $r) {
                 $r = (array) $r; $assoc[] = ['avarId' => (int) $r['avar_id'], 'variantId' => (int) $r['var_id'], 'sku' => (string) ($r['var_sku'] ?? ''), 'status' => (int) $r['var_status'], 'productName' => (string) ($r['pname'] ?? ('#' . $r['var_id'])), 'attributes' => (string) ($r['attrs'] ?? '')];
             }
-            $available = [];
-            foreach ($db->query("SELECT v.var_id, v.var_sku, v.var_status, $lbl AS pname, $attrsSub AS attrs FROM melis_ecom_variant v
-                WHERE v.var_id <> ? AND v.var_id NOT IN (SELECT avar_two FROM melis_ecom_assoc_variant WHERE avar_one = ?) ORDER BY v.var_id", [$lang, $varId, $varId]) as $r) {
-                $r = (array) $r; $available[] = ['variantId' => (int) $r['var_id'], 'sku' => (string) ($r['var_sku'] ?? ''), 'status' => (int) $r['var_status'], 'productName' => (string) ($r['pname'] ?? ('#' . $r['var_id'])), 'attributes' => (string) ($r['attrs'] ?? '')];
-            }
-            return $this->jsonResponse(['success' => true, 'data' => ['associated' => $assoc, 'available' => $available]]);
+            // Les variants « disponibles à associer » ne sont plus renvoyés à plat : côté React on
+            // parcourt la liste des PRODUITS (keyset + recherche) puis, au dépliage, les variants du
+            // produit (endpoint /products/:id/variants). On expose juste les ids déjà associés + le
+            // variant courant pour l'exclusion côté front.
+            $excludeIds = array_values(array_unique(array_merge([$varId], array_map(static fn ($a) => $a['variantId'], $assoc))));
+            return $this->jsonResponse(['success' => true, 'data' => ['associated' => $assoc, 'excludeIds' => $excludeIds]]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
     public function variantAssocSaveAction(): HttpResponse

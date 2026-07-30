@@ -155,8 +155,7 @@ export const saveVariantSeo = (prdId: number, varId: number, items: { langId: nu
 
 // Association de variants
 export interface AssocVariant { avarId: number; variantId: number; sku: string; status: number; productName: string; attributes: string }
-export interface AvailVariant { variantId: number; sku: string; status: number; productName: string; attributes: string }
-export const fetchVariantAssoc = (prdId: number, varId: number) => apiFetch<{ associated: AssocVariant[]; available: AvailVariant[] }>(`/melis/react-api/products/${prdId}/variants/${varId}/assoc`)
+export const fetchVariantAssoc = (prdId: number, varId: number) => apiFetch<{ associated: AssocVariant[]; excludeIds: number[] }>(`/melis/react-api/products/${prdId}/variants/${varId}/assoc`)
 export const saveVariantAssoc = (prdId: number, varId: number, variantId: number) =>
   apiFetch<null>(`/melis/react-api/products/${prdId}/variants/${varId}/assoc/save`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ variantId }) })
 export const deleteVariantAssoc = (prdId: number, varId: number, avarId: number) =>
