@@ -4,7 +4,7 @@
             <?php foreach ($this->categoryListProducts As $prd){?>
                 <div class="col-4 col-sm-3 col-md-2">
                     <div class="thumbnail">
-                        <img src="<?php echo $prd['prd_docs_image']['imagePath']?>">
+                        <img src="<?php echo $this->escapeHtmlAttr($prd['prd_docs_image']['imagePath'])?>">
                         <div class="caption">
                             <h4>
                                 <?php
@@ -15,10 +15,10 @@
                                         $prdPriceStr = $prdPrice['prd_currency_symbol'].number_format($prdPrice['prd_price_net'],2);
                                     }
                                 ?>
-                                <a href="<?php echo $this->MelisCommerceLink('product', $prd['prd_id'], $this->langId, true)?>"><?php echo $prd['prd_text'].' ('.$prdPriceStr.')' ?></a>
+                                <a href="<?php echo $this->escapeHtmlAttr($this->MelisCommerceLink('product', $prd['prd_id'], $this->langId, true))?>"><?php echo $this->escapeHtml($prd['prd_text'].' ('.$prdPriceStr.')') ?></a>
                             </h4>
                             <?php foreach ($prd['prd_categories'] As $cats){?>
-                                <p class="label label-primary"><?php echo $cats['catt_name']?></p>
+                                <p class="label label-primary"><?php echo $this->escapeHtml($cats['catt_name'])?></p>
                             <?php }?>
                         </div>
                     </div>

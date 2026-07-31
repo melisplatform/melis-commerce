@@ -51,17 +51,17 @@
                 <div class="single-product">
                     <div class="product-img">
                         <div class="product-label">
-                            <div class="new"><?= $categoryName ?></div>
+                            <div class="new"><?= $this->escapeHtml($categoryName) ?></div>
                         </div>
                         <div class="single-prodcut-img  product-overlay pos-rltv">
-                            <a href="<?= $productPageLink ?>">
-                                <img alt="" src="<?= $mainImage ?>" class="primary-image">
-                                <img alt="" src="<?= $hoverImage ?>" class="secondary-image">
+                            <a href="<?= $this->escapeHtmlAttr($productPageLink) ?>">
+                                <img alt="" src="<?= $this->escapeHtmlAttr($mainImage) ?>" class="primary-image">
+                                <img alt="" src="<?= $this->escapeHtmlAttr($hoverImage) ?>" class="secondary-image">
                             </a>
                         </div>
                     </div>
                     <div>
-                        <div><?= $productName?></div>
+                        <div><?= $this->escapeHtml($productName)?></div>
                         <div>
                             <div>
                                 <div> <?= $price->cur_symbol.' '.$price->price_net ?> </div>

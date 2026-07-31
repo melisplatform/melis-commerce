@@ -37,9 +37,9 @@
 	<div>
 		<h3><?= $this->translate('tr_meliscommerce_order_checkout_address_delivery');?></h3>
         <?php if(!empty($delivery)) { ?>
-		    <div><i class="fa fa-user"></i> <?= $delivery['oadd_firstname'].' '.$delivery['oadd_middle_name'].' '.$delivery['oadd_name']  ?></div>
+		    <div><i class="fa fa-user"></i> <?= $this->escapeHtml($delivery['oadd_firstname'].' '.$delivery['oadd_middle_name'].' '.$delivery['oadd_name'])  ?></div>
             <?php if(!empty($deliveryData)) { ?>
-                <div><i class="fa fa-map-marker"></i><?php echo implode(', ', $deliveryData) ?></div>
+                <div><i class="fa fa-map-marker"></i><?php echo $this->escapeHtml(implode(', ', $deliveryData)) ?></div>
             <?php } else { ?>
                 <div><i class="fa fa-map-marker"></i> <?php echo $this->translate('tr_meliscommerce_plugin_order_address_not_set') ?></div>
             <?php } ?>
@@ -50,9 +50,9 @@
 	<div>
 		<h3><?= $this->translate('tr_meliscommerce_order_checkout_address_billing'); ?></h3>
         <?php if(!empty($billing)) { ?>
-		    <div><i class="fa fa-user"></i> <?= $billing['oadd_firstname'].' '.$billing['oadd_middle_name'].' '.$billing['oadd_name']  ?></div>
+		    <div><i class="fa fa-user"></i> <?= $this->escapeHtml($billing['oadd_firstname'].' '.$billing['oadd_middle_name'].' '.$billing['oadd_name'])  ?></div>
             <?php if(!empty($billingyData)) { ?>
-                <div><i class="fa fa-map-marker"></i><?php echo implode(', ', $billingyData) ?></div>
+                <div><i class="fa fa-map-marker"></i><?php echo $this->escapeHtml(implode(', ', $billingyData)) ?></div>
             <?php } else { ?>
                 <div><i class="fa fa-map-marker"></i> <?php echo $this->translate('tr_meliscommerce_plugin_order_address_not_set') ?></div>
             <?php } ?>

@@ -26,7 +26,7 @@
         		<tr>
         			<td>
         				<?php 
-        				    echo $val['var_product_name'].' ('.$val['var_sku'].')';
+        				    echo $this->escapeHtml($val['var_product_name'].' ('.$val['var_sku'].')');
         				    if (!empty($val['var_err']))
         				    {
         				        echo '<div class="text-danger">'.$val['var_err'].'</div>';
@@ -58,7 +58,7 @@
                 	   
                 	    if (!empty($this->checkoutCartDiscountInfo))
                 	    {
-                	       echo '<div>'.$this->translage("tr_meliscommerce_plugin_checkout_coupon_code").': '.$this->checkoutCartCouponCode.'</div>';
+                	       echo '<div>'.$this->translage("tr_meliscommerce_plugin_checkout_coupon_code").': '.$this->escapeHtml($this->checkoutCartCouponCode).'</div>';
                 	       echo '<div>'.$this->translage("tr_meliscommerce_plugin_checkout_coupon_value").': '.$this->checkoutCartDiscountInfo.'</div>';
                 	    }
                 	    

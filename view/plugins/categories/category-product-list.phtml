@@ -9,7 +9,7 @@
   			    }
   			?>
   			<li role="presentation" class="nav-item <?php echo (!$key) ? 'active' : ''?>">
-				<a class="nav-link" href="#<?php echo $val->getId().'-cat-prd-lst-plugin'?>" aria-controls="<?php echo $val->getId().'-cat-prd-lst-plugin'?>" role="tab" data-bs-toggle="tab"><?php echo $catName ?></a>
+				<a class="nav-link" href="#<?php echo $val->getId().'-cat-prd-lst-plugin'?>" aria-controls="<?php echo $val->getId().'-cat-prd-lst-plugin'?>" role="tab" data-bs-toggle="tab"><?php echo $this->escapeHtml($catName) ?></a>
 			</li>
   		<?php }?>
   	</ul>
@@ -46,7 +46,7 @@
 								?>
 								<div class="col-xs-4 col-sm-3 col-md-2">
 									<div class="thumbnail">
-										<img src="<?php echo $productImg ?>">
+										<img src="<?php echo $this->escapeHtmlAttr($productImg) ?>">
 										<div class="caption">
 											<h4>
 												<?php 
@@ -57,10 +57,10 @@
 														$prdPriceStr = ' ('.number_format($pVal->price_net).')';
 													}
 												?>
-												<a href="<?php echo $this->MelisCommerceLink('product', $product->getId(), $this->langId, true)?>"><?php echo $productName .$prdPriceStr ?></a>
+												<a href="<?php echo $this->escapeHtmlAttr($this->MelisCommerceLink('product', $product->getId(), $this->langId, true))?>"><?php echo $this->escapeHtml($productName .$prdPriceStr) ?></a>
 											</h4>
 											<?php foreach ($product->getCategories() As $cKey => $cVal){?>
-												<p class="label label-primary"><?php echo $cVal->catt_name ?></p>
+												<p class="label label-primary"><?php echo $this->escapeHtml($cVal->catt_name) ?></p>
 											<?php }?>
 										</div>
 									</div>

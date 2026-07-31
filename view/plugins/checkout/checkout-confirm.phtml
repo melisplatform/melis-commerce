@@ -5,7 +5,7 @@
     		<h3><?= $this->translate('tr_meliscommerce_plugin_checkout_confirmation_order'); ?></h3>
     		</div>
     		<div class="o-ref-left">
-    			<span class="o-ref-main clearfix">Reference : <?php echo $this->order['orderReference'] ?></span>				
+    			<span class="o-ref-main clearfix">Reference : <?php echo $this->escapeHtml($this->order['orderReference']) ?></span>
     		</div>
     		<div class="float-right o-ref-right">
     			<span> Placed on <?php echo date("F d, Y h:i " ,strtotime($this->order['orderDate'])) ?></span>
@@ -25,7 +25,7 @@
 				<tbody>
 					<?php foreach($this->orderBasket as $item){ ?>
     					<tr class="cart_item check-item prd-name">
-    						<td class="ctg-type"> <?php echo $item->obas_product_name.' ('.$item->obas_sku.')' ?></td>
+    						<td class="ctg-type"> <?php echo $this->escapeHtml($item->obas_product_name.' ('.$item->obas_sku.')') ?></td>
     						<td class="ctg-type"> <?php echo $item->cur_symbol.number_format($item->obas_price_net, 2) ?> </td>
     						<td class="ctg-type"> <?php echo $item->obas_quantity ?></td>
     						<td class="ctg-type"> <?php echo ($item->discount) ? $item->cur_symbol.number_format($item->discount, 2) : ''?></td>
@@ -43,7 +43,7 @@
     					<tr class="cart_item">
     						<td class="ctg-type"> <?= $this->translate('tr_meliscommerce_plugin_checkout_confirmation_coupon');?></td>
     						<td></td>
-    						<td><i><?php echo  $this->order['orderCouponDetails']['couponCode'] ?></i></td>
+    						<td><i><?php echo  $this->escapeHtml($this->order['orderCouponDetails']['couponCode']) ?></i></td>
     						<td class="cgt-des"><?php echo '('.$this->order['orderCurrency'].number_format($this->order['orderCouponDetails']['couponDiscount'], 2).')' ?></td>
     					</tr>
 					<?php } ?>
