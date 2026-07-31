@@ -73,44 +73,88 @@ class MelisComReactApiProductController extends MelisAbstractActionController
     {
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
         try {
-            $limit  = min(9999, max(1, (int) $this->params()->fromQuery('limit', 50)));
+            $limit  = min(9999, max(1, (int) $this->params()->fromQuery('limit', 25)));
             $search = trim((string) ($this->params()->fromQuery('search', '') ?? ''));
             $rawSt  = $this->params()->fromQuery('status', '');
             $status = ($rawSt !== '' && $rawSt !== null) ? (int) $rawSt : null;
             $rawCat = $this->params()->fromQuery('categoryId', '');
             $catId  = ($rawCat !== '' && $rawCat !== null) ? (int) $rawCat : null;
-            $lang   = $this->langId();
+            $lang   = (int) $this->langId();
 
             $db   = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
-            $ttId = $this->titleTypeId($db);
+            $ttId = (int) $this->titleTypeId($db);
 
-            $where = []; $params = [];
-            if ($status !== null) { $where[] = 'p.prd_status = ?'; $params[] = $status; }
-            if ($catId !== null)  { $where[] = 'EXISTS (SELECT 1 FROM melis_ecom_product_category pc WHERE pc.pcat_prd_id = p.prd_id AND pc.pcat_cat_id = ?)'; $params[] = $catId; }
+            // Tri server-side : whitelist clé → expression SQL NON-NULL (keyset fiable). ttId/lang
+            // (des ENTIERS validés) sont inlinés en littéraux → aucun paramètre dans le SELECT/ORDER,
+            // ce qui garde l'ordre des binds compatible avec le keyset. « image »/« categories »
+            // ne sont pas triables côté serveur (image binaire, catégories = jointure n-n).
+            $nameExpr = "COALESCE(NULLIF((SELECT pt.ptxt_field_short FROM melis_ecom_product_text pt WHERE pt.ptxt_prd_id = p.prd_id AND pt.ptxt_type = $ttId AND pt.ptxt_lang_id = $lang LIMIT 1),''),"
+                      . "(SELECT pt2.ptxt_field_short FROM melis_ecom_product_text pt2 WHERE pt2.ptxt_prd_id = p.prd_id AND pt2.ptxt_type = $ttId AND pt2.ptxt_field_short <> '' LIMIT 1),'')";
+            $sortMap = [
+                'id'        => 'p.prd_id',
+                'status'    => 'p.prd_status',
+                'reference' => "COALESCE(p.prd_reference,'')",
+                'name'      => $nameExpr,
+                'created'   => "COALESCE(p.prd_date_creation,'1000-01-01 00:00:00')",
+            ];
+            $sortKey  = (string) $this->params()->fromQuery('sort', 'id');
+            if (!isset($sortMap[$sortKey])) { $sortKey = 'id'; }
+            $sortExpr = $sortMap[$sortKey];
+            $dir = strtolower((string) $this->params()->fromQuery('dir', 'desc')) === 'asc' ? 'ASC' : 'DESC';
+            $op  = $dir === 'ASC' ? '>' : '<';
+
+            // Filtres (communs au COUNT et à la requête data).
+            $filterWhere = []; $filterParams = [];
+            if ($status !== null) { $filterWhere[] = 'p.prd_status = ?'; $filterParams[] = $status; }
+            if ($catId !== null)  { $filterWhere[] = 'EXISTS (SELECT 1 FROM melis_ecom_product_category pc WHERE pc.pcat_prd_id = p.prd_id AND pc.pcat_cat_id = ?)'; $filterParams[] = $catId; }
             if ($search !== '') {
                 $like = '%' . $search . '%';
-                $where[] = '(p.prd_reference LIKE ? OR EXISTS (SELECT 1 FROM melis_ecom_product_text pt WHERE pt.ptxt_prd_id = p.prd_id AND pt.ptxt_field_short LIKE ?))';
-                $params = array_merge($params, [$like, $like]);
+                $filterWhere[] = '(p.prd_reference LIKE ? OR EXISTS (SELECT 1 FROM melis_ecom_product_text pt WHERE pt.ptxt_prd_id = p.prd_id AND pt.ptxt_field_short LIKE ?))';
+                $filterParams = array_merge($filterParams, [$like, $like]);
             }
-            $wc = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
-            $total = (int) ((array) iterator_to_array($db->query("SELECT COUNT(*) AS t FROM melis_ecom_product p $wc", $params))[0])['t'];
+            $countWhere = $filterWhere ? 'WHERE ' . implode(' AND ', $filterWhere) : '';
+            $total = (int) ((array) iterator_to_array($db->query("SELECT COUNT(*) AS t FROM melis_ecom_product p $countWhere", $filterParams))[0])['t'];
 
-            $rows = $db->query("
+            // Keyset : reprendre STRICTEMENT après (valeur de tri, prd_id) du dernier élément.
+            $dataWhere = $filterWhere; $dataParams = $filterParams;
+            $after = (string) ($this->params()->fromQuery('after', '') ?? '');
+            if ($after !== '') {
+                $cur = json_decode((string) base64_decode($after, true), true);
+                if (is_array($cur) && array_key_exists('v', $cur) && array_key_exists('id', $cur)) {
+                    $dataWhere[]  = "($sortExpr $op ? OR ($sortExpr = ? AND p.prd_id $op ?))";
+                    $dataParams[] = $cur['v'];
+                    $dataParams[] = $cur['v'];
+                    $dataParams[] = (int) $cur['id'];
+                }
+            }
+            $dataWhereClause = $dataWhere ? 'WHERE ' . implode(' AND ', $dataWhere) : '';
+
+            $rows = iterator_to_array($db->query("
                 SELECT p.prd_id, p.prd_reference, p.prd_status, p.prd_date_creation, p.prd_date_edit,
-                       (SELECT pt.ptxt_field_short FROM melis_ecom_product_text pt WHERE pt.ptxt_prd_id = p.prd_id AND pt.ptxt_type = ? AND pt.ptxt_lang_id = ? LIMIT 1) AS name_cur,
-                       (SELECT pt2.ptxt_field_short FROM melis_ecom_product_text pt2 WHERE pt2.ptxt_prd_id = p.prd_id AND pt2.ptxt_type = ? AND pt2.ptxt_field_short <> '' LIMIT 1) AS name_any,
-                       (SELECT d.doc_path FROM melis_ecom_doc_relations dr JOIN melis_ecom_document d ON d.doc_id = dr.rdoc_doc_id WHERE dr.rdoc_product_id = p.prd_id AND d.doc_type_id != 2 ORDER BY d.doc_id ASC LIMIT 1) AS image_path
+                       (SELECT pt.ptxt_field_short FROM melis_ecom_product_text pt WHERE pt.ptxt_prd_id = p.prd_id AND pt.ptxt_type = $ttId AND pt.ptxt_lang_id = $lang LIMIT 1) AS name_cur,
+                       (SELECT pt2.ptxt_field_short FROM melis_ecom_product_text pt2 WHERE pt2.ptxt_prd_id = p.prd_id AND pt2.ptxt_type = $ttId AND pt2.ptxt_field_short <> '' LIMIT 1) AS name_any,
+                       (SELECT d.doc_path FROM melis_ecom_doc_relations dr JOIN melis_ecom_document d ON d.doc_id = dr.rdoc_doc_id WHERE dr.rdoc_product_id = p.prd_id AND d.doc_type_id != 2 ORDER BY d.doc_id ASC LIMIT 1) AS image_path,
+                       $sortExpr AS __sortval
                 FROM melis_ecom_product p
-                $wc
-                ORDER BY p.prd_id DESC
+                $dataWhereClause
+                ORDER BY $sortExpr $dir, p.prd_id $dir
                 LIMIT ?
-            ", array_merge([$ttId, $lang, $ttId], $params, [$limit]));
+            ", array_merge($dataParams, [$limit])));
 
-            $items = [];
-            foreach ($rows as $r) { $items[] = $this->formatProduct((array) $r, $db, $lang); }
+            $items = []; $lastSortVal = null; $lastId = null;
+            foreach ($rows as $r) {
+                $a           = (array) $r; // ignore la colonne technique __sortval
+                $lastSortVal = $a['__sortval'] ?? null;
+                $lastId      = (int) ($a['prd_id'] ?? 0);
+                $items[]     = $this->formatProduct($a, $db, $lang);
+            }
+            $nextCursor = null;
+            if (count($rows) === $limit && $lastId !== null) {
+                $nextCursor = base64_encode((string) json_encode(['v' => $lastSortVal, 'id' => $lastId]));
+            }
 
-            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items, 'total' => $total]]);
+            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items, 'total' => $total, 'nextCursor' => $nextCursor]]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
 
@@ -232,11 +276,48 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             foreach ($db->query('SELECT eseo_lang_id, eseo_page_id, eseo_url, eseo_url_redirect, eseo_url_301, eseo_meta_title, eseo_meta_description FROM melis_ecom_seo WHERE eseo_product_id = ?', [$id]) as $r) {
                 $r = (array) $r; $seoRows[(int) $r['eseo_lang_id']] = ['pageId' => (string) ($r['eseo_page_id'] ?? ''), 'url' => (string) ($r['eseo_url'] ?? ''), 'urlRedirect' => (string) ($r['eseo_url_redirect'] ?? ''), 'url301' => (string) ($r['eseo_url_301'] ?? ''), 'metaTitle' => (string) ($r['eseo_meta_title'] ?? ''), 'metaDescription' => (string) ($r['eseo_meta_description'] ?? '')];
             }
-            $textList = []; $seoList = [];
+            $textList = []; $seoList = []; $activeLangIds = [];
             foreach ($db->query('SELECT elang_id, elang_name FROM melis_ecom_lang WHERE elang_status = 1 ORDER BY elang_id', []) as $r) {
                 $r = (array) $r; $lid = (int) $r['elang_id'];
+                $activeLangIds[] = $lid;
                 $textList[] = ['langId' => $lid, 'langName' => (string) $r['elang_name'], 'name' => $texts[$lid]['name'] ?? '', 'description' => $texts[$lid]['description'] ?? ''];
                 $seoList[]  = ['langId' => $lid, 'langName' => (string) $r['elang_name'], 'pageId' => $seoRows[$lid]['pageId'] ?? '', 'url' => $seoRows[$lid]['url'] ?? '', 'urlRedirect' => $seoRows[$lid]['urlRedirect'] ?? '', 'url301' => $seoRows[$lid]['url301'] ?? '', 'metaTitle' => $seoRows[$lid]['metaTitle'] ?? '', 'metaDescription' => $seoRows[$lid]['metaDescription'] ?? ''];
+            }
+
+            // Types de texte additionnels (tout ptxt_type != TITLE) — « Ajouter un type de texte ».
+            // Un type = fieldType 1 (court, ptxt_field_short) OU 2 (long/riche, ptxt_field_long),
+            // jamais les deux — cf. meliscommerce_product_text_type_form (ptt_field_type select).
+            // Comme $textList/$seoList ci-dessus : TOUJOURS une entrée par langue active, même quand
+            // aucune ligne n'existe encore pour une langue (ex. un type ajouté et rempli seulement en
+            // EN — le FR, jamais soumis tant que vide, n'a pas de ligne en base) — sinon la carte de ce
+            // type disparaît simplement en changeant de langue après un rechargement.
+            $extraByType = [];
+            foreach ($db->query('
+                SELECT pt.ptxt_id, pt.ptxt_type, pt.ptxt_lang_id, pt.ptxt_field_short, pt.ptxt_field_long,
+                       ptt.ptt_code, ptt.ptt_name, ptt.ptt_field_type
+                FROM melis_ecom_product_text pt
+                JOIN melis_ecom_product_text_type ptt ON ptt.ptt_id = pt.ptxt_type
+                WHERE pt.ptxt_prd_id = ? AND pt.ptxt_type != ?
+                ORDER BY ptt.ptt_name, pt.ptxt_lang_id
+            ', [$id, $ttId]) as $r) {
+                $r = (array) $r;
+                $typeId = (int) $r['ptxt_type'];
+                $fieldType = (int) $r['ptt_field_type'] === 2 ? 2 : 1;
+                if (!isset($extraByType[$typeId])) {
+                    $extraByType[$typeId] = ['typeId' => $typeId, 'code' => (string) $r['ptt_code'], 'name' => (string) $r['ptt_name'], 'fieldType' => $fieldType, 'byLang' => []];
+                }
+                $extraByType[$typeId]['byLang'][(int) $r['ptxt_lang_id']] = [
+                    'ptxtId' => (int) $r['ptxt_id'],
+                    'value'  => (string) ($fieldType === 2 ? ($r['ptxt_field_long'] ?? '') : ($r['ptxt_field_short'] ?? '')),
+                ];
+            }
+            $extraTexts = [];
+            foreach ($extraByType as $et) {
+                $values = [];
+                foreach ($activeLangIds as $lid) {
+                    $values[] = ['langId' => $lid, 'ptxtId' => $et['byLang'][$lid]['ptxtId'] ?? null, 'value' => $et['byLang'][$lid]['value'] ?? ''];
+                }
+                $extraTexts[] = ['typeId' => $et['typeId'], 'code' => $et['code'], 'name' => $et['name'], 'fieldType' => $et['fieldType'], 'values' => $values];
             }
 
             $categoryIds = [];
@@ -251,6 +332,7 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             $data = $this->formatProduct($p, $db, $lang);
             $data['stockLow']    = isset($p['prd_stock_low']) && $p['prd_stock_low'] !== null ? (int) $p['prd_stock_low'] : null;
             $data['texts']       = $textList;
+            $data['extraTexts']  = $extraTexts;
             $data['seo']         = $seoList;
             $data['categoryIds'] = $categoryIds;
             $data['variants']    = $variants;
@@ -267,8 +349,79 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         $id = (int) $this->params()->fromRoute('id', 0);
         if ($id <= 0) { return $this->jsonResponse(['success' => false, 'error' => 'Invalid ID'], 400); }
         try {
-            $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
-            return $this->jsonResponse(['success' => true, 'data' => ['items' => $this->variantList($db, $id)]]);
+            $db      = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
+            $lang    = $this->langId();
+            $valName = $this->attributeValueNameSql();
+
+            $limit = (int) $this->params()->fromQuery('limit', 25);
+            if ($limit < 1) { $limit = 25; } elseif ($limit > 500) { $limit = 500; }
+
+            // Filtres : produit + recherche (SKU / id / valeurs d'attributs).
+            $filterWhere  = ['v.var_prd_id = ?'];
+            $filterParams = [$id];
+            $search = trim((string) ($this->params()->fromQuery('search', '') ?? ''));
+            if ($search !== '') {
+                $like = '%' . $search . '%';
+                $filterWhere[] = "(v.var_sku LIKE ? OR CAST(v.var_id AS CHAR) LIKE ? OR EXISTS ("
+                    . "SELECT 1 FROM melis_ecom_variant_attribute_value vatv "
+                    . "JOIN melis_ecom_attribute_value av ON av.atval_id = vatv.vatv_attribute_value_id "
+                    . "LEFT JOIN melis_ecom_attribute_value_trans tr ON tr.av_attribute_value_id = av.atval_id AND tr.avt_lang_id = $lang "
+                    . "WHERE vatv.vatv_variant_id = v.var_id AND ($valName) COLLATE utf8mb4_general_ci LIKE ?))";
+                $filterParams[] = $like; $filterParams[] = $like; $filterParams[] = $like;
+            }
+
+            // Tri server-side (whitelist). Défaut = variante principale d'abord (legacy).
+            $sortMap = [
+                'id'     => 'v.var_id',
+                'main'   => 'v.var_main_variant',
+                'status' => 'v.var_status',
+                'sku'    => "COALESCE(v.var_sku,'')",
+            ];
+            $sortKey = (string) $this->params()->fromQuery('sort', 'main');
+            if (!isset($sortMap[$sortKey])) { $sortKey = 'main'; }
+            $sortExpr = $sortMap[$sortKey];
+            $dir = strtolower((string) $this->params()->fromQuery('dir', 'desc')) === 'asc' ? 'ASC' : 'DESC';
+            $op  = $dir === 'ASC' ? '>' : '<';
+
+            $countWhere = 'WHERE ' . implode(' AND ', $filterWhere);
+            $total = (int) ((array) iterator_to_array($db->query("SELECT COUNT(*) AS t FROM melis_ecom_variant v $countWhere", $filterParams))[0])['t'];
+
+            // Curseur keyset : (sortExpr, var_id).
+            $dataWhere = $filterWhere; $dataParams = $filterParams;
+            $after = (string) ($this->params()->fromQuery('after', '') ?? '');
+            if ($after !== '') {
+                $cur = json_decode((string) base64_decode($after, true), true);
+                if (is_array($cur) && array_key_exists('v', $cur) && array_key_exists('id', $cur)) {
+                    $dataWhere[]  = "($sortExpr $op ? OR ($sortExpr = ? AND v.var_id $op ?))";
+                    $dataParams[] = $cur['v']; $dataParams[] = $cur['v']; $dataParams[] = (int) $cur['id'];
+                }
+            }
+            $dataWhereClause = 'WHERE ' . implode(' AND ', $dataWhere);
+            $sql = "SELECT v.var_id, v.var_sku, v.var_status, v.var_main_variant, v.var_date_creation,
+                    (SELECT d.doc_path FROM melis_ecom_doc_relations dr JOIN melis_ecom_document d ON d.doc_id = dr.rdoc_doc_id WHERE dr.rdoc_variant_id = v.var_id AND d.doc_type_id <> 2 LIMIT 1) AS image,
+                    (SELECT GROUP_CONCAT($valName SEPARATOR ', ') FROM melis_ecom_variant_attribute_value vatv
+                      JOIN melis_ecom_attribute_value av ON av.atval_id = vatv.vatv_attribute_value_id
+                      LEFT JOIN melis_ecom_attribute_value_trans tr ON tr.av_attribute_value_id = av.atval_id AND tr.avt_lang_id = $lang
+                      WHERE vatv.vatv_variant_id = v.var_id) AS attrs,
+                    $sortExpr AS __sortval
+                FROM melis_ecom_variant v $dataWhereClause ORDER BY $sortExpr $dir, v.var_id $dir LIMIT ?";
+            $dataParams[] = $limit;
+
+            $items = []; $lastSortVal = null; $lastId = null;
+            foreach ($db->query($sql, $dataParams) as $r) {
+                $r = (array) $r;
+                $lastSortVal = $r['__sortval'] ?? null; $lastId = (int) $r['var_id'];
+                $items[] = [
+                    'id' => (int) $r['var_id'], 'sku' => (string) ($r['var_sku'] ?? ''), 'status' => (int) $r['var_status'], 'isMain' => (int) ($r['var_main_variant'] ?? 0),
+                    'image' => isset($r['image']) && $r['image'] !== null ? (string) $r['image'] : '', 'attributes' => (string) ($r['attrs'] ?? ''),
+                    'dateCreation' => $r['var_date_creation'] ?? null,
+                ];
+            }
+            $nextCursor = null;
+            if (count($items) === $limit && $lastId !== null) {
+                $nextCursor = base64_encode((string) json_encode(['v' => $lastSortVal, 'id' => $lastId]));
+            }
+            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items, 'total' => $total, 'nextCursor' => $nextCursor, 'limit' => $limit]]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
 
@@ -746,12 +899,12 @@ class MelisComReactApiProductController extends MelisAbstractActionController
                 WHERE a.avar_one = ? ORDER BY a.avar_id", [$lang, $varId]) as $r) {
                 $r = (array) $r; $assoc[] = ['avarId' => (int) $r['avar_id'], 'variantId' => (int) $r['var_id'], 'sku' => (string) ($r['var_sku'] ?? ''), 'status' => (int) $r['var_status'], 'productName' => (string) ($r['pname'] ?? ('#' . $r['var_id'])), 'attributes' => (string) ($r['attrs'] ?? '')];
             }
-            $available = [];
-            foreach ($db->query("SELECT v.var_id, v.var_sku, v.var_status, $lbl AS pname, $attrsSub AS attrs FROM melis_ecom_variant v
-                WHERE v.var_id <> ? AND v.var_id NOT IN (SELECT avar_two FROM melis_ecom_assoc_variant WHERE avar_one = ?) ORDER BY v.var_id", [$lang, $varId, $varId]) as $r) {
-                $r = (array) $r; $available[] = ['variantId' => (int) $r['var_id'], 'sku' => (string) ($r['var_sku'] ?? ''), 'status' => (int) $r['var_status'], 'productName' => (string) ($r['pname'] ?? ('#' . $r['var_id'])), 'attributes' => (string) ($r['attrs'] ?? '')];
-            }
-            return $this->jsonResponse(['success' => true, 'data' => ['associated' => $assoc, 'available' => $available]]);
+            // Les variants « disponibles à associer » ne sont plus renvoyés à plat : côté React on
+            // parcourt la liste des PRODUITS (keyset + recherche) puis, au dépliage, les variants du
+            // produit (endpoint /products/:id/variants). On expose juste les ids déjà associés + le
+            // variant courant pour l'exclusion côté front.
+            $excludeIds = array_values(array_unique(array_merge([$varId], array_map(static fn ($a) => $a['variantId'], $assoc))));
+            return $this->jsonResponse(['success' => true, 'data' => ['associated' => $assoc, 'excludeIds' => $excludeIds]]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
     public function variantAssocSaveAction(): HttpResponse
@@ -1243,6 +1396,47 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
 
+    // ─── GET/POST /products/text-types — types de texte additionnels (« Ajouter un type de texte »,
+    //     legacy MelisComProductController::addProductTextTypeAction()) ──────────
+    public function textTypesAction(): HttpResponse
+    {
+        if ($deny = $this->denyUnlessAccess()) { return $deny; }
+        try {
+            $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
+
+            if ($this->getRequest()->isPost()) {
+                $body = json_decode($this->getRequest()->getContent(), true) ?? [];
+                $name = trim((string) ($body['name'] ?? ''));
+                // Même normalisation que le legacy (majuscules, sans espaces/caractères spéciaux).
+                $code = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', (string) ($body['code'] ?? $name)));
+                $fieldType = (int) ($body['fieldType'] ?? 1) === 2 ? 2 : 1;
+                if ($code === '' || $name === '') { return $this->jsonResponse(['success' => false, 'error' => 'code and name required'], 400); }
+
+                $dupCode = iterator_to_array($db->query('SELECT ptt_id FROM melis_ecom_product_text_type WHERE ptt_code = ? LIMIT 1', [$code]));
+                if ($dupCode) { return $this->jsonResponse(['success' => false, 'error' => 'A text type with this code already exists.'], 409); }
+                $dupName = iterator_to_array($db->query('SELECT ptt_id FROM melis_ecom_product_text_type WHERE ptt_name = ? LIMIT 1', [$name]));
+                if ($dupName) { return $this->jsonResponse(['success' => false, 'error' => 'A text type with this name already exists.'], 409); }
+
+                $db->query('INSERT INTO melis_ecom_product_text_type (ptt_code, ptt_name, ptt_field_type) VALUES (?, ?, ?)', [$code, $name, $fieldType]);
+                $pttId = (int) iterator_to_array($db->query('SELECT LAST_INSERT_ID() AS id', []))[0]['id'];
+
+                $this->getEventManager()->trigger('meliscommerce_product_add_text_type_end', $this, [
+                    'success' => true, 'textTitle' => 'tr_meliscommerce_products_text_type', 'textMessage' => 'tr_meliscommerce_product_text_type_add_success',
+                    'typeCode' => 'ECOM_PRODUCT_TEXT_TYPE_ADD', 'itemId' => $pttId,
+                ]);
+
+                return $this->jsonResponse(['success' => true, 'data' => ['id' => $pttId, 'code' => $code, 'name' => $name, 'fieldType' => $fieldType]], 201);
+            }
+
+            $types = [];
+            foreach ($db->query('SELECT ptt_id, ptt_code, ptt_name, ptt_field_type FROM melis_ecom_product_text_type ORDER BY ptt_name', []) as $r) {
+                $r = (array) $r;
+                $types[] = ['id' => (int) $r['ptt_id'], 'code' => (string) $r['ptt_code'], 'name' => (string) $r['ptt_name'], 'fieldType' => (int) $r['ptt_field_type'] === 2 ? 2 : 1];
+            }
+            return $this->jsonResponse(['success' => true, 'data' => $types]);
+        } catch (\Throwable $e) { return $this->errorResponse($e); }
+    }
+
     // ─── DELETE /products/:id/prices/:priceId ─────────────────────────────────
     public function priceDeleteAction(): HttpResponse
     {
@@ -1311,6 +1505,27 @@ class MelisComReactApiProductController extends MelisAbstractActionController
                 $row = ['ptxt_lang_id' => $lid, 'ptxt_type' => $ttId, 'ptxt_field_short' => $name, 'ptxt_field_long' => $desc];
                 if (isset($existing[$lid])) { $row['ptxt_id'] = $existing[$lid]; }
                 $productTexts[] = $row;
+            }
+
+            // Types de texte additionnels (« Ajouter un type de texte ») — même forme que renvoyée par
+            // GET /products/:id (extraTexts), l'écran renvoie directement le tableau édité. Un type
+            // retiré côté écran (trash) n'est simplement plus soumis ici — comme le legacy (product.tool.js
+            // .deleteTextInput), sa ligne existante n'est PAS supprimée en base, juste plus mise à jour.
+            $extraTexts = is_array($body['extraTexts'] ?? null) ? $body['extraTexts'] : [];
+            foreach ($extraTexts as $et) {
+                if (!is_array($et)) { continue; }
+                $typeId = (int) ($et['typeId'] ?? 0); if ($typeId <= 0) { continue; }
+                $fieldType = (int) ($et['fieldType'] ?? 1) === 2 ? 2 : 1;
+                foreach ((is_array($et['values'] ?? null) ? $et['values'] : []) as $v) {
+                    if (!is_array($v)) { continue; }
+                    $lid = (int) ($v['langId'] ?? 0); if ($lid <= 0) { continue; }
+                    $value = (string) ($v['value'] ?? '');
+                    $ptxtId = isset($v['ptxtId']) && (int) $v['ptxtId'] > 0 ? (int) $v['ptxtId'] : null;
+                    if ($value === '' && $ptxtId === null) { continue; } // pas de ligne vide pour une langue jamais renseignée
+                    $row = ['ptxt_lang_id' => $lid, 'ptxt_type' => $typeId, 'ptxt_field_short' => $fieldType === 1 ? $value : '', 'ptxt_field_long' => $fieldType === 2 ? $value : ''];
+                    if ($ptxtId !== null) { $row['ptxt_id'] = $ptxtId; }
+                    $productTexts[] = $row;
+                }
             }
 
             // Réutilise la logique métier (produit + textes). ob_* : jette les warnings dev pour garder un JSON valide.

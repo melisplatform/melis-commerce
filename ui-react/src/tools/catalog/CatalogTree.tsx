@@ -2,6 +2,7 @@ import { useMemo, useState, type CSSProperties, type ReactNode } from 'react'
 import type { CatNode, LangOption } from './api'
 import { card, inputCss } from '../../shared/styles'
 import { PlusIcon, TrashIcon, ChevronDownIcon, GripIcon, RefreshIcon } from '../../shared/icons'
+import { usePointerDrag } from '../../shared/usePointerDrag'
 
 /* Arbre catalogues / catégories — calqué visuellement sur le treeview de melis-cms-category2
  * (carte pleine hauteur, toolbar interne, poignée de glissement, pastille de statut, drop 3-zones).
@@ -91,6 +92,7 @@ export default function CatalogTree(p: Props) {
   const [collapsed, setCollapsed] = useState<Set<number>>(new Set())
   const [drag, setDrag] = useState<{ id: number; fatherId: number; type: string; descendants: Set<number> } | null>(null)
   const [dropInfo, setDropInfo] = useState<{ id: number; pos: 'before' | 'inside' | 'after' } | null>(null)
+  const pointerDrag = usePointerDrag<number>('data-cat-id', Number)
 
   const q = search.trim().toLowerCase()
   // Le glisser-déposer n'a de sens que dans la vue COMPLÈTE non filtrée (ordre des frères réel).
@@ -108,27 +110,30 @@ export default function CatalogTree(p: Props) {
 
   // Un nœud ne peut pas être déposé sur lui-même / dans son propre sous-arbre, ni violer la règle
   // catalogue=racine / catégorie=non-racine.
-  const canDropAt = (newFather: number): boolean => {
-    if (!drag) return false
-    if (drag.descendants.has(newFather)) return false
-    if (drag.type === 'catalog' && newFather !== -1) return false
-    if (drag.type === 'category' && newFather === -1) return false
+  type DragNode = { id: number; fatherId: number; type: string; descendants: Set<number> }
+  const canDropAt = (dragNode: DragNode, newFather: number): boolean => {
+    if (dragNode.descendants.has(newFather)) return false
+    if (dragNode.type === 'catalog' && newFather !== -1) return false
+    if (dragNode.type === 'category' && newFather === -1) return false
     return true
   }
 
-  const onDrop = (target: CatNode) => {
-    if (drag && dropInfo && dropInfo.id === target.id && target.id !== drag.id) {
-      if (dropInfo.pos === 'inside') {
-        if (canDropAt(target.id)) {
-          setCollapsed((prev) => { const s = new Set(prev); s.delete(target.id); return s }) // révèle l'enfant déplacé
-          p.onReorder({ catId: drag.id, fatherId: target.id, order: target.children.length + 1, oldParent: drag.fatherId })
-        }
-      } else if (canDropAt(target.fatherId)) {
-        const order = dropInfo.pos === 'after' ? target.order + 1 : target.order
-        p.onReorder({ catId: drag.id, fatherId: target.fatherId, order, oldParent: drag.fatherId })
+  // Prend tout en paramètres explicites plutôt que de lire `drag`/`dropInfo` : appelé depuis la
+  // fin d'un geste pointer (voir usePointerDrag) où ces deux states, capturés dans une closure au
+  // DÉBUT du drag et jamais recréée entre-temps (les callbacks vivent hors du cycle de rendu React,
+  // dans un ref du hook), seraient périmés — contrairement aux events DnD natifs qui rattachaient
+  // un handler frais à chaque rendu, ce piège n'existait pas avec l'ancienne implémentation HTML5.
+  const commitMove = (dragNode: DragNode, target: CatNode, pos: 'before' | 'inside' | 'after') => {
+    if (target.id === dragNode.id) return
+    if (pos === 'inside') {
+      if (canDropAt(dragNode, target.id)) {
+        setCollapsed((prev) => { const s = new Set(prev); s.delete(target.id); return s }) // révèle l'enfant déplacé
+        p.onReorder({ catId: dragNode.id, fatherId: target.id, order: target.children.length + 1, oldParent: dragNode.fatherId })
       }
+    } else if (canDropAt(dragNode, target.fatherId)) {
+      const order = pos === 'after' ? target.order + 1 : target.order
+      p.onReorder({ catId: dragNode.id, fatherId: target.fatherId, order, oldParent: dragNode.fatherId })
     }
-    setDrag(null); setDropInfo(null)
   }
 
   const renderNode = (node: CatNode, depth: number) => {
@@ -151,27 +156,44 @@ export default function CatalogTree(p: Props) {
     }
     return (
       <div key={node.id}>
-        <div style={rowStyle}
-          onDragOver={(e) => {
-            if (!drag) return
-            e.preventDefault()
-            const r = e.currentTarget.getBoundingClientRect()
-            const y = e.clientY - r.top
-            // 3 zones : ¼ haut = avant, ¼ bas = après, ½ milieu = dedans (reparentage).
-            const pos = y < r.height * 0.25 ? 'before' : y > r.height * 0.75 ? 'after' : 'inside'
-            setDropInfo({ id: node.id, pos })
-          }}
-          onDragLeave={() => setDropInfo((d) => (d?.id === node.id ? null : d))}
-          onDrop={(e) => { e.preventDefault(); e.stopPropagation(); onDrop(node) }}
+        <div style={rowStyle} data-cat-id={node.id}
           onMouseEnter={(e) => { if (!selected) e.currentTarget.style.background = 'color-mix(in srgb, var(--color-muted,#888) 10%, transparent)' }}
           onMouseLeave={(e) => { if (!selected) e.currentTarget.style.background = 'transparent' }}
           onClick={() => p.onSelect(node)}
           onContextMenu={(e) => { e.preventDefault(); p.onContext(node, e.clientX, e.clientY) }}>
-          {/* Seule la poignée est draggable — un clic sur les boutons +/✎/🗑 reste un clic. */}
+          {/* Seule la poignée est draggable — un clic sur les boutons +/✎/🗑 reste un clic.
+              Pointer Events (pas HTML5 draggable) : fonctionne aussi bien au doigt qu'à la souris —
+              draggable/dragstart ne se déclenche jamais sur un geste tactile mobile (Mantis #10843). */}
           {dndEnabled ? (
-            <span style={{ opacity: 0.5, cursor: 'grab', display: 'inline-flex' }} title={t('drag_hint')} draggable
-              onDragStart={(e) => { e.stopPropagation(); const d = new Set<number>(); collectIds(node, d); setDrag({ id: node.id, fatherId: node.fatherId, type: node.type, descendants: d }); e.dataTransfer.effectAllowed = 'move' }}
-              onDragEnd={() => { setDrag(null); setDropInfo(null) }}
+            <span style={{ opacity: 0.5, cursor: 'grab', display: 'inline-flex', touchAction: 'none' }} title={t('drag_hint')}
+              onPointerDown={(e) => {
+                e.stopPropagation(); e.preventDefault()
+                const d = new Set<number>(); collectIds(node, d)
+                const dragNode: DragNode = { id: node.id, fatherId: node.fatherId, type: node.type, descendants: d }
+                setDrag(dragNode) // visuel uniquement — la logique de drop ci-dessous ne relit pas ce state
+                // Vit pour toute la durée de CE geste (fermé par onHover/onDrop, tous deux passés une
+                // seule fois à startDrag) — pas de risque de closure périmée, contrairement à `dropInfo`.
+                let currentDrop: { id: number; pos: 'before' | 'inside' | 'after' } | null = null
+                pointerDrag.startDrag(node.id, {
+                  onHover: (targetId, el, ev) => {
+                    const target = findNode(p.nodes, targetId)
+                    if (!target) { currentDrop = null; setDropInfo(null); return }
+                    const r = el.getBoundingClientRect()
+                    const y = ev.clientY - r.top
+                    // 3 zones : ¼ haut = avant, ¼ bas = après, ½ milieu = dedans (reparentage).
+                    const pos = y < r.height * 0.25 ? 'before' : y > r.height * 0.75 ? 'after' : 'inside'
+                    currentDrop = { id: target.id, pos }
+                    setDropInfo({ id: target.id, pos })
+                  },
+                  onLeave: () => { currentDrop = null; setDropInfo(null) },
+                  onDrop: (targetId) => {
+                    const target = findNode(p.nodes, targetId)
+                    if (target && currentDrop && currentDrop.id === target.id) commitMove(dragNode, target, currentDrop.pos)
+                    setDrag(null); setDropInfo(null)
+                  },
+                  onCancel: () => { setDrag(null); setDropInfo(null) },
+                })
+              }}
               onClick={(e) => e.stopPropagation()}>
               <GripIcon />
             </span>
@@ -199,8 +221,7 @@ export default function CatalogTree(p: Props) {
   }
 
   return (
-    <div style={{ ...card, display: 'flex', flexDirection: 'column', minHeight: 0, height: '100%', overflow: 'hidden' }}
-      onDragEnd={() => { setDrag(null); setDropInfo(null) }}>
+    <div style={{ ...card, display: 'flex', flexDirection: 'column', minHeight: 0, height: '100%', overflow: 'hidden' }}>
       {/* toolbar */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, borderBottom: '1px solid var(--color-border)' }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>

@@ -1,13 +1,14 @@
-import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
-  deleteProduct, duplicateProduct, fetchProductById, fetchProductOptions, fetchProducts, fetchProductStats, saveProduct, fetchProductTooltip,
+  deleteProduct, duplicateProduct, fetchProductById, fetchProductOptions, fetchProducts, fetchAllProducts, fetchProductStats, saveProduct, fetchProductTooltip,
   uploadProductMedia, deleteProductMedia, saveProductAttribute, deleteProductAttribute, saveProductRecipient, deleteProductRecipient, saveProductPrice,
-  type ProductItem, type ProductStats, type ProductText, type ProductSeo, type TooltipVariant,
+  type ProductItem, type ProductStats, type ProductText, type ProductExtraText, type ProductSeo, type TooltipVariant, type ProductSortKey, type TextType,
 } from './api'
+import { useKeysetList } from '../../shared/use-keyset-list'
 import { makeCache } from '../../shared/listCache'
 import type { T } from '../../shared/i18n'
-import { VariantsTab, PricesTab, AttributesSection, FilesSection, ImagesSection, RecipientsSection, CategoryPickerModal, SiteTreeModal, DuplicateModal, InfoDot, SitemapIcon, StatusToggle, flattenCatNames, VariantTooltipTable, type PendingPrice, type PendingMedia } from './ProductTabs'
+import { VariantsTab, PricesTab, AttributesSection, FilesSection, ImagesSection, RecipientsSection, CategoryPickerModal, SiteTreeModal, DuplicateModal, AddTextTypeModal, InfoDot, SitemapIcon, StatusToggle, flattenCatNames, VariantTooltipTable, type PendingPrice, type PendingMedia } from './ProductTabs'
 import { VariantEditor } from './ProductVariantEditor'
 import { MelisToolEditor } from '../../shared/MelisToolEditor'
 import type { UserOption, CountryOption } from './api'
@@ -15,7 +16,7 @@ import { fetchCatalogTree } from '../catalog/api'
 import { DICT } from './dict'
 import { makeT, fmtDate } from '../../shared/i18n'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint, segBtn } from '../../shared/styles'
-import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, TagIcon, FileTextIcon, LayoutIcon, CartIcon, PackageIcon, PackageCheckIcon, PackageXIcon, ResetIcon } from '../../shared/icons'
+import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, TagIcon, FileTextIcon, LayoutIcon, CartIcon, PackageIcon, PackageCheckIcon, PackageXIcon, ResetIcon, SortIcon, Spinner } from '../../shared/icons'
 import { StatusBadge, Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { useCaps } from '../../shared/useCaps'
@@ -38,10 +39,12 @@ const COL_ORDER = ['id', 'status', 'image', 'reference', 'name', 'categories', '
 const COL_LABEL: Record<string, string> = { id: 'col_id', status: 'col_status', image: 'col_image', reference: 'col_reference', name: 'col_name', categories: 'col_categories', created: 'col_created' }
 const cols$ = makeColStore('melis-products-cols-v1', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['name'])
+// Colonnes triables côté serveur — doit matcher le sortMap backend (« image »/« categories » exclus).
+const SORTABLE = new Set<ProductSortKey>(['id', 'status', 'reference', 'name', 'created'])
 
 const listCache = makeCache<{
-  items: ProductItem[]; stats: ProductStats | null
-  search: string; searchInput: string; status: number | null; categoryId: number; sortCol: string; sortAsc: boolean; mode: 'react' | 'old'
+  items: ProductItem[]; stats: ProductStats | null; total: number; cursor: string | null; hasMore: boolean
+  search: string; searchInput: string; status: number | null; categoryId: number; sortCol: string; sortDir: 'asc' | 'desc'; mode: 'react' | 'old'
 }>()
 
 function getCellExport(p: ProductItem, id: string, t: (k: string) => string): string | number {
@@ -116,62 +119,62 @@ function ProductList({ base }: { base: string }) {
   // view: a blank tab. Derive the initial value from `mode` so a remount picks the legacy
   // iframe back up immediately, same as `mode` itself does.
   const [oldLoaded, setOldLoaded] = useState(() => (listCache.get()?.mode ?? 'react') === 'old')
-  const [items, setItems] = useState<ProductItem[]>(listCache.get()?.items ?? [])
-  const [stats, setStats] = useState<ProductStats | null>(listCache.get()?.stats ?? null)
-  const [loading, setLoading] = useState(false)
-  const [searchInput, setSearchInput] = useState(listCache.get()?.searchInput ?? '')
-  const [search, setSearch] = useState(listCache.get()?.search ?? '')
-  const [status, setStatus] = useState<number | null>(listCache.get()?.status ?? null)
-  const [categoryId, setCategoryId] = useState<number>(listCache.get()?.categoryId ?? 0)
+  const cached = listCache.get()
+  const [stats, setStats] = useState<ProductStats | null>(cached?.stats ?? null)
+  const [searchInput, setSearchInput] = useState(cached?.searchInput ?? '')
+  const [search, setSearch] = useState(cached?.search ?? '')
+  const [status, setStatus] = useState<number | null>(cached?.status ?? null)
+  const [categoryId, setCategoryId] = useState<number>(cached?.categoryId ?? 0)
   const [categories, setCategories] = useState<Option[]>([])
-  const [sortCol, setSortCol] = useState<string>(listCache.get()?.sortCol ?? 'id')
-  const [sortAsc, setSortAsc] = useState(listCache.get()?.sortAsc ?? false)
   const [toDelete, setToDelete] = useState<ProductItem | null>(null)
   const [toDup, setToDup] = useState<ProductItem | null>(null)
   const [tick, setTick] = useState(0)
   const [cols, setCols] = useState<ColDef[]>(cols$.load)
   const [showCols, setShowCols] = useState(false)
   const [showExport, setShowExport] = useState(false)
+  const [exportItems, setExportItems] = useState<ProductItem[]>([])
+  const [exporting, setExporting] = useState(false)
   const [expanded, setExpanded] = useState<Set<number>>(new Set())
   function toggleExpand(id: number) {
     setExpanded((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
   }
 
-  const cacheRef = useRef({ items, stats, search, searchInput, status, categoryId, sortCol, sortAsc, mode })
-  useEffect(() => { cacheRef.current = { items, stats, search, searchInput, status, categoryId, sortCol, sortAsc, mode } })
+  // Scroll infini + tri server-side + keyset (mutualisé). Ordre legacy = id desc.
+  const {
+    items, setItems, total, loading, hasMore, sentinelRef, sortCol, sortDir, setSortCol, setSortDir, toggleSort, snapshot,
+  } = useKeysetList<ProductItem>({
+    fetcher: (a) => fetchProducts({ ...a, sort: a.sort as ProductSortKey, search, status, categoryId: categoryId || null }),
+    deps: [search, status, categoryId, tick],
+    defaultSort: 'id',
+    defaultDir: 'desc',
+    initial: cached ? { items: cached.items, total: cached.total, cursor: cached.cursor, hasMore: cached.hasMore, sortCol: cached.sortCol, sortDir: cached.sortDir } : undefined,
+    skipInitial: !!(cached && cached.items.length),
+  })
+
+  const cacheRef = useRef({ ...snapshot(), stats, search, searchInput, status, categoryId, mode })
+  useEffect(() => { cacheRef.current = { ...snapshot(), stats, search, searchInput, status, categoryId, mode } })
   useEffect(() => () => listCache.set(cacheRef.current), [])
 
   useEffect(() => { fetchProductStats().then(setStats).catch(() => null) }, [tick])
   useEffect(() => { fetchProductOptions().then((o) => setCategories(o.categories)).catch(() => null) }, [])
-  useEffect(() => {
-    setLoading(true)
-    fetchProducts({ search, status, categoryId: categoryId || null }).then((r) => setItems(r.items)).catch(() => null).finally(() => setLoading(false))
-  }, [search, status, categoryId, tick])
 
-  const sortVal = (p: ProductItem): string | number => {
-    switch (sortCol) {
-      case 'status': return p.status; case 'reference': return p.reference; case 'name': return p.name
-      case 'categories': return p.categories.join(', '); case 'created': return p.dateCreation ?? ''; default: return p.id
-    }
-  }
-  const sorted = useMemo(() => [...items].sort((a, b) => {
-    const va = sortVal(a), vb = sortVal(b)
-    const cmp = typeof va === 'number' && typeof vb === 'number' ? va - vb : String(va).localeCompare(String(vb))
-    return sortAsc ? cmp : -cmp
-  }), [items, sortCol, sortAsc])
-
-  function toggleSort(id: string) { if (sortCol === id) setSortAsc((v) => !v); else { setSortCol(id); setSortAsc(true) } }
   // Réinitialiser les filtres : recherche + statut + catégorie + tri par défaut (id desc), puis refetch.
   // On vide `items` : sinon les lignes restent affichées pendant le refetch et le clic paraît sans effet.
   function resetFilters() {
     setSearchInput(''); setSearch('')
     setStatus(null)
     setCategoryId(0)
-    setSortCol('id'); setSortAsc(false)
+    setSortCol('id'); setSortDir('desc')
     setItems([])
     setTick((x) => x + 1)
   }
   async function confirmDelete() { if (!toDelete) return; try { await deleteProduct(toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) } }
+  // Export : le keyset ne charge qu'une page → on récupère TOUT le jeu filtré via curseur avant d'ouvrir.
+  async function openExport() {
+    setExporting(true)
+    try { const all = await fetchAllProducts({ search, status, categoryId: categoryId || null }); setExportItems(all); setShowExport(true) }
+    catch { /* ignore */ } finally { setExporting(false) }
+  }
   // Depuis le tooltip variants (survol du nom) : ouvre le produit sur l'onglet Variants, ce variant édité.
   function openVariant(productId: number, variantId: number) { navigate(`${base}/${productId}`, { state: { tab: 'variants', openVariantEditor: variantId } }) }
   const FILTERS: { k: string; v: number | null; dot: string | null }[] = [
@@ -241,7 +244,7 @@ function ProductList({ base }: { base: string }) {
               <button style={{ ...btnGhost, height: narrow ? '100%' : 36, minHeight: narrow ? 36 : undefined, width: narrow ? '100%' : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} onClick={() => setShowCols((v) => !v)}><GripIcon />{t('columns')}</button>
               {showCols && <ColManager cols={cols} labelFor={(id) => t(COL_LABEL[id])} onChange={setCols} onClose={() => setShowCols(false)} save={cols$.save} defaults={cols$.DEFAULT} t={t} />}
             </div>
-            {can('export') && <button style={{ ...btnGhost, height: narrow ? 'auto' : 36, minHeight: narrow ? 36 : undefined, flex: narrow ? 1 : undefined, minWidth: narrow ? 0 : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} onClick={() => setShowExport(true)}><FileDownIcon />{t('export')}</button>}
+            {can('export') && <button disabled={exporting} style={{ ...btnGhost, height: narrow ? 'auto' : 36, minHeight: narrow ? 36 : undefined, flex: narrow ? 1 : undefined, minWidth: narrow ? 0 : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px', opacity: exporting ? 0.6 : 1 }} onClick={openExport}>{exporting ? <Spinner /> : <FileDownIcon />}{t('export')}</button>}
           </div>
         </div>
 
@@ -250,18 +253,24 @@ function ProductList({ base }: { base: string }) {
             <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}>
               <tr>
                 {hasHidden && <th style={{ ...th, width: 32 }} />}
-                {visible.map(({ id }) => (
-                  <th key={id} style={{ ...th, cursor: id === 'image' ? 'default' : 'pointer', ...(id === 'id' ? { width: 70 } : {}) }} onClick={() => id !== 'image' && toggleSort(id)}>
-                    {t(COL_LABEL[id])}{sortCol === id ? ` ${sortAsc ? '↑' : '↓'}` : ''}
-                  </th>
-                ))}
+                {visible.map(({ id }) => {
+                  const sortable = SORTABLE.has(id as ProductSortKey)
+                  return (
+                    <th key={id} style={{ ...th, cursor: sortable ? 'pointer' : 'default', ...(id === 'id' ? { width: 70 } : {}) }} onClick={sortable ? () => toggleSort(id) : undefined}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                        {t(COL_LABEL[id])}
+                        {sortable && <SortIcon dir={sortCol === id ? sortDir : null} />}
+                      </span>
+                    </th>
+                  )
+                })}
                 <th style={{ ...th, width: 80, position: 'sticky', right: 0, background: 'var(--color-muted,rgba(0,0,0,.03))' }} />
               </tr>
             </thead>
             <tbody>
-              {sorted.length === 0 && !loading ? (
+              {items.length === 0 && !loading ? (
                 <tr><td style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: '40px 16px' }} colSpan={totalCols}>{t('empty')}</td></tr>
-              ) : sorted.map((p) => (
+              ) : items.map((p) => (
                 <Fragment key={p.id}>
                   <tr>
                     {hasHidden && (
@@ -289,11 +298,19 @@ function ProductList({ base }: { base: string }) {
               ))}
             </tbody>
           </table>
-          <div style={{ padding: '10px 16px', textAlign: 'center', fontSize: 12, color: 'var(--color-muted-foreground)' }}>{loading ? t('loading') : t('count', { n: items.length })}</div>
+          <div ref={sentinelRef} style={{ height: 1 }} />
+          {loading && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '14px 16px', fontSize: 12, color: 'var(--color-muted-foreground)' }}>
+              <Spinner />{t('loading')}
+            </div>
+          )}
+          {!hasMore && items.length > 0 && (
+            <div style={{ padding: '10px 16px', textAlign: 'center', fontSize: 12, color: 'var(--color-muted-foreground)' }}>{t('count', { n: total })}</div>
+          )}
         </div>
       </div>
 
-      {showExport && <ExportModal cols={cols} items={items} getCell={(p, id) => getCellExport(p, id, t)} labelFor={(id) => t(COL_LABEL[id])} filename={t('exp_filename')} sheetTitle={t('title')} t={t} onClose={() => setShowExport(false)} />}
+      {showExport && <ExportModal cols={cols} items={exportItems} getCell={(p, id) => getCellExport(p, id, t)} labelFor={(id) => t(COL_LABEL[id])} filename={t('exp_filename')} sheetTitle={t('title')} t={t} onClose={() => setShowExport(false)} />}
 
       {toDelete && (
         <ConfirmModal title={t('del_title')} message={t('del_confirm', { u: prodLabel(toDelete) })}
@@ -344,6 +361,9 @@ function ProductForm({ id, base }: { id: string; base: string }) {
   const [stockLow, setStockLow] = useState('')
   const [active, setActive] = useState(true)
   const [texts, setTexts] = useState<ProductText[]>([])
+  const [extraTexts, setExtraTexts] = useState<ProductExtraText[]>([])
+  const [showAddTextType, setShowAddTextType] = useState(false)
+  const [removeTextTypeId, setRemoveTextTypeId] = useState<number | null>(null)
   const [seo, setSeo] = useState<ProductSeo[]>([])
   const [categories, setCategories] = useState<Option[]>([])
   const [attrOptions, setAttrOptions] = useState<Option[]>([])
@@ -420,7 +440,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
     fetchProductById(productId).then((p) => {
       if (cancelled) return
       setReference(p.reference); setStockLow(p.stockLow === null ? '' : String(p.stockLow)); setActive(p.status === 1)
-      setTexts(p.texts); setSeo(p.seo); setCategoryIds(p.categoryIds)
+      setTexts(p.texts); setExtraTexts(p.extraTexts ?? []); setSeo(p.seo); setCategoryIds(p.categoryIds)
       if (p.pageLinks) setPageLinks(p.pageLinks)
     }).catch(() => { if (!cancelled) navigate(base) }).finally(() => { if (!cancelled) setLoading(false) })
     return () => { cancelled = true }
@@ -440,6 +460,22 @@ function ProductForm({ id, base }: { id: string; base: string }) {
 
   function setText(langId: number, field: 'name' | 'description', value: string) { setTexts((p) => p.map((x) => x.langId === langId ? { ...x, [field]: value } : x)) }
   function setSeoField(langId: number, field: keyof ProductSeo, value: string) { setSeo((p) => p.map((x) => x.langId === langId ? { ...x, [field]: value } : x)) }
+  // « Ajouter un type de texte » (onglet Textes) — cf. AddTextTypeModal / legacy addProductTextTypeAction.
+  function setExtraTextValue(typeId: number, langId: number, value: string) {
+    setExtraTexts((p) => p.map((et) => et.typeId !== typeId ? et : {
+      ...et, values: et.values.map((v) => v.langId === langId ? { ...v, value } : v),
+    }))
+  }
+  function addExtraTextType(type: TextType) {
+    setExtraTexts((p) => p.some((et) => et.typeId === type.id) ? p : [
+      ...p,
+      { typeId: type.id, code: type.code, name: type.name, fieldType: type.fieldType, values: languages.map((l) => ({ langId: l.id, ptxtId: null, value: '' })) },
+    ])
+  }
+  // Retire seulement de CETTE session d'édition (comme le legacy product.tool.js .deleteTextInput) —
+  // le contenu déjà enregistré n'est pas supprimé en base tant que ce type n'est pas ré-ajouté et
+  // re-sauvegardé vide ; ré-ouvrir le produit fera réapparaître le texte existant.
+  function removeExtraText(typeId: number) { setExtraTexts((p) => p.filter((et) => et.typeId !== typeId)) }
   function toggleCategory(cid: number) { setCategoryIds((p) => p.includes(cid) ? p.filter((x) => x !== cid) : [...p, cid]) }
 
   async function submit() {
@@ -451,6 +487,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
         id: productId, reference: reference.trim(), status: active,
         stockLow: stockLow.trim() === '' ? null : parseInt(stockLow, 10) || 0,
         texts: texts.map((x) => ({ langId: x.langId, name: x.name.trim(), description: x.description })),
+        extraTexts,
         seo: seo.map((s) => ({ langId: s.langId, pageId: s.pageId, url: s.url, urlRedirect: s.urlRedirect, url301: s.url301, metaTitle: s.metaTitle, metaDescription: s.metaDescription })),
         categoryIds, pageLinks,
       })
@@ -495,16 +532,19 @@ function ProductForm({ id, base }: { id: string; base: string }) {
   }
 
   // After save navigates new→edit, apply the intended tab/state.
-  const stateApplied = useRef(false)
+  // Applique l'état de navigation (onglet + éditeur de variant à ouvrir) à CHAQUE navigation
+  // (clé de location), pas une seule fois : les liens « nom produit / SKU » du picker
+  // d'association naviguent produit→produit et doivent rouvrir l'onglet/variant ciblé.
   useEffect(() => {
-    if (!isEdit) { stateApplied.current = false; return }
-    if (stateApplied.current) return
-    stateApplied.current = true
+    if (!isEdit) return
     const s = (location.state as { tab?: string; openVariantEditor?: boolean | number }) ?? {}
     if (s.tab) setTab(s.tab)
+    // Naviguer sans variant ciblé (ex. lien « nom produit ») ferme tout éditeur de variant
+    // resté ouvert du produit précédent → on retombe sur la LISTE des variants.
     if (typeof s.openVariantEditor === 'number') setVariantEdit(s.openVariantEditor)
     else if (s.openVariantEditor) setVariantEdit('new')
-  }, [isEdit]) // eslint-disable-line react-hooks/exhaustive-deps
+    else setVariantEdit(null)
+  }, [isEdit, location.key]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const secTitle = { fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 12px' } as const
   const labelRow = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 } as const
@@ -613,17 +653,48 @@ function ProductForm({ id, base }: { id: string; base: string }) {
         </div>
         </div>
       ) : tab === 'text' ? (
-        <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '150px minmax(0, 1fr)', gap: 14, maxWidth: 1080 }}>
-          <LangSwitcher languages={languages} value={lang} onChange={setLang} narrow={narrow} />
-          {texts.filter((x) => x.langId === lang).map((tx) => (
-            <div key={tx.langId} style={{ ...card, padding: 18, minWidth: 0 }}>
-              <div style={labelRow}><label style={label}>{t('f_name')}</label></div>
-              <input style={inputCss} value={tx.name} onChange={(e) => setText(tx.langId, 'name', e.target.value)} placeholder={t('f_name_ph')} autoComplete="off" />
-              <div style={{ ...labelRow, marginTop: 14, marginBottom: 6 }}><label style={label}>{t('f_description')}</label></div>
-              {/* Éditeur riche TinyMCE (config 'tool' de melis-core), comme la gestion des emails. */}
-              <MelisToolEditor value={tx.description} onChange={(html) => setText(tx.langId, 'description', html)} minHeight={300} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, maxWidth: 1080 }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <button style={btnGhost} onClick={() => setShowAddTextType(true)}><PlusIcon />{t('texttype_add_btn')}</button>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '150px minmax(0, 1fr)', gap: 14 }}>
+            <LangSwitcher languages={languages} value={lang} onChange={setLang} narrow={narrow} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minWidth: 0 }}>
+              {texts.filter((x) => x.langId === lang).map((tx) => (
+                <div key={tx.langId} style={{ ...card, padding: 18, minWidth: 0 }}>
+                  <div style={labelRow}><label style={label}>{t('f_name')}</label></div>
+                  <input style={inputCss} value={tx.name} onChange={(e) => setText(tx.langId, 'name', e.target.value)} placeholder={t('f_name_ph')} autoComplete="off" />
+                  <div style={{ ...labelRow, marginTop: 14, marginBottom: 6 }}><label style={label}>{t('f_description')}</label></div>
+                  {/* Éditeur riche TinyMCE (config 'tool' de melis-core), comme la gestion des emails. */}
+                  <MelisToolEditor value={tx.description} onChange={(html) => setText(tx.langId, 'description', html)} minHeight={300} />
+                </div>
+              ))}
+              {/* Types de texte additionnels (« Ajouter un type de texte ») — un par type assigné,
+                  court → <input>, long → éditeur riche, comme le legacy. */}
+              {extraTexts.map((et) => {
+                const v = et.values.find((x) => x.langId === lang)
+                if (!v) return null
+                return (
+                  // Keyed on typeId+lang (not typeId alone) so switching language REMOUNTS this card —
+                  // MelisToolEditor/TinyMCE only reads its `value` prop once at mount (see that
+                  // component's own comment); without a lang-keyed remount, switching language kept
+                  // showing/editing the PREVIOUS language's stale in-editor content instead of loading
+                  // the new one, so an edit looked like it silently failed to save (it saved, into the
+                  // wrong place, or got overwritten by stale content). Same pattern the Title/Description
+                  // card above already relies on (key={tx.langId}), which is why that one was unaffected.
+                  <div key={`${et.typeId}-${lang}`} style={{ ...card, padding: 18, minWidth: 0 }}>
+                    <div style={labelRow}>
+                      <label style={label}>{et.name} <span style={{ fontWeight: 400, color: 'var(--color-muted-foreground)' }}>({et.code})</span></label>
+                      <button title={t('texttype_del_title')} onClick={() => setRemoveTextTypeId(et.typeId)} style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }}><TrashIcon /></button>
+                    </div>
+                    {et.fieldType === 2
+                      ? <MelisToolEditor value={v.value} onChange={(html) => setExtraTextValue(et.typeId, lang, html)} minHeight={300} />
+                      : <input style={inputCss} value={v.value} onChange={(e) => setExtraTextValue(et.typeId, lang, e.target.value)} autoComplete="off" />}
+                  </div>
+                )
+              })}
             </div>
-          ))}
+          </div>
         </div>
       ) : tab === 'variants' ? (
         variantEdit !== null && productId ? (
@@ -666,6 +737,15 @@ function ProductForm({ id, base }: { id: string; base: string }) {
       )}
       {treePick && (
         <SiteTreeModal t={t} onClose={() => setTreePick(null)} onInsert={(pageId) => setPageLinks((p) => ({ ...p, [treePick]: String(pageId) }))} />
+      )}
+      {showAddTextType && (
+        <AddTextTypeModal excludeTypeIds={extraTexts.map((et) => et.typeId)} t={t} onClose={() => setShowAddTextType(false)} onAdd={addExtraTextType} />
+      )}
+      {removeTextTypeId != null && (
+        <ConfirmModal t={t} title={t('texttype_del_title')}
+          message={t('texttype_del_confirm', { u: extraTexts.find((et) => et.typeId === removeTextTypeId)?.name ?? '' })}
+          onCancel={() => setRemoveTextTypeId(null)}
+          onConfirm={() => { removeExtraText(removeTextTypeId); setRemoveTextTypeId(null) }} />
       )}
     </div>
   )

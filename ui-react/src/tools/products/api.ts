@@ -6,10 +6,14 @@ export interface ProductItem {
   categories: string[]; dateCreation: string | null; dateEdit: string | null
 }
 export interface ProductText { langId: number; langName: string; name: string; description: string }
+// Type de texte additionnel (« Ajouter un type de texte », legacy meliscommerce_product_text_type_form) —
+// fieldType 1 = court (ptxt_field_short, <input>), 2 = long (ptxt_field_long, éditeur riche).
+export interface ProductExtraText { typeId: number; code: string; name: string; fieldType: 1 | 2; values: { langId: number; ptxtId: number | null; value: string }[] }
+export interface TextType { id: number; code: string; name: string; fieldType: 1 | 2 }
 export interface ProductSeo { langId: number; langName: string; pageId: string; url: string; urlRedirect: string; url301: string; metaTitle: string; metaDescription: string }
 export interface ProductVariant { id: number; sku: string; status: number; isMain: number; image: string; attributes: string; dateCreation: string | null }
 export interface ProductDetail extends ProductItem {
-  stockLow: number | null; texts: ProductText[]; seo: ProductSeo[]; categoryIds: number[]; variants: ProductVariant[]; pageLinks: PageLinks
+  stockLow: number | null; texts: ProductText[]; extraTexts: ProductExtraText[]; seo: ProductSeo[]; categoryIds: number[]; variants: ProductVariant[]; pageLinks: PageLinks
 }
 export interface ProductPrice { id: number; countryId: number; currency: number; net: number | null; gross: number | null; vatPercent: number | null; vatPrice: number | null; otherTax: number | null }
 export interface ProductAttribute { pattId: number; attributeId: number; name: string }
@@ -24,17 +28,42 @@ export interface ProductOptions { categories: Option[]; languages: LangOption[];
 export interface ProductSavePayload {
   id?: number | null; reference: string; status: boolean; stockLow: number | null
   texts: { langId: number; name: string; description: string }[]
+  extraTexts?: ProductExtraText[]
   seo: { langId: number; url: string; metaTitle: string; metaDescription: string }[]
   categoryIds: number[]
   pageLinks?: PageLinks
 }
 
-export function fetchProducts(params: { search?: string; status?: number | null; categoryId?: number | null } = {}) {
-  const qs = new URLSearchParams(); qs.set('limit', '9999')
+export type ProductSortKey = 'id' | 'status' | 'reference' | 'name' | 'created'
+export interface ProductListResult { items: ProductItem[]; total: number; nextCursor: string | null }
+
+export function fetchProducts(
+  params: { search?: string; status?: number | null; categoryId?: number | null
+            limit?: number; sort?: ProductSortKey; dir?: 'asc' | 'desc'; after?: string | null } = {},
+): Promise<ProductListResult> {
+  const qs = new URLSearchParams()
+  if (params.limit) qs.set('limit', String(params.limit))
   if (params.search) qs.set('search', params.search)
   if (params.status !== undefined && params.status !== null) qs.set('status', String(params.status))
   if (params.categoryId) qs.set('categoryId', String(params.categoryId))
-  return apiFetch<{ items: ProductItem[]; total: number }>(`/melis/react-api/products?${qs}`)
+  if (params.sort) qs.set('sort', params.sort)
+  if (params.dir) qs.set('dir', params.dir)
+  if (params.after) qs.set('after', params.after)
+  return apiFetch<ProductListResult>(`/melis/react-api/products?${qs}`)
+}
+
+/** Tous les produits filtrés (export) via boucle de curseur keyset. */
+export async function fetchAllProducts(
+  params: { search?: string; status?: number | null; categoryId?: number | null } = {},
+): Promise<ProductItem[]> {
+  const all: ProductItem[] = []
+  let after: string | null = null
+  do {
+    const r: ProductListResult = await fetchProducts({ ...params, limit: 200, after })
+    all.push(...r.items)
+    after = r.nextCursor
+  } while (after)
+  return all
 }
 export const fetchProductById = (id: number) => apiFetch<ProductDetail>(`/melis/react-api/products/${id}`)
 export interface TooltipVariant { id: number; sku: string; image: string; attributes: string; price: number | null; stock: number | null }
@@ -49,7 +78,20 @@ export const duplicateProduct = (id: number, opts: DuplicateOpts & { reference: 
   apiFetch<{ id: number }>(`/melis/react-api/products/${id}/duplicate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(opts) })
 
 // ── Variants ──────────────────────────────────────────────────────────────────
-export const fetchProductVariants = (id: number) => apiFetch<{ items: ProductVariant[] }>(`/melis/react-api/products/${id}/variants`)
+export type ProductVariantSortKey = 'id' | 'main' | 'status' | 'sku'
+export const fetchProductVariants = (
+  id: number,
+  params: { limit?: number; sort?: ProductVariantSortKey; dir?: 'asc' | 'desc'; after?: string | null; search?: string } = {},
+) => {
+  const qs = new URLSearchParams()
+  if (params.limit) qs.set('limit', String(params.limit))
+  if (params.sort) qs.set('sort', params.sort)
+  if (params.dir) qs.set('dir', params.dir)
+  if (params.after) qs.set('after', params.after)
+  if (params.search) qs.set('search', params.search)
+  const q = qs.toString()
+  return apiFetch<{ items: ProductVariant[]; total: number; nextCursor: string | null }>(`/melis/react-api/products/${id}/variants${q ? `?${q}` : ''}`)
+}
 export const saveProductVariant = (id: number, v: { variantId?: number | null; sku: string; status: boolean; isMain: boolean }) =>
   apiFetch<{ id: number }>(`/melis/react-api/products/${id}/variants/save`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(v) })
 export const deleteProductVariant = (id: number, variantId: number) =>
@@ -80,6 +122,11 @@ export const deleteProductMedia = (id: number, docId: number) =>
 export const fetchDocumentTypes = () => apiFetch<{ imageTypes: DocType[]; fileTypes: DocType[] }>('/melis/react-api/products/document-types')
 export const addDocumentType = (kind: 'image' | 'file', code: string, name: string) =>
   apiFetch<null>('/melis/react-api/products/document-types', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ kind, code, name }) })
+
+// ── Types de texte (« Ajouter un type de texte ») ───────────────────────────────
+export const fetchTextTypes = () => apiFetch<TextType[]>('/melis/react-api/products/text-types')
+export const addTextType = (data: { code?: string; name: string; fieldType: 1 | 2 }) =>
+  apiFetch<TextType>('/melis/react-api/products/text-types', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
 
 // ── Alerte stock — destinataires ────────────────────────────────────────────────
 export const fetchProductAlert = (id: number) => apiFetch<{ recipients: AlertRecipient[] }>(`/melis/react-api/products/${id}/alert`)
@@ -118,8 +165,7 @@ export const saveVariantSeo = (prdId: number, varId: number, items: { langId: nu
 
 // Association de variants
 export interface AssocVariant { avarId: number; variantId: number; sku: string; status: number; productName: string; attributes: string }
-export interface AvailVariant { variantId: number; sku: string; status: number; productName: string; attributes: string }
-export const fetchVariantAssoc = (prdId: number, varId: number) => apiFetch<{ associated: AssocVariant[]; available: AvailVariant[] }>(`/melis/react-api/products/${prdId}/variants/${varId}/assoc`)
+export const fetchVariantAssoc = (prdId: number, varId: number) => apiFetch<{ associated: AssocVariant[]; excludeIds: number[] }>(`/melis/react-api/products/${prdId}/variants/${varId}/assoc`)
 export const saveVariantAssoc = (prdId: number, varId: number, variantId: number) =>
   apiFetch<null>(`/melis/react-api/products/${prdId}/variants/${varId}/assoc/save`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ variantId }) })
 export const deleteVariantAssoc = (prdId: number, varId: number, avarId: number) =>

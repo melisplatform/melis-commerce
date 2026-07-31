@@ -5,12 +5,13 @@ import {
   fetchProductPrices, saveProductPrice, deleteProductPrice,
   fetchProductAttributes, saveProductAttribute, deleteProductAttribute,
   fetchProductMedia, uploadProductMedia, updateProductMedia, deleteProductMedia,
-  fetchDocumentTypes, addDocumentType,
+  fetchDocumentTypes, addDocumentType, fetchTextTypes, addTextType,
   fetchProductAlert, saveProductRecipient, deleteProductRecipient, fetchProductTooltip,
-  type ProductVariant, type ProductPrice, type ProductAttribute, type MediaItem, type DocType, type AlertRecipient, type UserOption, type CountryOption, type TooltipVariant,
+  type ProductVariant, type ProductPrice, type ProductAttribute, type MediaItem, type DocType, type AlertRecipient, type UserOption, type CountryOption, type TooltipVariant, type ProductVariantSortKey, type TextType,
 } from './api'
+import { useKeysetList } from '../../shared/use-keyset-list'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
-import { PencilIcon, EyeIcon, TrashIcon, PlusIcon, GlobeIcon, ImageIcon, ChevronDownIcon, PaperclipIcon, CubesIcon, PowerIcon, GripIcon } from '../../shared/icons'
+import { PencilIcon, EyeIcon, TrashIcon, PlusIcon, GlobeIcon, ImageIcon, ChevronDownIcon, PaperclipIcon, CubesIcon, PowerIcon, GripIcon, SortIcon, Spinner } from '../../shared/icons'
 import { StatusBadge } from '../../shared/widgets'
 import { SearchableSelect } from '../../shared/SearchableSelect'
 import { useIsNarrow } from '../../shared/useIsNarrow'
@@ -550,6 +551,97 @@ export function MediaModal({ kind, doc, pendingDoc, countries, t, onClose, onSav
   )
 }
 
+// ── Modal « Ajouter un type de texte » (onglet Textes) — même pattern que MediaModal
+// (sélectionner un type existant OU en créer un nouveau inline), legacy
+// meliscommerce_product_text_type_form / addProductTextTypeAction. ──────────────────
+export function AddTextTypeModal({ excludeTypeIds, t, onClose, onAdd }: {
+  excludeTypeIds: number[]; t: TFn; onClose: () => void; onAdd: (type: TextType) => void
+}) {
+  const [types, setTypes] = useState<TextType[]>([])
+  const [typeId, setTypeId] = useState<number | ''>('')
+  const [showCreate, setShowCreate] = useState(false)
+  const [newCode, setNewCode] = useState('')
+  const [newName, setNewName] = useState('')
+  const [newFieldType, setNewFieldType] = useState<1 | 2>(1)
+  const [creating, setCreating] = useState(false)
+  const [createError, setCreateError] = useState('')
+
+  useEffect(() => { fetchTextTypes().then(setTypes).catch(() => null) }, [])
+
+  const available = types.filter((tp) => !excludeTypeIds.includes(tp.id))
+
+  async function doCreate() {
+    if (!newName.trim()) return
+    setCreating(true); setCreateError('')
+    try {
+      const created = await addTextType({ code: newCode.trim() || undefined, name: newName.trim(), fieldType: newFieldType })
+      setTypes((prev) => [...prev, created])
+      setTypeId(created.id)
+      setNewCode(''); setNewName(''); setNewFieldType(1); setShowCreate(false)
+    } catch (e) { setCreateError(e instanceof Error ? e.message : t('err_save')) } finally { setCreating(false) }
+  }
+
+  function confirmAdd() {
+    const tp = types.find((x) => x.id === typeId)
+    if (tp) onAdd(tp)
+    onClose()
+  }
+
+  return createPortal(
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.45)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}>
+      <div style={{ background: 'var(--color-background,#fff)', borderRadius: 8, width: '100%', maxWidth: 480, boxShadow: '0 8px 32px rgba(0,0,0,.22)', overflow: 'hidden' }}>
+        <div style={{ background: '#35a8e0', color: '#fff', padding: '12px 20px', fontWeight: 600, fontSize: 15 }}>{t('texttype_modal_title')}</div>
+        <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <p style={{ margin: 0, fontSize: 13, color: 'var(--color-muted-foreground)' }}>{t('texttype_modal_subtitle')}</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <span style={label}>{t('texttype_type')}</span>
+            <select style={inputCss} value={typeId} onChange={(e) => setTypeId(e.target.value ? Number(e.target.value) : '')}>
+              <option value="">{t('modal_choose')}</option>
+              {available.map((tp) => <option key={tp.id} value={tp.id}>{tp.name}</option>)}
+            </select>
+          </div>
+          <div style={{ borderRadius: 6, border: '1px solid var(--color-border)', overflow: 'hidden' }}>
+            <button style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: 'var(--color-muted,rgba(0,0,0,.03))', border: 0, cursor: 'pointer', fontSize: 13, fontWeight: 500 }}
+              onClick={() => setShowCreate((v) => !v)}>
+              {t('texttype_create')}
+              <span style={{ fontSize: 11, color: 'var(--color-muted-foreground)' }}>{showCreate ? '▲' : '▼'}</span>
+            </button>
+            {showCreate && (
+              <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <span style={label}>{t('texttype_code')}</span>
+                  <input style={inputCss} value={newCode} onChange={(e) => setNewCode(e.target.value)} placeholder={newName || t('texttype_code_ph')} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <span style={label}>{t('texttype_name')}</span>
+                  <input style={inputCss} value={newName} onChange={(e) => setNewName(e.target.value)} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <span style={label}>{t('texttype_size')}</span>
+                  <select style={inputCss} value={newFieldType} onChange={(e) => setNewFieldType(Number(e.target.value) === 2 ? 2 : 1)}>
+                    <option value={1}>{t('texttype_short')}</option>
+                    <option value={2}>{t('texttype_long')}</option>
+                  </select>
+                </div>
+                {createError && <p style={{ margin: 0, fontSize: 12, color: '#ef4444' }}>{createError}</p>}
+                <button style={{ ...btnPrimary, alignSelf: 'flex-end' }} disabled={creating || !newName.trim()} onClick={doCreate}>
+                  {creating ? t('modal_saving') : t('modal_type_add_btn')}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+        <div style={{ padding: '12px 20px', display: 'flex', justifyContent: 'flex-end', gap: 10, borderTop: '1px solid var(--color-border)' }}>
+          <button style={btnGhost} onClick={onClose}>{t('modal_close')}</button>
+          <button style={btnPrimary} disabled={!typeId} onClick={confirmAdd}>{t('modal_type_add_btn')}</button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  )
+}
+
 // ── Lightbox plein écran ────────────────────────────────────────────────────────
 export function Lightbox({ src, onClose }: { src: string; onClose: () => void }) {
   return createPortal(
@@ -697,6 +789,7 @@ export function ImagesSection({ productId, t, countries = [], pendingImages = []
    * hidden on them until the tab is closed and reopened. */
   refreshSignal?: number
 }) {
+  const narrow = useIsNarrow()
   const [images, setImages] = useState<MediaItem[]>([])
   const [tick, setTick] = useState(0)
   const [hovered, setHovered] = useState<number | null>(null)
@@ -740,7 +833,9 @@ export function ImagesSection({ productId, t, countries = [], pendingImages = []
               <img src={im.path} alt={im.name} title={im.name}
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 onError={(e) => { (e.target as HTMLImageElement).style.opacity = '.25' }} />
-              {hovered === im.id && (
+              {/* On narrow, hover never fires (touch) — always show the actions overlay instead of
+                  requiring a hover gesture that doesn't exist on a phone (Mantis #10846). */}
+              {(narrow || hovered === im.id) && (
                 <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,.48)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
                   <button style={hoverCircle} title={t('img_view')} onClick={() => setLightbox(im.path)}><EyeIcon /></button>
                   <button style={hoverCircle} title={t('img_edit')}
@@ -852,6 +947,7 @@ const VARIANT_COL_LABEL: Record<string, string> = {
 const VARIANT_COL_WIDTH: Record<string, number> = { id: 50, main: 60, image: 70, status: 70 }
 const variantCols$ = makeColStore('melis-product-variant-cols-v1', VARIANT_COL_ORDER)
 const VARIANT_ESSENTIAL_COLS = new Set(['sku'])
+const VARIANT_SORTABLE = new Set<ProductVariantSortKey>(['id', 'main', 'status', 'sku'])
 
 export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: number | null; t: TFn; onAdd: () => void; onEdit: (id: number) => void; can?: (cap: string) => boolean }) {
   const narrow = useIsNarrow()
@@ -862,8 +958,8 @@ export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: n
   function toggleExpand(id: number) {
     setExpanded((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
   }
-  const [items, setItems] = useState<ProductVariant[]>([])
   const [tick, setTick] = useState(0)
+  const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
   const [toDelete, setToDelete] = useState<ProductVariant | null>(null)
   // Tooltip au survol du SKU (calqué sur ProductNameCell / legacy toolTipVarHoverEvent, cf. VariantTooltipTable) —
@@ -887,11 +983,18 @@ export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: n
   const hoveredTooltipRow = tooltipItems?.filter((v) => v.id === hoveredSkuId) ?? []
   const [toDup, setToDup] = useState<ProductVariant | null>(null)
 
-  useEffect(() => { if (!productId) return; fetchProductVariants(productId).then((r) => setItems(r.items)).catch(() => null) }, [productId, tick])
+  // Scroll infini + tri server-side + keyset (mutualisé). Recherche server-side (SKU/id/attributs).
+  // productId null (produit en création) → aucune requête, liste vide. `tick` force un reload après mutation.
+  const { items, total, loading, hasMore, sentinelRef, sortCol, sortDir, toggleSort } = useKeysetList<ProductVariant>({
+    fetcher: (a) => productId
+      ? fetchProductVariants(productId, { ...a, sort: a.sort as ProductVariantSortKey, search })
+      : Promise.resolve({ items: [], total: 0, nextCursor: null }),
+    deps: [productId, search, tick],
+    defaultSort: 'main',
+    defaultDir: 'desc',
+  })
   async function confirmDelete() { if (!toDelete || !productId) return; try { await deleteProductVariant(productId, toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) } }
   async function toggleStatus(v: ProductVariant) { if (!productId) return; try { await saveProductVariant(productId, { variantId: v.id, sku: v.sku, status: v.status !== 1, isMain: v.isMain === 1 }); setTick((x) => x + 1) } catch { /* */ } }
-
-  const view = items.filter((v) => !search || v.sku.toLowerCase().includes(search.toLowerCase()) || v.attributes.toLowerCase().includes(search.toLowerCase()) || String(v.id).includes(search))
 
   const eCols = effectiveCols(cols, VARIANT_ESSENTIAL_COLS, narrow)
   const visible = visibleCols(eCols)
@@ -932,7 +1035,9 @@ export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: n
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, gap: 12, flexWrap: narrow ? 'wrap' : 'nowrap' }}>
         <h3 style={{ fontSize: 15, fontWeight: 600, margin: 0 }}>{t('var_title')}</h3>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexBasis: narrow ? '100%' : undefined, flexWrap: narrow ? 'wrap' : 'nowrap' }}>
-          <input style={{ ...inputCss, height: 34, width: narrow ? '100%' : 220 }} value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('search')} />
+          <input style={{ ...inputCss, height: 34, width: narrow ? '100%' : 220 }} value={searchInput}
+            onChange={(e) => { const val = e.target.value; setSearchInput(val); if (val === '') setSearch('') }}
+            onKeyDown={(e) => { if (e.key === 'Enter') setSearch(searchInput) }} placeholder={t('search')} />
           <button style={{ ...btnGhost, height: 34, flex: narrow ? 1 : undefined }} onClick={() => setTick((x) => x + 1)} title={t('refresh')}>↻</button>
           <div style={{ position: 'relative', flex: narrow ? 1 : undefined, display: narrow ? 'flex' : undefined }}>
             <button style={{ ...btnGhost, height: narrow ? '100%' : 34, width: narrow ? '100%' : undefined, justifyContent: 'center', whiteSpace: narrow ? 'normal' : 'nowrap', padding: narrow ? '6px 8px' : '0 12px' }} onClick={() => setShowCols((x) => !x)} title={t('columns')}><GripIcon />{t('columns')}</button>
@@ -950,16 +1055,21 @@ export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: n
           <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}>
             <tr>
               {hasHidden && <th style={{ ...th, width: 32 }} />}
-              {visible.map((c) => (
-                <th key={c.id} style={{ ...th, ...(VARIANT_COL_WIDTH[c.id] ? { width: VARIANT_COL_WIDTH[c.id] } : {}) }}>{t(VARIANT_COL_LABEL[c.id])}</th>
-              ))}
+              {visible.map((c) => {
+                const sortable = VARIANT_SORTABLE.has(c.id as ProductVariantSortKey)
+                return (
+                  <th key={c.id} style={{ ...th, ...(VARIANT_COL_WIDTH[c.id] ? { width: VARIANT_COL_WIDTH[c.id] } : {}), cursor: sortable ? 'pointer' : 'default', userSelect: 'none' }} onClick={sortable ? () => toggleSort(c.id) : undefined}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>{t(VARIANT_COL_LABEL[c.id])}{sortable && <SortIcon dir={sortCol === c.id ? sortDir : null} />}</span>
+                  </th>
+                )
+              })}
               <th style={{ ...th, width: 150, textAlign: 'right' }}>{t('action')}</th>
             </tr>
           </thead>
           <tbody>
-            {view.length === 0 ? (
-              <tr><td colSpan={totalCols} style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: '30px 16px' }}>{t('var_empty')}</td></tr>
-            ) : view.map((v) => (
+            {items.length === 0 ? (
+              <tr><td colSpan={totalCols} style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: '30px 16px' }}>{loading ? t('var_loading') : t('var_empty')}</td></tr>
+            ) : items.map((v) => (
               <Fragment key={v.id}>
                 <tr>
                   {hasHidden && (
@@ -986,8 +1096,16 @@ export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: n
             ))}
           </tbody>
         </table>
+        <div ref={sentinelRef} style={{ height: 1 }} />
+        {loading && items.length > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '12px 16px', fontSize: 12, color: 'var(--color-muted-foreground)' }}>
+            <Spinner />{t('var_loading')}
+          </div>
+        )}
+        {!hasMore && items.length > 0 && (
+          <div style={{ padding: '10px 16px', textAlign: 'center', fontSize: 12, color: 'var(--color-muted-foreground)' }}>{t('var_count', { n: total })}</div>
+        )}
       </div>
-      <p style={{ ...hint, margin: '8px 2px 0' }}>{t('showing', { a: view.length ? 1 : 0, b: view.length, n: items.length })}</p>
 
       {toDelete && (
         <ConfirmModal t={t} title={t('var_del_title')} message={t('var_del_confirm', { u: toDelete.sku || `#${toDelete.id}` })} onCancel={() => setToDelete(null)} onConfirm={confirmDelete} />

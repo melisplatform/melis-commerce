@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import type React from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import {
   saveProductVariant, fetchVariant, fetchVariantMedia,
   fetchVariantPrices, saveVariantPrice,
@@ -7,12 +8,14 @@ import {
   fetchVariantAssoc, saveVariantAssoc, deleteVariantAssoc,
   fetchVariantAttributes, saveVariantAttribute,
   uploadVariantMedia, updateVariantMedia, deleteVariantMedia,
+  fetchProducts, fetchProductVariants,
   type VariantSeo, type VariantPrice, type VariantStock, type MediaItem, type CountryOption,
-  type AssocVariant, type AvailVariant, type VariantAttrGroup,
+  type AssocVariant, type VariantAttrGroup, type ProductItem, type ProductVariant, type ProductSortKey,
 } from './api'
+import { useKeysetList } from '../../shared/use-keyset-list'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
 import { DatePicker } from '../../shared/DatePicker'
-import { PlusIcon, TrashIcon, PencilIcon, EyeIcon, ArrowLeftIcon, ImageIcon, SettingsIcon, PaperclipIcon, CubesIcon } from '../../shared/icons'
+import { PlusIcon, TrashIcon, PencilIcon, EyeIcon, ArrowLeftIcon, ImageIcon, SettingsIcon, PaperclipIcon, CubesIcon, SortIcon, Spinner } from '../../shared/icons'
 import { StatusBadge, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { Tabs, type TabDef } from '../../shared/Tabs'
@@ -313,6 +316,7 @@ function VarFiles({ productId, variantId, t, countries, onNeedVid }: { productId
   )
 }
 function VarImages({ productId, variantId, t, countries }: { productId: number; variantId: number | null; t: TFn; countries: CountryOption[] }) {
+  const narrow = useIsNarrow()
   const [images, setImages] = useState<MediaItem[]>([])
   // Images added while the variant doesn't exist yet (still on "Nouveau variant") are queued
   // here instead of eagerly auto-saving the variant to get an id — auto-saving would run the same
@@ -363,7 +367,9 @@ function VarImages({ productId, variantId, t, countries }: { productId: number; 
               <div key={im.id} style={{ position: 'relative', width: 160, height: 140, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--color-border)', flexShrink: 0 }}
                 onMouseEnter={() => setHovered(im.id)} onMouseLeave={() => setHovered(null)}>
                 <img src={im.path} alt={im.name} title={im.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { (e.target as HTMLImageElement).style.opacity = '.25' }} />
-                {hovered === im.id && (
+                {/* On narrow, hover never fires (touch) — always show the actions overlay instead of
+                    requiring a hover gesture that doesn't exist on a phone (Mantis #10846). */}
+                {(narrow || hovered === im.id) && (
                   <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,.48)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
                     <button style={hoverCircle} title={t('img_view')} onClick={() => setLightbox(im.path)}><EyeIcon /></button>
                     <button style={hoverCircle} title={t('img_edit')}
@@ -434,28 +440,31 @@ function VarAttributes({ productId, variantId, t, onNeedVid }: { productId: numb
   )
 }
 
-// ── Association : variants associés + variants disponibles à associer ────────
+// ── Association : variants associés (haut) + picker PAR PRODUIT (bas) ──────────
+// Legacy : on ne liste pas tous les variants de tous les produits à plat, mais la liste des
+// PRODUITS (keyset + recherche) ; au dépliage d'un produit on montre SES variants, chacun
+// associable via « + » (exclus : le variant courant + ceux déjà associés).
 const ASSOC_ESSENTIAL_COLS = new Set(['product'])
 
 function VarAssoc({ productId, variantId, t, onNeedVid }: { productId: number; variantId: number | null; t: TFn; onNeedVid?: () => Promise<number | null> }) {
   const narrow = useIsNarrow()
   const [associated, setAssociated] = useState<AssocVariant[]>([])
-  const [available, setAvailable] = useState<AvailVariant[]>([])
+  const [excludeIds, setExcludeIds] = useState<number[]>([])
   const [tick, setTick] = useState(0)
-  const [search, setSearch] = useState('')
   const [expandedAssoc, setExpandedAssoc] = useState<Set<number>>(new Set())
-  const [expandedAvail, setExpandedAvail] = useState<Set<number>>(new Set())
   function toggle(set: Set<number>, setter: (s: Set<number>) => void, id: number) {
     const next = new Set(set); next.has(id) ? next.delete(id) : next.add(id); setter(next)
   }
-  useEffect(() => { if (variantId == null) return; fetchVariantAssoc(productId, variantId).then((r) => { setAssociated(r.associated); setAvailable(r.available) }).catch(() => null) }, [productId, variantId, tick])
+  useEffect(() => { if (variantId == null) return; fetchVariantAssoc(productId, variantId).then((r) => { setAssociated(r.associated); setExcludeIds(r.excludeIds) }).catch(() => null) }, [productId, variantId, tick])
   async function add(vId: number) { const id = variantId ?? await onNeedVid?.(); if (!id) return; try { await saveVariantAssoc(productId, id, vId); setTick((x) => x + 1) } catch { /* */ } }
   async function del(avarId: number) { const id = variantId ?? await onNeedVid?.(); if (!id) return; try { await deleteVariantAssoc(productId, id, avarId); setTick((x) => x + 1) } catch { /* */ } }
-  const filt = available.filter((v) => !search || v.productName.toLowerCase().includes(search.toLowerCase()) || v.sku.toLowerCase().includes(search.toLowerCase()) || String(v.variantId).includes(search))
   const tbl = { width: '100%', borderCollapse: 'collapse' as const }
 
-  type Row = AssocVariant | AvailVariant
-  const ASSOC_COLS: { id: string; label: string; render: (v: Row) => import('react').ReactNode; style?: import('react').CSSProperties }[] = [
+  // Exclusions : variant courant + déjà associés (le backend fournit l'ensemble, on complète
+  // avec `associated` pour couvrir l'instant entre un ajout et le refetch).
+  const excluded = new Set<number>([...excludeIds, ...associated.map((a) => a.variantId), ...(variantId != null ? [variantId] : [])])
+
+  const ASSOC_COLS: { id: string; label: string; render: (v: AssocVariant) => import('react').ReactNode; style?: import('react').CSSProperties }[] = [
     { id: 'id', label: t('var_col_id'), render: (v) => v.variantId },
     { id: 'status', label: t('col_status'), render: (v) => <StatusBadge active={v.status === 1} t={t} /> },
     { id: 'product', label: t('assoc_product'), render: (v) => v.productName, style: { ...td, fontWeight: 500 } },
@@ -499,33 +508,126 @@ function VarAssoc({ productId, variantId, t, onNeedVid }: { productId: number; v
       </div>
 
       <h3 style={{ fontSize: 15, fontWeight: 600, margin: '0 0 10px' }}>{t('assoc_variants')}</h3>
-      <input style={{ ...inputCss, height: 34, maxWidth: narrow ? undefined : 320, width: narrow ? '100%' : undefined, marginBottom: 10 }} value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('search')} />
+      <AssocProductPicker t={t} narrow={narrow} excluded={excluded} onAdd={add} />
+    </div>
+  )
+}
+
+// Liste des PRODUITS (keyset + recherche) : chaque produit se déplie sur ses variants.
+function AssocProductPicker({ t, narrow, excluded, onAdd }: { t: TFn; narrow: boolean; excluded: Set<number>; onAdd: (variantId: number) => void }) {
+  const navigate = useNavigate()
+  const loc = useLocation()
+  const base = loc.pathname.slice(0, loc.pathname.lastIndexOf('/'))
+  const openProduct = (pid: number) => navigate(`${base}/${pid}`, { state: { tab: 'variants' } })
+  const [searchInput, setSearchInput] = useState('')
+  const [search, setSearch] = useState('')
+  const [expanded, setExpanded] = useState<Set<number>>(new Set())
+  const { items, loading, hasMore, sentinelRef, sortCol, sortDir, toggleSort } = useKeysetList<ProductItem>({
+    fetcher: (a) => fetchProducts({ ...a, sort: a.sort as ProductSortKey, search }),
+    deps: [search], defaultSort: 'id', defaultDir: 'asc',
+  })
+  function toggleExpand(id: number) { setExpanded((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n }) }
+  const dot = (on: boolean) => <span style={{ display: 'inline-block', width: 9, height: 9, borderRadius: '50%', background: on ? '#16a34a' : '#dc2626' }} />
+  const COLS: { id: ProductSortKey; label: string }[] = [
+    { id: 'id', label: t('var_col_id') }, { id: 'status', label: t('col_status') }, { id: 'name', label: t('assoc_product') },
+  ]
+  return (
+    <>
+      <input style={{ ...inputCss, height: 34, maxWidth: narrow ? undefined : 320, width: narrow ? '100%' : undefined, marginBottom: 10 }}
+        value={searchInput}
+        onChange={(e) => { const v = e.target.value; setSearchInput(v); if (v === '') setSearch('') }}
+        onKeyDown={(e) => { if (e.key === 'Enter') setSearch(searchInput) }}
+        placeholder={t('assoc_search_product')} />
       <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, overflowX: 'auto' }}>
-        <table style={tbl}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}>
             <tr>
-              {hasHiddenAssocCols && <th style={{ ...th, width: 32 }} />}
-              {visibleAssocCols.map((c) => <th key={c.id} style={th}>{c.label}</th>)}
+              {COLS.map((c) => (
+                <th key={c.id} style={{ ...th, cursor: 'pointer', userSelect: 'none' }} onClick={() => toggleSort(c.id)}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>{c.label}<SortIcon dir={sortCol === c.id ? sortDir : null} /></span>
+                </th>
+              ))}
               <th style={{ ...th, width: 70 }} />
             </tr>
           </thead>
           <tbody>
-            {filt.length === 0 ? <tr><td colSpan={assocColSpan} style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: 24 }}>{t('empty')}</td></tr>
-              : filt.map((v) => (
-                <Fragment key={v.variantId}>
-                  <tr>
-                    {hasHiddenAssocCols && <td style={td}><ExpandToggle expanded={expandedAvail.has(v.variantId)} onClick={() => toggle(expandedAvail, setExpandedAvail, v.variantId)} /></td>}
-                    {visibleAssocCols.map((c) => <td key={c.id} style={c.style ?? td}>{c.render(v)}</td>)}
-                    <td style={td}><button style={iconBtn} title={t('assoc_add')} onClick={() => add(v.variantId)}><PlusIcon /></button></td>
-                  </tr>
-                  {hasHiddenAssocCols && expandedAvail.has(v.variantId) && (
-                    <HiddenColsRow cols={assocColDefs} labelFor={labelFor} renderValue={(id) => ASSOC_COLS.find((c) => c.id === id)?.render(v)} colSpan={assocColSpan} narrow={narrow} />
-                  )}
-                </Fragment>
-              ))}
+            {items.length === 0 && !loading ? (
+              <tr><td colSpan={COLS.length + 1} style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: 24 }}>{t('empty')}</td></tr>
+            ) : items.map((pr) => (
+              <Fragment key={pr.id}>
+                <tr style={{ cursor: 'pointer' }} onClick={() => toggleExpand(pr.id)}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-accent)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = '')}>
+                  <td style={{ ...td, color: 'var(--color-muted-foreground)', fontVariantNumeric: 'tabular-nums' }}>{pr.id}</td>
+                  <td style={td}>{dot(pr.status === 1)}</td>
+                  <td style={{ ...td, fontWeight: 500 }}>
+                    <button onClick={(e) => { e.stopPropagation(); openProduct(pr.id) }} title={t('assoc_open_product')}
+                      style={{ border: 0, background: 'transparent', color: 'var(--color-primary)', cursor: 'pointer', fontWeight: 500, fontSize: 14, padding: 0, textDecoration: 'underline', textAlign: 'left' }}>{pr.name || `#${pr.id}`}</button>
+                  </td>
+                  <td style={td}><button style={iconBtn} title={t('assoc_show_variants')} onClick={(e) => { e.stopPropagation(); toggleExpand(pr.id) }}><EyeIcon /></button></td>
+                </tr>
+                {expanded.has(pr.id) && (
+                  <ProductVariantsInline productId={pr.id} excluded={excluded} onAdd={onAdd} t={t} colSpan={COLS.length + 1} />
+                )}
+              </Fragment>
+            ))}
           </tbody>
         </table>
+        <div ref={sentinelRef} style={{ height: 1 }} />
+        {loading && (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '12px 16px', fontSize: 12, color: 'var(--color-muted-foreground)' }}>
+            <Spinner />{t('var_loading')}
+          </div>
+        )}
+        {!hasMore && items.length > 0 && (
+          <div style={{ padding: '8px 16px', textAlign: 'center', fontSize: 11, color: 'var(--color-muted-foreground)' }}>{t('var_count', { n: items.length })}</div>
+        )}
       </div>
-    </div>
+    </>
+  )
+}
+
+// Variants d'un produit déplié : ligne indentée par variant + bouton « + » (sauf exclus).
+function ProductVariantsInline({ productId, excluded, onAdd, t, colSpan }: { productId: number; excluded: Set<number>; onAdd: (variantId: number) => void; t: TFn; colSpan: number }) {
+  const navigate = useNavigate()
+  const loc = useLocation()
+  const base = loc.pathname.slice(0, loc.pathname.lastIndexOf('/'))
+  const openVariant = (vid: number) => navigate(`${base}/${productId}`, { state: { tab: 'variants', openVariantEditor: vid } })
+  const [rows, setRows] = useState<ProductVariant[] | null>(null)
+  useEffect(() => {
+    let ok = true
+    fetchProductVariants(productId, { limit: 200, sort: 'main', dir: 'desc' }).then((r) => { if (ok) setRows(r.items) }).catch(() => { if (ok) setRows([]) })
+    return () => { ok = false }
+  }, [productId])
+  const dot = (on: boolean) => <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: on ? '#16a34a' : '#dc2626' }} />
+  return (
+    <tr>
+      <td colSpan={colSpan} style={{ padding: 0, background: 'var(--color-muted,rgba(0,0,0,.02))' }}>
+        {rows === null ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px 10px 32px', fontSize: 12, color: 'var(--color-muted-foreground)' }}><Spinner />{t('var_loading')}</div>
+        ) : rows.length === 0 ? (
+          <div style={{ padding: '10px 16px 10px 32px', fontSize: 12, color: 'var(--color-muted-foreground)' }}>{t('var_empty')}</div>
+        ) : (
+          <div>
+            {rows.map((v) => {
+              const isExcluded = excluded.has(v.id)
+              return (
+                <div key={v.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px 8px 32px', borderTop: '1px solid var(--color-border)' }}>
+                  {dot(v.status === 1)}
+                  <button onClick={() => openVariant(v.id)} title={t('assoc_open_variant')}
+                    style={{ border: 0, background: 'transparent', color: 'var(--color-primary)', cursor: 'pointer', fontWeight: 500, fontSize: 13, padding: 0, textDecoration: 'underline', textAlign: 'left' }}>{v.sku || `#${v.id}`}</button>
+                  {v.attributes && <span style={{ fontSize: 12, color: 'var(--color-muted-foreground)' }}>{v.attributes}</span>}
+                  <span style={{ marginLeft: 'auto' }}>
+                    {isExcluded
+                      ? <span style={{ fontSize: 11, color: 'var(--color-muted-foreground)' }}>{t('assoc_already')}</span>
+                      : <button style={{ ...iconBtn, color: 'var(--color-primary)' }} title={t('assoc_add')} onClick={() => onAdd(v.id)}><PlusIcon /></button>}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </td>
+    </tr>
   )
 }

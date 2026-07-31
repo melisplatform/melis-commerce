@@ -551,6 +551,11 @@ return [
                                 'options' => [ 'route' => '/products/document-types[/]',
                                     'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiProduct', 'action' => 'documentTypes'] ],
                             ],
+                            'products-text-types' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/products/text-types[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiProduct', 'action' => 'textTypes'] ],
+                            ],
                             'products-media-update' => [
                                 'type' => 'Segment',
                                 'options' => [ 'route' => '/products/:id/media/:docId/update[/]', 'constraints' => ['id' => '[0-9]+', 'docId' => '[0-9]+'],

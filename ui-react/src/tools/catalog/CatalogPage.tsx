@@ -15,6 +15,7 @@ import { notify } from '../../shared/notify'
 import { Tabs, type TabDef } from '../../shared/Tabs'
 import { useCaps } from '../../shared/useCaps'
 import { useIsNarrow } from '../../shared/useIsNarrow'
+import { usePointerDrag } from '../../shared/usePointerDrag'
 import type { Option } from '../../shared/api'
 
 /* Brique « Catalogues / Catégories » (MelisCommerce) — arbre full React (drag-and-drop) +
@@ -224,8 +225,11 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
   const [products, setProducts] = useState<CatProduct[]>([])
   const [prodLoaded, setProdLoaded] = useState(false)
   // Drag-and-drop de l'ordre des produits affectés (persiste pcat_order, comme le legacy).
+  // Pointer Events (pas HTML5 draggable) : fonctionne aussi bien au doigt qu'à la souris —
+  // draggable/dragstart ne se déclenche jamais sur un geste tactile mobile (Mantis #10843).
   const [dragProd, setDragProd] = useState<number | null>(null)
   const [dropProd, setDropProd] = useState<{ id: number; pos: 'before' | 'after' } | null>(null)
+  const prodPointerDrag = usePointerDrag<number>('data-prod-id', Number)
 
   useEffect(() => {
     setTexts(languages.map((l) => ({ langId: l.id, langName: l.name, name: '', description: '' })))
@@ -424,7 +428,7 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
               {products.length === 0 ? (
                 <div style={{ padding: 30, textAlign: 'center', color: 'var(--color-muted-foreground)', border: '1px dashed var(--color-border)', borderRadius: 8 }}>{t('prod_empty')}</div>
               ) : (
-                <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden' }} onDragEnd={() => { setDragProd(null); setDropProd(null) }}>
+                <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden' }}>
                   {/* En-tête */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'var(--color-muted,rgba(0,0,0,.03))', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.04em', color: 'var(--color-muted-foreground)' }}>
                     <span style={{ width: 16 }} />
@@ -433,22 +437,44 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
                     <span style={{ flex: 2 }}>{t('prod_col_name')}</span>
                     <span style={{ width: 90 }}>{t('prod_col_status')}</span>
                   </div>
-                  {/* Lignes drag-and-drop */}
+                  {/* Lignes drag-and-drop — seule la poignée déclenche le drag (pointerdown), pas
+                      toute la ligne : sinon un simple scroll tactile sur la ligne serait intercepté. */}
                   {products.map((p) => {
                     const isTarget = dropProd?.id === p.id && dragProd !== p.id
                     return (
-                      <div key={p.id} draggable
-                        onDragStart={(e) => { setDragProd(p.id); e.dataTransfer.effectAllowed = 'move' }}
-                        onDragOver={(e) => { if (dragProd == null || dragProd === p.id) return; e.preventDefault(); const r = e.currentTarget.getBoundingClientRect(); setDropProd({ id: p.id, pos: (e.clientY - r.top) < r.height / 2 ? 'before' : 'after' }) }}
-                        onDragLeave={() => setDropProd((d) => (d?.id === p.id ? null : d))}
-                        onDrop={(e) => { e.preventDefault(); if (dragProd != null && dropProd) moveProduct(dragProd, dropProd.id, dropProd.pos); setDragProd(null); setDropProd(null) }}
+                      <div key={p.id} data-prod-id={p.id}
                         style={{
-                          display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', fontSize: 14, cursor: 'grab',
+                          display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', fontSize: 14,
                           borderTop: '1px solid var(--color-border)', userSelect: 'none', opacity: dragProd === p.id ? 0.4 : 1,
                           background: 'var(--color-card)',
                           boxShadow: isTarget ? (dropProd!.pos === 'before' ? 'inset 0 2px 0 0 var(--color-primary)' : 'inset 0 -2px 0 0 var(--color-primary)') : 'none',
                         }}>
-                        <span style={{ display: 'inline-flex', color: 'var(--color-muted-foreground)', opacity: 0.6 }}><GripIcon /></span>
+                        <span style={{ display: 'inline-flex', color: 'var(--color-muted-foreground)', opacity: 0.6, cursor: 'grab', touchAction: 'none' }}
+                          onPointerDown={(e) => {
+                            e.preventDefault()
+                            setDragProd(p.id)
+                            // Vit pour toute la durée de CE geste (fermé par onHover/onDrop, tous deux
+                            // passés une seule fois à startDrag, hors du cycle de rendu React) — lire
+                            // `dropProd` (state) au lieu de cette variable locale relirait une closure
+                            // périmée, capturée au DÉBUT du drag et jamais recréée entre-temps.
+                            let currentDrop: { id: number; pos: 'before' | 'after' } | null = null
+                            prodPointerDrag.startDrag(p.id, {
+                              onHover: (targetId, el, ev) => {
+                                if (targetId === p.id) { currentDrop = null; setDropProd(null); return }
+                                const r = el.getBoundingClientRect()
+                                currentDrop = { id: targetId, pos: (ev.clientY - r.top) < r.height / 2 ? 'before' : 'after' }
+                                setDropProd(currentDrop)
+                              },
+                              onLeave: () => { currentDrop = null; setDropProd(null) },
+                              onDrop: (targetId) => {
+                                if (currentDrop && currentDrop.id === targetId) moveProduct(p.id, currentDrop.id, currentDrop.pos)
+                                setDragProd(null); setDropProd(null)
+                              },
+                              onCancel: () => { setDragProd(null); setDropProd(null) },
+                            })
+                          }}>
+                          <GripIcon />
+                        </span>
                         <span style={{ width: 50, color: 'var(--color-muted-foreground)' }}>{p.id}</span>
                         <span style={{ flex: 1 }}>{p.reference || '—'}</span>
                         <span style={{ flex: 2, fontWeight: 500 }}>{p.name}</span>
