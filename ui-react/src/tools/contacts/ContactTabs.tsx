@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { Fragment, useEffect, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   fetchContactAddressOptions, fetchContactAssociations, fetchContactOptions,
@@ -10,10 +10,13 @@ import { StatusBadge } from '../../shared/widgets'
 import { LinkHeader } from '../../shared/LinkHeader'
 import { ConfirmModal } from '../../shared/ConfirmModal'
 import { AddressEditor } from '../../shared/AddressEditor'
-import { iconBtn, card, inputCss, btnGhost, th, td } from '../../shared/styles'
+import { iconBtn, card, btnGhost, th, td } from '../../shared/styles'
 import { TrashIcon, PencilIcon, StarIcon, CheckIcon, UserPlusIcon, RefreshIcon, SortIcon, Spinner } from '../../shared/icons'
 import type { T } from '../../shared/i18n'
 import type { Option } from '../../shared/api'
+import { useIsNarrow } from '../../shared/useIsNarrow'
+import { ExpandToggle, HiddenColsRow } from '../../shared/ExpandableRow'
+import { effectiveCols } from '../../shared/columns'
 
 const ACCOUNT_ROUTE = '/melis-commerce/clients-list'
 
@@ -28,18 +31,23 @@ export function AddressTab({ addresses, onChange, t }: { addresses: ContactAddre
 // ── Comptes associés — scroll infini keyset + tri server-side ─────────────────────
 const ASSOC_SORTABLE = new Set<ContactAssocSortKey>(['id', 'account', 'status', 'def_account', 'def_contact'])
 
+// Single essential column on narrow viewports: just enough to identify the row (account name),
+// the rest reachable via the per-row "+" (see displayCols/hasHidden below).
+const ASSOC_ESSENTIAL = new Set(['account'])
+
 export function AssociationTab({ contactId, t, can }: { contactId: number; t: T; can?: (cap: string) => boolean }) {
   const allow = (cap: string) => (can ? can(cap) : true)
   const navigate = useNavigate()
+  const narrow = useIsNarrow()
   const [opts, setOpts] = useState<Option[]>([])
-  const [searchInput, setSearchInput] = useState('')
-  const [search, setSearch] = useState('')
   const [tick, setTick] = useState(0)
   const [toUnlink, setToUnlink] = useState<ContactAssociation | null>(null)
+  const [expanded, setExpanded] = useState<Set<number>>(new Set())
+  const toggleExpand = (id: number) => setExpanded((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n })
 
   const { items, total, loading, hasMore, sentinelRef, sortCol, sortDir, toggleSort } = useKeysetList<ContactAssociation>({
-    fetcher: (a) => fetchContactAssociations(contactId, { ...a, sort: a.sort as ContactAssocSortKey, search }),
-    deps: [contactId, search, tick],
+    fetcher: (a) => fetchContactAssociations(contactId, { ...a, sort: a.sort as ContactAssocSortKey }),
+    deps: [contactId, tick],
     defaultSort: 'account',
     defaultDir: 'asc',
   })
@@ -60,14 +68,15 @@ export function AssociationTab({ contactId, t, can }: { contactId: number; t: T;
     { id: 'def_account', label: t('as_def_account'), center: true, render: (r) => (r.isDefaultAccount ? <StarIcon /> : '—') },
     { id: 'def_contact', label: t('as_def_contact'), center: true, render: (r) => (r.isMain ? <StarIcon /> : '—') },
   ]
+  const displayCols = effectiveCols(COLS.map((c) => ({ id: c.id, visible: true })), ASSOC_ESSENTIAL, narrow)
+  const visibleColIds = new Set(displayCols.filter((c) => c.visible).map((c) => c.id))
+  const shownCols = COLS.filter((c) => visibleColIds.has(c.id))
+  const hasHidden = narrow
 
   return (
     <div>
-      {/* Barre d'outils unique : recherche à gauche ; à droite = lier un compte + ajouter + rafraîchir. */}
+      {/* Barre d'outils : lier un compte + ajouter + rafraîchir. */}
       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-        <input style={{ ...inputCss, height: 36, flex: 1, minWidth: 180, maxWidth: 320 }} value={searchInput}
-          onChange={(e) => { const v = e.target.value; setSearchInput(v); if (v === '') setSearch('') }}
-          onKeyDown={(e) => { if (e.key === 'Enter') setSearch(searchInput) }} placeholder={t('ph_search_account')} />
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           {allow('association.create') && <LinkHeader inline options={available} placeholder={t('as_link_ph')} linkLabel={t('as_link')} onLink={link} />}
           <button style={{ ...btnGhost, height: 36 }} onClick={() => navigate(`${ACCOUNT_ROUTE}/new`)} title={t('as_add')}><UserPlusIcon />{t('as_add')}</button>
@@ -76,10 +85,11 @@ export function AssociationTab({ contactId, t, can }: { contactId: number; t: T;
       </div>
 
       <div style={{ ...card, overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 640 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', ...(narrow ? {} : { minWidth: 640 }) }}>
           <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}>
             <tr>
-              {COLS.map((c) => {
+              {hasHidden && <th style={{ ...th, width: 32 }} />}
+              {shownCols.map((c) => {
                 const sortable = ASSOC_SORTABLE.has(c.id)
                 return (
                   <th key={c.id} style={{ ...th, ...(c.width ? { width: c.width } : {}), ...(c.center ? { textAlign: 'center' as const } : {}), cursor: sortable ? 'pointer' : 'default', userSelect: 'none' }} onClick={sortable ? () => toggleSort(c.id) : undefined}>
@@ -92,12 +102,14 @@ export function AssociationTab({ contactId, t, can }: { contactId: number; t: T;
           </thead>
           <tbody>
             {loading && items.length === 0 ? (
-              <tr><td colSpan={COLS.length + 1} style={{ ...td, textAlign: 'center', padding: '30px 16px', color: 'var(--color-muted-foreground)' }}>{t('loading')}</td></tr>
+              <tr><td colSpan={shownCols.length + (hasHidden ? 1 : 0) + 1} style={{ ...td, textAlign: 'center', padding: '30px 16px', color: 'var(--color-muted-foreground)' }}>{t('loading')}</td></tr>
             ) : items.length === 0 ? (
-              <tr><td colSpan={COLS.length + 1} style={{ ...td, textAlign: 'center', padding: '30px 16px', color: 'var(--color-muted-foreground)' }}>{t('as_empty')}</td></tr>
+              <tr><td colSpan={shownCols.length + (hasHidden ? 1 : 0) + 1} style={{ ...td, textAlign: 'center', padding: '30px 16px', color: 'var(--color-muted-foreground)' }}>{t('as_empty')}</td></tr>
             ) : items.map((r) => (
-              <tr key={r.id}>
-                {COLS.map((c) => <td key={c.id} style={{ ...td, ...(c.center ? { textAlign: 'center' as const } : {}) }}>{c.render(r)}</td>)}
+              <Fragment key={r.id}>
+              <tr>
+                {hasHidden && <td style={td}><ExpandToggle expanded={expanded.has(r.id)} onClick={() => toggleExpand(r.id)} /></td>}
+                {shownCols.map((c) => <td key={c.id} style={{ ...td, ...(c.center ? { textAlign: 'center' as const } : {}) }}>{c.render(r)}</td>)}
                 <td style={{ ...td, textAlign: 'right' }}>
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6 }}>
                     <button style={iconBtn} title={t('edit')} onClick={() => navigate(`${ACCOUNT_ROUTE}/${r.id}`)}><PencilIcon /></button>
@@ -106,6 +118,11 @@ export function AssociationTab({ contactId, t, can }: { contactId: number; t: T;
                   </div>
                 </td>
               </tr>
+              {hasHidden && expanded.has(r.id) && (
+                <HiddenColsRow cols={displayCols} labelFor={(id) => COLS.find((c) => c.id === id)?.label ?? id}
+                  renderValue={(id) => COLS.find((c) => c.id === id)?.render(r)} colSpan={shownCols.length + 2} narrow={narrow} />
+              )}
+              </Fragment>
             ))}
           </tbody>
         </table>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { card, inputCss, btnGhost } from './styles'
 import { LinkIcon } from './icons'
+import { useIsNarrow } from './useIsNarrow'
 import type { Option } from './api'
 
 /**
@@ -15,6 +16,7 @@ export function LinkHeader({ options, placeholder, linkLabel, onLink, inline }: 
   /** true → pas de wrapper flottant (display:contents) : s'intègre dans une barre d'outils parente. */
   inline?: boolean
 }) {
+  const narrow = useIsNarrow()
   const [query, setQuery] = useState('')
   const [selectedId, setSelectedId] = useState(0)
   const [open, setOpen] = useState(false)
@@ -50,7 +52,7 @@ export function LinkHeader({ options, placeholder, linkLabel, onLink, inline }: 
 
   return (
     <div style={inline ? { display: 'contents' } : { display: 'flex', justifyContent: 'flex-end', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
-      <div ref={ref} style={{ position: 'relative', width: inline ? 220 : 260 }}>
+      <div ref={ref} style={{ position: 'relative', width: narrow ? '100%' : inline ? 220 : 260 }}>
         <input style={{ ...inputCss, height: 36 }} value={query} placeholder={placeholder}
           onChange={(e) => onQueryChange(e.target.value)}
           onFocus={() => { if (query.trim()) setOpen(true) }} />
@@ -67,7 +69,7 @@ export function LinkHeader({ options, placeholder, linkLabel, onLink, inline }: 
           </div>
         )}
       </div>
-      <button style={{ ...btnGhost, height: 36, color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
+      <button style={{ ...btnGhost, height: 36, color: 'var(--color-primary)', borderColor: 'var(--color-primary)', ...(narrow ? { flex: '1 1 100%', justifyContent: 'center' } : {}) }}
         onClick={link} disabled={!selectedId || busy}>
         <LinkIcon />{linkLabel}
       </button>

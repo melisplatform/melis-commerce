@@ -448,7 +448,11 @@ function ContactForm({ id, base }: { id: string; base: string }) {
       {loading ? (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '40vh', color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>
       ) : (
-        <div style={{ display: narrow ? 'flex' : 'grid', flexDirection: narrow ? 'column' : undefined, gridTemplateColumns: narrow ? undefined : 'minmax(0,1fr) minmax(0,1fr)', gap: 20, alignItems: 'start' }}>
+        /* alignItems:'start' only makes sense for the desktop GRID (stop the 2 columns from
+           stretching to match each other's height) — in the narrow flexDirection:'column' case,
+           align-items is the CROSS axis (horizontal) instead, so 'start' shrinks each column to
+           its own content width and left-aligns it, instead of stretching it full-width. */
+        <div style={{ display: narrow ? 'flex' : 'grid', flexDirection: narrow ? 'column' : undefined, gridTemplateColumns: narrow ? undefined : 'minmax(0,1fr) minmax(0,1fr)', gap: 20, alignItems: narrow ? 'stretch' : 'start' }}>
           {/* Colonne 1 — Identité (infos personnelles) */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minWidth: 0 }}>
             <div style={{ ...card, padding: 24 }}>

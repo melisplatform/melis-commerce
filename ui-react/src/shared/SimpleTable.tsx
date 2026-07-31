@@ -83,10 +83,17 @@ export function SimpleTable<TRow>({
               onChange={(e) => { setQ(e.target.value); setPage(1) }} placeholder={searchPlaceholder ?? tr('search')} />
           )}
           {filters}
-          <div style={{ marginLeft: 'auto', display: 'inline-flex', gap: 6 }}>
+          {/* flexWrap: a toolbarEnd caller (e.g. LinkHeader) can contribute more than one element
+              (an autocomplete input + its own button) — without wrap, that plus Ajouter/Actualiser
+              never fit on one line on a narrow screen and just overflow off-screen instead of
+              dropping to a 2nd line. Safe-additive: nothing here relied on nowrap before.
+              Ajouter/Actualiser go full-width EACH on narrow rather than paired 50/50: their
+              labels are very unevenly long ("Ajouter un contact" vs "Rafraîchir"), so a fixed
+              half-width forces the longer one to wrap inside the button. */}
+          <div style={{ marginLeft: 'auto', display: 'inline-flex', flexWrap: 'wrap', gap: 6, ...(narrow ? { width: '100%' } : {}) }}>
             {toolbarEnd}
-            {onAdd && <button style={{ ...iconBtn, width: 'auto', height: 34, padding: '0 12px', gap: 6, border: '1px solid var(--color-border)' }} title={addTitle ?? tr('tbl_add')} onClick={onAdd}>{addIcon}<span>{addTitle ?? tr('tbl_add')}</span></button>}
-            {onRefresh && <button style={{ ...iconBtn, width: 'auto', height: 34, padding: '0 12px', gap: 6, border: '1px solid var(--color-border)' }} title={tr('refresh')} onClick={onRefresh}><RefreshIcon /><span>{tr('refresh')}</span></button>}
+            {onAdd && <button style={{ ...iconBtn, width: 'auto', height: 34, padding: '0 12px', gap: 6, border: '1px solid var(--color-border)', justifyContent: 'center', ...(narrow ? { flex: '1 1 100%' } : {}) }} title={addTitle ?? tr('tbl_add')} onClick={onAdd}>{addIcon}<span>{addTitle ?? tr('tbl_add')}</span></button>}
+            {onRefresh && <button style={{ ...iconBtn, width: 'auto', height: 34, padding: '0 12px', gap: 6, border: '1px solid var(--color-border)', justifyContent: 'center', ...(narrow ? { flex: '1 1 100%' } : {}) }} title={tr('refresh')} onClick={onRefresh}><RefreshIcon /><span>{tr('refresh')}</span></button>}
           </div>
         </div>
       )}

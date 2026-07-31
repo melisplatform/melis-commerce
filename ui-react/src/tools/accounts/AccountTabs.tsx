@@ -174,10 +174,10 @@ export function ContactsTab({ accountId, pending, onPendingChange, t, can }: {
   }
   return (
     <div>
-      {allow('contacts.create') && <LinkHeader options={available} placeholder={t('c_link_ph')} linkLabel={t('c_link')} onLink={link} />}
       <SimpleTable<AccountContact> rows={rows} rowKey={(r) => r.id} empty={t('c_empty')} loading={loading} loadingText={t('loading')}
-        t={t} search={(r) => `${r.firstname} ${r.name} ${r.email}`} searchPlaceholder={t('ph_search_contact')} onRefresh={() => setTick((x) => x + 1)}
+        t={t} onRefresh={() => setTick((x) => x + 1)}
         onAdd={allow('contacts.create') ? () => navigate(`${CONTACT_ROUTE}/new`) : undefined} addIcon={<UserPlusIcon />} addTitle={t('c_add')}
+        toolbarEnd={allow('contacts.create') ? <LinkHeader inline options={available} placeholder={t('c_link_ph')} linkLabel={t('c_link')} onLink={link} /> : undefined}
         cols={[
           { key: 'firstname', label: t('c_firstname'), render: (r) => r.firstname || '—' },
           { key: 'name', label: t('c_name'), essential: true, render: (r) => <span style={{ fontWeight: 500 }}>{r.name || '—'}</span> },

@@ -40,7 +40,7 @@ export const DICT = mergeDict({
     as_def_account: 'Compte par défaut', as_def_contact: 'Contact par défaut',
     as_link_ph: 'Nom du compte', as_link: 'Lier le compte', as_add: 'Ajouter un compte',
     as_unlink_title: 'Délier le compte', as_unlink_confirm: 'Délier « {u} » de ce contact ?',
-    ph_search_address: 'Rechercher une adresse…', ph_search_account: 'Rechercher un compte…',
+    ph_search_address: 'Rechercher une adresse…',
   },
   en: {
     title: 'Contacts', subtitle: 'MelisCommerce contacts',
@@ -80,6 +80,6 @@ export const DICT = mergeDict({
     as_def_account: 'Default account', as_def_contact: 'Default contact',
     as_link_ph: 'Account name', as_link: 'Link account', as_add: 'Add account',
     as_unlink_title: 'Unlink account', as_unlink_confirm: 'Unlink “{u}” from this contact?',
-    ph_search_address: 'Search an address…', ph_search_account: 'Search an account…',
+    ph_search_address: 'Search an address…',
   },
 })
