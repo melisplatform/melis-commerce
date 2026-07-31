@@ -733,15 +733,20 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
                 return $this->jsonResponse(['success' => false, 'error' => 'No file uploaded'], 400);
             }
             $orig = basename((string) $file['name']);
-            $safe = preg_replace('/[^A-Za-z0-9._-]/', '_', $orig) ?: 'file';
+            [$ext, $uploadErr] = $this->validateUploadedFile($file);
+            if ($uploadErr !== null) {
+                return $this->jsonResponse(['success' => false, 'error' => $uploadErr], 400);
+            }
             $docRoot = rtrim((string) ($_SERVER['DOCUMENT_ROOT'] ?? (getcwd() . '/public')), '/');
             $relDir  = '/media/commerce/' . $clientId;
             $absDir  = $docRoot . $relDir;
             if (!is_dir($absDir) && !mkdir($absDir, 0775, true) && !is_dir($absDir)) {
                 return $this->jsonResponse(['success' => false, 'error' => 'Cannot create upload dir'], 500);
             }
-            $uniq    = substr(md5(uniqid('', true)), 0, 8);
-            $relPath = $relDir . '/' . $uniq . '_' . $safe;
+            // Nom stocké 100 % généré côté serveur : uniquement l'extension validée est conservée
+            // (l'extension/le nom d'origine du client ne sont JAMAIS réutilisés sur le disque).
+            $uniq    = substr(md5(uniqid('', true)), 0, 16);
+            $relPath = $relDir . '/' . $uniq . '.' . $ext;
             if (!@move_uploaded_file($file['tmp_name'], $docRoot . $relPath) && !@rename($file['tmp_name'], $docRoot . $relPath)) {
                 return $this->jsonResponse(['success' => false, 'error' => 'Upload failed'], 500);
             }
@@ -953,6 +958,50 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
 
             return $this->jsonResponse(['success' => true, 'data' => ['imported' => true, 'errors' => []]]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
+    }
+
+    /**
+     * Valide un fichier téléversé contre une allow-list stricte d'extensions ET le vrai type MIME
+     * (défense anti-RCE : refuse php/phtml/phar/svg/html/js/…). Renvoie l'extension validée sûre.
+     *
+     * @param array $file entrée $_FILES (tmp_name, name, error…)
+     * @return array{0: ?string, 1: ?string} [extensionValidée, messageErreurOuNull]
+     */
+    private function validateUploadedFile(array $file): array
+    {
+        // extension => liste des types MIME réels acceptables pour cette extension
+        static $allowed = [
+            'jpg'  => ['image/jpeg'],
+            'jpeg' => ['image/jpeg'],
+            'png'  => ['image/png'],
+            'gif'  => ['image/gif'],
+            'webp' => ['image/webp'],
+            'pdf'  => ['application/pdf'],
+            'doc'  => ['application/msword'],
+            'docx' => ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/zip'],
+            'xls'  => ['application/vnd.ms-excel', 'application/msword'],
+            'xlsx' => ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip'],
+            'csv'  => ['text/plain', 'text/csv', 'application/csv', 'application/vnd.ms-excel'],
+            'txt'  => ['text/plain'],
+        ];
+
+        if (!$file || !isset($file['tmp_name']) || ($file['error'] ?? 1) !== UPLOAD_ERR_OK || !is_uploaded_file((string) $file['tmp_name'])) {
+            return [null, 'No file uploaded'];
+        }
+        $ext = strtolower(pathinfo((string) $file['name'], PATHINFO_EXTENSION));
+        if (!isset($allowed[$ext])) {
+            return [null, 'File type not allowed'];
+        }
+        $mime = '';
+        if (function_exists('finfo_open')) {
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            if ($finfo) { $mime = (string) finfo_file($finfo, (string) $file['tmp_name']); finfo_close($finfo); }
+        }
+        // CSV/TXT : finfo renvoie souvent text/plain quelle que soit la donnée → l'allow-list d'extension suffit.
+        if ($mime !== '' && !in_array($mime, $allowed[$ext], true)) {
+            return [null, 'File content does not match its extension'];
+        }
+        return [$ext, null];
     }
 
     /** @return array{0: ?array, 1: ?HttpResponse} [$file, $errorResponseOrNull] */

@@ -14,7 +14,7 @@ input[name="m_box_product_attribute_values_ids_selected[]"]{
         		<div class="col-xs-12">
         			<div class="pdc-heading clearfix">
                         <h4>
-                        	<?php echo $val->atrans_name ?>
+                        	<?php echo $this->escapeHtml($val->atrans_name) ?>
                         </h4>
                     </div>
         		</div>
@@ -31,10 +31,10 @@ input[name="m_box_product_attribute_values_ids_selected[]"]{
         			?>
         			<div class="col-xs-2 cat-prd-attr-values">
         				<label>
-                    		<input type="checkbox" name="m_box_product_attribute_values_ids_selected[]" value="<?php echo $vals->atval_id ?>" <?= $checked; ?>>
-                			<?php 
+                    		<input type="checkbox" name="m_box_product_attribute_values_ids_selected[]" value="<?php echo $this->escapeHtmlAttr($vals->atval_id) ?>" <?= $checked; ?>>
+                			<?php
                     		    $valCol = 'avt_v_'.$vals->atype_column_value;
-                    		    echo $vals->$valCol
+                    		    echo $this->escapeHtml($vals->$valCol)
                 		    ?>
                 		</label>
             		</div>

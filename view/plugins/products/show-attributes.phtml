@@ -5,7 +5,7 @@
         {
             echo '<div class="form-group">';
             echo '<label>';
-            echo $attribute->getAttribute()->attr_trans[0]['atrans_name'];
+            echo $this->escapeHtml($attribute->getAttribute()->attr_trans[0]['atrans_name']);
             echo '</label>';
             echo '<select class="form-control" name="prd_attr_'.$attribute->getId().'">';
             foreach($attribute->getAttributeValues() as $value)
@@ -17,8 +17,8 @@
                 }
                 
                 $column = 'avt_v_'.$value->atype_column_value;
-                echo '<option '.$selected.' value="'.$value->atval_id.'">';
-                echo $value->atval_trans[0]->$column;
+                echo '<option '.$selected.' value="'.$this->escapeHtmlAttr($value->atval_id).'">';
+                echo $this->escapeHtml($value->atval_trans[0]->$column);
                 echo '</option>';
             }
             echo '</select>';

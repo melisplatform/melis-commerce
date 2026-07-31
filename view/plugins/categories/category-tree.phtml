@@ -31,7 +31,7 @@
     		                    $selected = 'selected';
     		                }
 
-    		                $temp .= '<li class="'.$opened.'"><span class="'.$selected.'" title="'.$items['text'].'">'.$items['cat_id'].' - '.$items['text'].'</span>';
+    		                $temp .= '<li class="'.$opened.'"><span class="'.$selected.'" title="'.$this->escapeHtmlAttr($items['text']).'">'.$this->escapeHtml($items['cat_id'].' - '.$items['text']).'</span>';
     		                $temp .= (!empty($data['html'])) ? $data['html'] : '';
     		                $temp .= '</li>';
     		            }

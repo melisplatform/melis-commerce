@@ -9,7 +9,7 @@
     					    // check if document type is image and default
     					    if($document->dtype_sub_code == 'DEFAULT' && $document->dtype_code == 'IMG')
     					    {
-    					        echo '<img class="img" src="'.$document->doc_path.'" />';
+    					        echo '<img class="img" src="'.$this->escapeHtmlAttr($document->doc_path).'" />';
     					        break;
     					    }
     					}
@@ -49,13 +49,13 @@
     			    }
     			?>
     			<div class="page-header">
-                    <h1><?php echo $title?></h1>
-                    <p class="lead"><?php echo $reference?></p>
+                    <h1><?php echo $this->escapeHtml($title)?></h1>
+                    <p class="lead"><?php echo $this->escapeHtml($reference)?></p>
                     <h3>
                         <?php
                             foreach ($this->product->getcategories() As $val)
                             {
-                                echo '<span class="label label-success">'.$val->catt_name.'</span>';
+                                echo '<span class="label label-success">'.$this->escapeHtml($val->catt_name).'</span>';
                             }
                         ?>
                     </h3>

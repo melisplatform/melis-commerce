@@ -520,8 +520,9 @@ class MelisComClientListController extends MelisAbstractActionController
                 if(!empty($accountContactList)){
                     foreach($accountContactList as $key => $v){
                         if($v['car_default_person']) {
-                            $defaultContact = $v['cper_firstname'] . ' ' . $v['cper_name'];
-                            $defaultContact = "<span class='d-none td-tooltip'>".$defaultContact."</span>".mb_strimwidth($defaultContact, 0, 30, '...');
+                            $defaultContact = trim(($v['cper_firstname'] ?? '') . ' ' . ($v['cper_name'] ?? ''));
+                            $defaultContactEsc = htmlspecialchars($defaultContact, ENT_QUOTES);
+                            $defaultContact = "<span class='d-none td-tooltip'>".$defaultContactEsc."</span>".htmlspecialchars(mb_strimwidth($defaultContact, 0, 30, '...'), ENT_QUOTES);
                             break;
                         }
                     }
@@ -529,14 +530,18 @@ class MelisComClientListController extends MelisAbstractActionController
 
                 $cliname = $melisComClientService->getAccountName($val['cli_id']);
 
+                $groupNameEsc = htmlspecialchars((string) $val['cgroup_name'], ENT_QUOTES);
+                $cliCompanyEsc = htmlspecialchars((string) $val['cli_company'], ENT_QUOTES);
+                $clinameEsc = htmlspecialchars((string) $cliname, ENT_QUOTES);
+
                 $rowdata = array(
                     'DT_RowId' => $val['cli_id'],
                     'cli_id' => $val['cli_id'],
-                    'cgroup_name' => !empty($val['cgroup_name']) ? "<span class='d-none td-tooltip'>".$val['cgroup_name']."</span>".mb_strimwidth($val['cgroup_name'], 0, 30, '...') : null,
+                    'cgroup_name' => !empty($val['cgroup_name']) ? "<span class='d-none td-tooltip'>".$groupNameEsc."</span>".htmlspecialchars(mb_strimwidth($val['cgroup_name'], 0, 30, '...'), ENT_QUOTES) : null,
                     'cli_status' => $contactStatus,
-                    'cli_company' => !empty($val['cli_company']) ? "<span class='d-none td-tooltip'>".$val['cli_company']."</span>".mb_strimwidth($val['cli_company'], 0, 30, '...') : null,
+                    'cli_company' => !empty($val['cli_company']) ? "<span class='d-none td-tooltip'>".$cliCompanyEsc."</span>".htmlspecialchars(mb_strimwidth($val['cli_company'], 0, 30, '...'), ENT_QUOTES) : null,
                     'cli_date_creation' => $clientCreated,
-                    'cli_name' => !empty($cliname) ? "<span class='d-none td-tooltip'>".$cliname."</span>".mb_strimwidth($cliname, 0, 30, '...') : null,
+                    'cli_name' => !empty($cliname) ? "<span class='d-none td-tooltip'>".$clinameEsc."</span>".htmlspecialchars(mb_strimwidth($cliname, 0, 30, '...'), ENT_QUOTES) : null,
                     'cli_num_orders' => $contactNumOrders,
                     'cli_last_order' => $lastOrder,
                     'default_contact' => $defaultContact,

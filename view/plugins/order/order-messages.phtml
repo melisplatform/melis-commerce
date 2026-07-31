@@ -8,8 +8,8 @@
     <?php foreach($this->orderMessages as $message){ ?>
     	<div class="media">
           	<div class="media-body">
-            	<h4 class="media-heading"><i class="fa fa-user"></i> <?= $message['firstName'] .' '. $message['middleName'] .' '. $message['lastName'] ?> <small><?= date("F d, Y " ,strtotime($message['omsg_date_creation'])) ?> </span> <span>, at <?= date("h:i a" ,strtotime($message['omsg_date_creation'])) ?></small></h4>
-            	<p><?= $message['omsg_message']?></p>
+            	<h4 class="media-heading"><i class="fa fa-user"></i> <?= $this->escapeHtml($message['firstName'] .' '. $message['middleName'] .' '. $message['lastName']) ?> <small><?= date("F d, Y " ,strtotime($message['omsg_date_creation'])) ?> </span> <span>, at <?= date("h:i a" ,strtotime($message['omsg_date_creation'])) ?></small></h4>
+            	<p><?= $this->escapeHtml($message['omsg_message'])?></p>
           	</div>
         </div>
     <?php } ?>
