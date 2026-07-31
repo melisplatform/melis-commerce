@@ -16,17 +16,32 @@ export interface OrderStatusDetail {
   translations: OrderStatusTranslation[]
 }
 
-export type OrderStatusListResult = ListResult<OrderStatusItem>
+export type OrderStatusSortKey = 'id' | 'name' | 'status'
+export interface OrderStatusListResult { items: OrderStatusItem[]; total: number; nextCursor: string | null }
 
 export function fetchOrderStatuses(params: {
-  search?: string; status?: number | null; page?: number; limit?: number
+  search?: string; status?: number | null; limit?: number; sort?: OrderStatusSortKey; dir?: 'asc' | 'desc'; after?: string | null
 } = {}): Promise<OrderStatusListResult> {
   const qs = new URLSearchParams()
   if (params.search) qs.set('search', params.search)
   if (params.status !== undefined && params.status !== null) qs.set('status', String(params.status))
-  qs.set('page', String(params.page ?? 1))
-  qs.set('limit', String(params.limit ?? 50))
+  if (params.limit) qs.set('limit', String(params.limit))
+  if (params.sort) qs.set('sort', params.sort)
+  if (params.dir) qs.set('dir', params.dir)
+  if (params.after) qs.set('after', params.after)
   return apiFetch<OrderStatusListResult>(`/melis/react-api/order-statuses?${qs}`)
+}
+
+/** Tous les éléments filtrés (export) via boucle de curseur keyset. */
+export async function fetchAllOrderStatuses(params: { search?: string; status?: number | null } = {}): Promise<OrderStatusItem[]> {
+  const all: OrderStatusItem[] = []
+  let after: string | null = null
+  do {
+    const rr: OrderStatusListResult = await fetchOrderStatuses({ ...params, limit: 200, after })
+    all.push(...rr.items)
+    after = rr.nextCursor
+  } while (after)
+  return all
 }
 
 export const fetchOrderStatusStats   = () => apiFetch<OrderStatusStats>('/melis/react-api/order-statuses/stats')

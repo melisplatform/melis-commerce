@@ -22,13 +22,37 @@ export interface ContactSavePayload {
   telMobile: string; telLandline: string; password: string; tags: string
 }
 
-export function fetchContacts(params: { search?: string; status?: number | null; accountId?: number | null } = {}): Promise<ListResult<ContactItem>> {
+export type ContactSortKey = 'id' | 'status' | 'firstname' | 'name' | 'account' | 'email' | 'type' | 'tags' | 'created'
+export interface ContactListResult { items: ContactItem[]; total: number; nextCursor: string | null }
+
+export function fetchContacts(
+  params: { search?: string; status?: number | null; accountId?: number | null; type?: string
+            limit?: number; sort?: ContactSortKey; dir?: 'asc' | 'desc'; after?: string | null } = {},
+): Promise<ContactListResult> {
   const qs = new URLSearchParams()
-  qs.set('limit', '9999')
+  if (params.limit) qs.set('limit', String(params.limit))
   if (params.search) qs.set('search', params.search)
   if (params.status !== undefined && params.status !== null) qs.set('status', String(params.status))
   if (params.accountId) qs.set('accountId', String(params.accountId))
-  return apiFetch<ListResult<ContactItem>>(`/melis/react-api/contacts?${qs}`)
+  if (params.type) qs.set('type', params.type)
+  if (params.sort) qs.set('sort', params.sort)
+  if (params.dir) qs.set('dir', params.dir)
+  if (params.after) qs.set('after', params.after)
+  return apiFetch<ContactListResult>(`/melis/react-api/contacts?${qs}`)
+}
+
+/** Tous les contacts filtrés (export) via boucle de curseur keyset. */
+export async function fetchAllContacts(
+  params: { search?: string; status?: number | null; accountId?: number | null; type?: string } = {},
+): Promise<ContactItem[]> {
+  const all: ContactItem[] = []
+  let after: string | null = null
+  do {
+    const r: ContactListResult = await fetchContacts({ ...params, limit: 200, after })
+    all.push(...r.items)
+    after = r.nextCursor
+  } while (after)
+  return all
 }
 export const fetchContactById = (id: number) => apiFetch<ContactItem>(`/melis/react-api/contacts/${id}`)
 export const fetchContactStats = () => apiFetch<ContactStats>('/melis/react-api/contacts/stats')
@@ -45,7 +69,20 @@ export const fetchContactAddresses = (id: number) => apiFetch<{ items: Address[]
 export const fetchContactAddressOptions = () => apiFetch<AddressOptions>('/melis/react-api/contacts/address-options')
 export const saveContactAddresses = (id: number, items: Address[]) =>
   apiFetch<null>(`/melis/react-api/contacts/${id}/addresses/save`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items }) })
-export const fetchContactAssociations = (id: number) => apiFetch<{ items: ContactAssociation[] }>(`/melis/react-api/contacts/${id}/associations`)
+export type ContactAssocSortKey = 'id' | 'account' | 'status' | 'def_account' | 'def_contact'
+export const fetchContactAssociations = (
+  id: number,
+  params: { limit?: number; sort?: ContactAssocSortKey; dir?: 'asc' | 'desc'; after?: string | null; search?: string } = {},
+) => {
+  const qs = new URLSearchParams()
+  if (params.limit) qs.set('limit', String(params.limit))
+  if (params.sort) qs.set('sort', params.sort)
+  if (params.dir) qs.set('dir', params.dir)
+  if (params.after) qs.set('after', params.after)
+  if (params.search) qs.set('search', params.search)
+  const q = qs.toString()
+  return apiFetch<{ items: ContactAssociation[]; total: number; nextCursor: string | null }>(`/melis/react-api/contacts/${id}/associations${q ? `?${q}` : ''}`)
+}
 export const linkContactAssociation = (contactId: number, accountId: number) =>
   apiFetch<null>(`/melis/react-api/contacts/${contactId}/associations/link`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ accountId }) })
 export const unlinkContactAssociation = (contactId: number, accountId: number) =>

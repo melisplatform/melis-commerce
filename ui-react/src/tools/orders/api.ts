@@ -54,19 +54,37 @@ export interface OrderDetail {
   payments: OrderPayment[]; shippings: OrderShipping[]; messages: OrderMessage[]
 }
 
-export type OrderListResult = ListResult<OrderItem>
+export type OrderSortKey = 'id' | 'reference' | 'status' | 'firstname' | 'name' | 'company' | 'date'
+export interface OrderListResult { items: OrderItem[]; total: number; nextCursor: string | null }
 
 export function fetchOrders(params: {
-  search?: string; status?: number | null; dateStart?: string; dateEnd?: string; page?: number; limit?: number
+  search?: string; status?: number | null; dateStart?: string; dateEnd?: string
+  limit?: number; sort?: OrderSortKey; dir?: 'asc' | 'desc'; after?: string | null
 } = {}): Promise<OrderListResult> {
   const qs = new URLSearchParams()
+  if (params.limit) qs.set('limit', String(params.limit))
   if (params.search)  qs.set('search', params.search)
   if (params.status !== undefined && params.status !== null) qs.set('status', String(params.status))
   if (params.dateStart) qs.set('dateStart', params.dateStart)
   if (params.dateEnd)   qs.set('dateEnd', params.dateEnd)
-  qs.set('page',  String(params.page  ?? 1))
-  qs.set('limit', String(params.limit ?? 25))
+  if (params.sort) qs.set('sort', params.sort)
+  if (params.dir) qs.set('dir', params.dir)
+  if (params.after) qs.set('after', params.after)
   return apiFetch<OrderListResult>(`/melis/react-api/orders?${qs}`)
+}
+
+/** Toutes les commandes filtrées (export) via boucle de curseur keyset. */
+export async function fetchAllOrders(
+  params: { search?: string; status?: number | null; dateStart?: string; dateEnd?: string } = {},
+): Promise<OrderItem[]> {
+  const all: OrderItem[] = []
+  let after: string | null = null
+  do {
+    const r: OrderListResult = await fetchOrders({ ...params, limit: 200, after })
+    all.push(...r.items)
+    after = r.nextCursor
+  } while (after)
+  return all
 }
 
 export const fetchOrderStats    = () => apiFetch<OrderStats>('/melis/react-api/orders/stats')

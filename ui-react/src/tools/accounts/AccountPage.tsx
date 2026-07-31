@@ -1,17 +1,18 @@
-import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
-  deleteAccount, fetchAccountById, fetchAccountOptions, fetchAccounts, fetchAccountStats,
+  deleteAccount, fetchAccountById, fetchAccountOptions, fetchAccounts, fetchAllAccounts, fetchAccountStats,
   saveAccount, fetchCompany, saveCompany, fetchAccountAddresses, saveAccountAddresses,
   fetchAccountContacts, linkAccountContact, testImportAccounts, importAccounts, ACCOUNT_IMPORT_TEMPLATE_URL,
-  type AccountItem, type AccountStats, type CompanyData, type AccountAddress, type AccountContact, type AccountNameMode, type CountryOption,
+  type AccountItem, type AccountStats, type CompanyData, type AccountAddress, type AccountContact, type AccountNameMode, type CountryOption, type AccountSortKey,
 } from './api'
+import { useKeysetList } from '../../shared/use-keyset-list'
 import { SearchableSelect } from '../../shared/SearchableSelect'
 import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
 import { makeT, fmtDate, type T } from '../../shared/i18n'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
-import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, FileUpIcon, BuildingKpiIcon, ResetIcon } from '../../shared/icons'
+import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, FileUpIcon, BuildingKpiIcon, ResetIcon, SortIcon, Spinner } from '../../shared/icons'
 import { StatusBadge, Kpi, ViewModeToggle, LegacyFrame, ConfirmModal, TagsInput } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { useCaps } from '../../shared/useCaps'
@@ -39,12 +40,12 @@ const COL_LABEL: Record<string, string> = {
 // v2 : jeu de colonnes changé (legacy) → on invalide les préférences persistées de v1.
 const cols$ = makeColStore('melis-account-cols-v2', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['name'])
-// Pagination : 30 comptes par page (découpage client — tri/recherche/filtres portent sur tout le jeu).
-const PAGE_SIZE = 30
+// Colonnes triables côté serveur — doit matcher le sortMap backend (« orders »/« lastOrder » = agrégats, exclus).
+const SORTABLE = new Set<AccountSortKey>(['id', 'status', 'group', 'name', 'contact', 'company', 'created'])
 
 const listCache = makeCache<{
-  items: AccountItem[]; stats: AccountStats | null
-  search: string; searchInput: string; status: number | null; filterGroupId: number; sortCol: string; sortAsc: boolean; mode: 'react' | 'old'
+  items: AccountItem[]; stats: AccountStats | null; total: number; cursor: string | null; hasMore: boolean
+  search: string; searchInput: string; status: number | null; filterGroupId: number; sortCol: string; sortDir: 'asc' | 'desc'; mode: 'react' | 'old'
 }>()
 
 function getCellExport(a: AccountItem, id: string, t: (k: string) => string): string | number {
@@ -176,76 +177,64 @@ function AccountList({ base }: { base: string }) {
   // view: a blank tab. Derive the initial value from `mode` so a remount picks the legacy
   // iframe back up immediately, same as `mode` itself does.
   const [oldLoaded, setOldLoaded] = useState(() => (listCache.get()?.mode ?? 'react') === 'old')
-  const [items, setItems] = useState<AccountItem[]>(listCache.get()?.items ?? [])
-  const [stats, setStats] = useState<AccountStats | null>(listCache.get()?.stats ?? null)
-  const [loading, setLoading] = useState(false)
-  const [searchInput, setSearchInput] = useState(listCache.get()?.searchInput ?? '')
-  const [search, setSearch] = useState(listCache.get()?.search ?? '')
-  const [status, setStatus] = useState<number | null>(listCache.get()?.status ?? null)
-  const [filterGroupId, setFilterGroupId] = useState(listCache.get()?.filterGroupId ?? 0)
+  const cached = listCache.get()
+  const [stats, setStats] = useState<AccountStats | null>(cached?.stats ?? null)
+  const [searchInput, setSearchInput] = useState(cached?.searchInput ?? '')
+  const [search, setSearch] = useState(cached?.search ?? '')
+  const [status, setStatus] = useState<number | null>(cached?.status ?? null)
+  const [filterGroupId, setFilterGroupId] = useState(cached?.filterGroupId ?? 0)
   const [groups, setGroups] = useState<{ id: number; name: string }[]>([])
-  const [sortCol, setSortCol] = useState<string>(listCache.get()?.sortCol ?? 'id')
-  const [sortAsc, setSortAsc] = useState(listCache.get()?.sortAsc ?? false)
   const [toDelete, setToDelete] = useState<AccountItem | null>(null)
   const [tick, setTick] = useState(0)
   const [cols, setCols] = useState<ColDef[]>(cols$.load)
   const [showCols, setShowCols] = useState(false)
   const [showExport, setShowExport] = useState(false)
+  const [exportItems, setExportItems] = useState<AccountItem[]>([])
+  const [exporting, setExporting] = useState(false)
   const [showImport, setShowImport] = useState(false)
   const [expanded, setExpanded] = useState<Set<number>>(new Set())
   function toggleExpand(id: number) {
     setExpanded((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
   }
 
-  const cacheRef = useRef({ items, stats, search, searchInput, status, filterGroupId, sortCol, sortAsc, mode })
-  useEffect(() => { cacheRef.current = { items, stats, search, searchInput, status, filterGroupId, sortCol, sortAsc, mode } })
+  // Scroll infini + tri server-side + keyset (mutualisé). Ordre legacy = id desc.
+  const {
+    items, setItems, total, loading, hasMore, sentinelRef, sortCol, sortDir, setSortCol, setSortDir, toggleSort, snapshot,
+  } = useKeysetList<AccountItem>({
+    fetcher: (a) => fetchAccounts({ ...a, sort: a.sort as AccountSortKey, search, status, groupId: filterGroupId || null }),
+    deps: [search, status, filterGroupId, tick],
+    defaultSort: 'id',
+    defaultDir: 'desc',
+    initial: cached ? { items: cached.items, total: cached.total, cursor: cached.cursor, hasMore: cached.hasMore, sortCol: cached.sortCol, sortDir: cached.sortDir } : undefined,
+    skipInitial: !!(cached && cached.items.length),
+  })
+
+  const cacheRef = useRef({ ...snapshot(), stats, search, searchInput, status, filterGroupId, mode })
+  useEffect(() => { cacheRef.current = { ...snapshot(), stats, search, searchInput, status, filterGroupId, mode } })
   useEffect(() => () => listCache.set(cacheRef.current), [])
 
   useEffect(() => { fetchAccountStats().then(setStats).catch(() => null) }, [tick])
   useEffect(() => { fetchAccountOptions().then((o) => setGroups(o.groups)).catch(() => null) }, [])
-  useEffect(() => {
-    setLoading(true)
-    fetchAccounts({ search, status, groupId: filterGroupId || null }).then((r) => setItems(r.items)).catch(() => null).finally(() => setLoading(false))
-  }, [search, status, filterGroupId, tick])
 
-  const sortVal = (a: AccountItem): string | number => {
-    switch (sortCol) {
-      case 'name': return a.name; case 'status': return a.status
-      case 'group': return a.groupName; case 'contact': return a.contactName
-      case 'company': return a.companyName; case 'orders': return a.numOrders
-      case 'lastOrder': return a.lastOrder ?? ''
-      case 'created': return a.dateCreation ?? ''; default: return a.id
-    }
-  }
-  const sorted = useMemo(() => [...items].sort((a, b) => {
-    const va = sortVal(a), vb = sortVal(b)
-    const cmp = typeof va === 'number' && typeof vb === 'number' ? va - vb : String(va).localeCompare(String(vb))
-    return sortAsc ? cmp : -cmp
-  }), [items, sortCol, sortAsc])
-
-  // Pagination (client) : la page courante affiche PAGE_SIZE lignes du jeu trié/filtré complet.
-  const [page, setPage] = useState(1)
-  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE))
-  // Retour page 1 dès que le jeu change (recherche / filtres / tri).
-  useEffect(() => { setPage(1) }, [search, status, filterGroupId, sortCol, sortAsc])
-  // Clamp si la page dépasse (ex. suppression réduisant le nombre de pages).
-  useEffect(() => { if (page > totalPages) setPage(totalPages) }, [totalPages, page])
-  const paged = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
-
-  function toggleSort(id: string) { if (sortCol === id) setSortAsc((v) => !v); else { setSortCol(id); setSortAsc(true) } }
   // Réinitialiser les filtres : recherche + statut + groupe + tri par défaut (id desc), puis refetch.
   // On vide `items` : sinon les lignes restent affichées pendant le refetch et le clic paraît sans effet.
   function resetFilters() {
     setSearchInput(''); setSearch('')
     setStatus(null)
     setFilterGroupId(0)
-    setSortCol('id'); setSortAsc(false)
+    setSortCol('id'); setSortDir('desc')
     setItems([])
     setTick((x) => x + 1)
   }
   async function confirmDelete() {
     if (!toDelete) return
     try { await deleteAccount(toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) }
+  }
+  // Export : le keyset ne charge qu'une page → on récupère TOUT le jeu filtré via curseur.
+  async function openExport() {
+    setExporting(true)
+    try { const all = await fetchAllAccounts({ search, status, groupId: filterGroupId || null }); setExportItems(all); setShowExport(true) }
+    catch { /* ignore */ } finally { setExporting(false) }
   }
   const FILTERS: { k: string; v: number | null; dot?: string }[] = [{ k: 'f_all', v: null }, { k: 'f_active', v: 1, dot: '#10b981' }, { k: 'f_inactive', v: 0, dot: '#ef4444' }]
 
@@ -313,7 +302,7 @@ function AccountList({ base }: { base: string }) {
               <button style={{ ...btnGhost, height: narrow ? '100%' : 36, minHeight: narrow ? 36 : undefined, width: narrow ? '100%' : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} onClick={() => setShowCols((v) => !v)}><GripIcon />{t('columns')}</button>
               {showCols && <ColManager cols={cols} labelFor={(id) => t(COL_LABEL[id])} onChange={setCols} onClose={() => setShowCols(false)} save={cols$.save} defaults={cols$.DEFAULT} t={t} />}
             </div>
-            {can('export') && <button style={{ ...btnGhost, height: narrow ? 'auto' : 36, minHeight: narrow ? 36 : undefined, flex: narrow ? '1 1 calc(50% - 4px)' : undefined, minWidth: narrow ? 0 : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} onClick={() => setShowExport(true)}><FileDownIcon />{t('export')}</button>}
+            {can('export') && <button disabled={exporting} style={{ ...btnGhost, height: narrow ? 'auto' : 36, minHeight: narrow ? 36 : undefined, flex: narrow ? '1 1 calc(50% - 4px)' : undefined, minWidth: narrow ? 0 : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px', opacity: exporting ? 0.6 : 1 }} onClick={openExport}>{exporting ? <Spinner /> : <FileDownIcon />}{t('export')}</button>}
             {can('create') && <button style={{ ...btnGhost, height: narrow ? 'auto' : 36, minHeight: narrow ? 36 : undefined, flex: narrow ? '1 1 calc(50% - 4px)' : undefined, minWidth: narrow ? 0 : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} onClick={() => setShowImport(true)}><FileUpIcon />{t('imp_btn')}</button>}
           </div>
         </div>
@@ -323,18 +312,24 @@ function AccountList({ base }: { base: string }) {
             <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}>
               <tr>
                 {hasHidden && <th style={{ ...th, width: 32 }} />}
-                {visible.map(({ id }) => (
-                  <th key={id} style={{ ...th, cursor: 'pointer', ...(id === 'id' ? { width: 70 } : {}) }} onClick={() => toggleSort(id)}>
-                    {t(COL_LABEL[id])}{sortCol === id ? ` ${sortAsc ? '↑' : '↓'}` : ''}
-                  </th>
-                ))}
+                {visible.map(({ id }) => {
+                  const sortable = SORTABLE.has(id as AccountSortKey)
+                  return (
+                    <th key={id} style={{ ...th, cursor: sortable ? 'pointer' : 'default', ...(id === 'id' ? { width: 70 } : {}) }} onClick={sortable ? () => toggleSort(id) : undefined}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                        {t(COL_LABEL[id])}
+                        {sortable && <SortIcon dir={sortCol === id ? sortDir : null} />}
+                      </span>
+                    </th>
+                  )
+                })}
                 <th style={{ ...th, width: 80, position: 'sticky', right: 0, background: 'var(--color-muted,rgba(0,0,0,.03))' }} />
               </tr>
             </thead>
             <tbody>
-              {sorted.length === 0 && !loading ? (
+              {items.length === 0 && !loading ? (
                 <tr><td style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: '40px 16px' }} colSpan={totalCols}>{t('empty')}</td></tr>
-              ) : paged.map((a) => (
+              ) : items.map((a) => (
                 <Fragment key={a.id}>
                   <tr>
                     {hasHidden && (
@@ -361,28 +356,19 @@ function AccountList({ base }: { base: string }) {
               ))}
             </tbody>
           </table>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', fontSize: 12, color: 'var(--color-muted-foreground)' }}>
-            <span>
-              {loading
-                ? t('loading')
-                : sorted.length === 0
-                  ? t('count', { n: 0 })
-                  : t('pg_range', { from: (page - 1) * PAGE_SIZE + 1, to: Math.min(page * PAGE_SIZE, sorted.length), n: sorted.length })}
-            </span>
-            {!loading && totalPages > 1 && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <button style={{ ...btnGhost, height: 30, padding: '0 10px', opacity: page <= 1 ? 0.5 : 1, cursor: page <= 1 ? 'default' : 'pointer' }}
-                  disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>{t('pg_prev')}</button>
-                <span style={{ fontVariantNumeric: 'tabular-nums' }}>{t('pg_page', { cur: page, tot: totalPages })}</span>
-                <button style={{ ...btnGhost, height: 30, padding: '0 10px', opacity: page >= totalPages ? 0.5 : 1, cursor: page >= totalPages ? 'default' : 'pointer' }}
-                  disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>{t('pg_next')}</button>
-              </div>
-            )}
-          </div>
+          <div ref={sentinelRef} style={{ height: 1 }} />
+          {loading && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '14px 16px', fontSize: 12, color: 'var(--color-muted-foreground)' }}>
+              <Spinner />{t('loading')}
+            </div>
+          )}
+          {!hasMore && items.length > 0 && (
+            <div style={{ padding: '10px 16px', textAlign: 'center', fontSize: 12, color: 'var(--color-muted-foreground)' }}>{t('count', { n: total })}</div>
+          )}
         </div>
       </div>
 
-      {showExport && <ExportModal cols={cols} items={items} getCell={(a, id) => getCellExport(a, id, t)} labelFor={(id) => t(COL_LABEL[id])} filename={t('exp_filename')} sheetTitle={t('title')} t={t} onClose={() => setShowExport(false)} />}
+      {showExport && <ExportModal cols={cols} items={exportItems} getCell={(a, id) => getCellExport(a, id, t)} labelFor={(id) => t(COL_LABEL[id])} filename={t('exp_filename')} sheetTitle={t('title')} t={t} onClose={() => setShowExport(false)} />}
 
       {showImport && (
         <ImportAccountsModal t={t} onClose={() => setShowImport(false)}

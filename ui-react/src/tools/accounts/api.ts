@@ -15,13 +15,36 @@ export interface CountryOption { id: number; name: string; flag?: string | null 
 export interface AccountOptions { groups: Option[]; countries: CountryOption[]; accountNameMode: AccountNameMode }
 export interface AccountSavePayload { id?: number | null; name: string; status: boolean; groupId: number; countryId: number; tags: string; contactId?: number }
 
-export function fetchAccounts(params: { search?: string; status?: number | null; groupId?: number | null } = {}): Promise<ListResult<AccountItem>> {
+export type AccountSortKey = 'id' | 'status' | 'group' | 'name' | 'contact' | 'company' | 'created'
+export interface AccountListResult { items: AccountItem[]; total: number; nextCursor: string | null }
+
+export function fetchAccounts(
+  params: { search?: string; status?: number | null; groupId?: number | null
+            limit?: number; sort?: AccountSortKey; dir?: 'asc' | 'desc'; after?: string | null } = {},
+): Promise<AccountListResult> {
   const qs = new URLSearchParams()
-  qs.set('limit', '9999')
+  if (params.limit) qs.set('limit', String(params.limit))
   if (params.search) qs.set('search', params.search)
   if (params.status !== undefined && params.status !== null) qs.set('status', String(params.status))
   if (params.groupId) qs.set('groupId', String(params.groupId))
-  return apiFetch<ListResult<AccountItem>>(`/melis/react-api/accounts?${qs}`)
+  if (params.sort) qs.set('sort', params.sort)
+  if (params.dir) qs.set('dir', params.dir)
+  if (params.after) qs.set('after', params.after)
+  return apiFetch<AccountListResult>(`/melis/react-api/accounts?${qs}`)
+}
+
+/** Tous les comptes filtrés (export) via boucle de curseur keyset. */
+export async function fetchAllAccounts(
+  params: { search?: string; status?: number | null; groupId?: number | null } = {},
+): Promise<AccountItem[]> {
+  const all: AccountItem[] = []
+  let after: string | null = null
+  do {
+    const r: AccountListResult = await fetchAccounts({ ...params, limit: 200, after })
+    all.push(...r.items)
+    after = r.nextCursor
+  } while (after)
+  return all
 }
 export const fetchAccountById = (id: number) => apiFetch<AccountItem>(`/melis/react-api/accounts/${id}`)
 export const fetchAccountStats = () => apiFetch<AccountStats>('/melis/react-api/accounts/stats')
@@ -62,7 +85,23 @@ export const fetchAccountAddresses = (id: number) => apiFetch<{ items: AccountAd
 export const fetchAddressOptions = () => apiFetch<AddressOptions>('/melis/react-api/accounts/address-options')
 export const saveAccountAddresses = (id: number, items: AccountAddress[]) =>
   apiFetch<null>(`/melis/react-api/accounts/${id}/addresses/save`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items }) })
-export const fetchAccountOrders = (id: number) => apiFetch<{ items: AccountOrder[] }>(`/melis/react-api/accounts/${id}/orders`)
+export type AccountOrderSortKey = 'id' | 'ref' | 'status' | 'date'
+export const fetchAccountOrders = (
+  id: number,
+  params: { limit?: number; sort?: AccountOrderSortKey; dir?: 'asc' | 'desc'; after?: string | null; search?: string; status?: number | null; from?: string; to?: string } = {},
+) => {
+  const qs = new URLSearchParams()
+  if (params.limit) qs.set('limit', String(params.limit))
+  if (params.sort) qs.set('sort', params.sort)
+  if (params.dir) qs.set('dir', params.dir)
+  if (params.after) qs.set('after', params.after)
+  if (params.search) qs.set('search', params.search)
+  if (params.status !== undefined && params.status !== null) qs.set('status', String(params.status))
+  if (params.from) qs.set('from', params.from)
+  if (params.to) qs.set('to', params.to)
+  const q = qs.toString()
+  return apiFetch<{ items: AccountOrder[]; total: number; nextCursor: string | null }>(`/melis/react-api/accounts/${id}/orders${q ? `?${q}` : ''}`)
+}
 export const fetchOrderStatuses = () => apiFetch<Option[]>('/melis/react-api/accounts/order-statuses')
 export const fetchAccountFiles = (id: number) => apiFetch<{ items: AccountFile[] }>(`/melis/react-api/accounts/${id}/files`)
 export interface FileOptions { types: Option[]; countries: Option[] }

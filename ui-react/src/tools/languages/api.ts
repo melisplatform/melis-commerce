@@ -7,17 +7,32 @@ export interface LanguageItem {
 
 export interface LanguageStats { total: number; active: number; inactive: number }
 
-export type LanguageListResult = ListResult<LanguageItem>
+export type LanguageSortKey = 'id' | 'status' | 'locale' | 'name'
+export interface LanguageListResult { items: LanguageItem[]; total: number; nextCursor: string | null }
 
 export function fetchLanguages(params: {
-  search?: string; status?: number | null; page?: number; limit?: number
+  search?: string; status?: number | null; limit?: number; sort?: LanguageSortKey; dir?: 'asc' | 'desc'; after?: string | null
 } = {}): Promise<LanguageListResult> {
   const qs = new URLSearchParams()
   if (params.search) qs.set('search', params.search)
   if (params.status !== undefined && params.status !== null) qs.set('status', String(params.status))
-  qs.set('page', String(params.page ?? 1))
-  qs.set('limit', String(params.limit ?? 50))
+  if (params.limit) qs.set('limit', String(params.limit))
+  if (params.sort) qs.set('sort', params.sort)
+  if (params.dir) qs.set('dir', params.dir)
+  if (params.after) qs.set('after', params.after)
   return apiFetch<LanguageListResult>(`/melis/react-api/commerce-languages?${qs}`)
+}
+
+/** Tous les éléments filtrés (export) via boucle de curseur keyset. */
+export async function fetchAllLanguages(params: { search?: string; status?: number | null } = {}): Promise<LanguageItem[]> {
+  const all: LanguageItem[] = []
+  let after: string | null = null
+  do {
+    const rr: LanguageListResult = await fetchLanguages({ ...params, limit: 200, after })
+    all.push(...rr.items)
+    after = rr.nextCursor
+  } while (after)
+  return all
 }
 
 export const fetchLanguageStats = () => apiFetch<LanguageStats>('/melis/react-api/commerce-languages/stats')

@@ -30,17 +30,35 @@ export interface CouponOrderUsage {
 }
 export interface CouponOrderStatus { id: number; name: string; color: string }
 
-export type CouponListResult = ListResult<CouponItem>
+export type CouponSortKey = 'id' | 'code' | 'status' | 'discount' | 'uses' | 'valid'
+export interface CouponListResult { items: CouponItem[]; total: number; nextCursor: string | null }
 
 export function fetchCoupons(params: {
-  search?: string; status?: number | null; page?: number; limit?: number
+  search?: string; status?: number | null
+  limit?: number; sort?: CouponSortKey; dir?: 'asc' | 'desc'; after?: string | null
 } = {}): Promise<CouponListResult> {
   const qs = new URLSearchParams()
+  if (params.limit) qs.set('limit', String(params.limit))
   if (params.search) qs.set('search', params.search)
   if (params.status !== undefined && params.status !== null) qs.set('status', String(params.status))
-  qs.set('page', String(params.page ?? 1))
-  qs.set('limit', String(params.limit ?? 50))
+  if (params.sort) qs.set('sort', params.sort)
+  if (params.dir) qs.set('dir', params.dir)
+  if (params.after) qs.set('after', params.after)
   return apiFetch<CouponListResult>(`/melis/react-api/coupons?${qs}`)
+}
+
+/** Tous les coupons filtrés (export) via boucle de curseur keyset. */
+export async function fetchAllCoupons(
+  params: { search?: string; status?: number | null } = {},
+): Promise<CouponItem[]> {
+  const all: CouponItem[] = []
+  let after: string | null = null
+  do {
+    const r: CouponListResult = await fetchCoupons({ ...params, limit: 200, after })
+    all.push(...r.items)
+    after = r.nextCursor
+  } while (after)
+  return all
 }
 
 export const fetchCouponStats = () => apiFetch<CouponStats>('/melis/react-api/coupons/stats')

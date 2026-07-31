@@ -1,13 +1,14 @@
-import { useEffect, useRef, useState, type ChangeEvent } from 'react'
+import { useEffect, useRef, useState, type ChangeEvent, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   fetchAccountContacts, fetchAccountOrders, fetchAccountFiles,
   uploadAccountFile, deleteAccountFile, fetchAddressOptions, fetchFileOptions, createFileType,
   fetchOrderStatuses, fetchAllContactOptions, linkAccountContact, unlinkAccountContact, setAccountContactDefault,
-  type CompanyData, type AccountContact, type AccountAddress, type AddressOptions, type AccountOrder, type AccountFile, type FileOptions,
+  type CompanyData, type AccountContact, type AccountAddress, type AddressOptions, type AccountOrder, type AccountOrderSortKey, type AccountFile, type FileOptions,
 } from './api'
 import { fetchContactById } from '../contacts/api'
-import { card, inputCss, btnGhost, iconBtn, label } from '../../shared/styles'
+import { useKeysetList } from '../../shared/use-keyset-list'
+import { card, inputCss, btnGhost, iconBtn, label, th, td } from '../../shared/styles'
 import { StatusBadge } from '../../shared/widgets'
 import { SimpleTable } from '../../shared/SimpleTable'
 import { LinkHeader } from '../../shared/LinkHeader'
@@ -15,7 +16,7 @@ import { ConfirmModal } from '../../shared/ConfirmModal'
 import { DateRangeFilter } from '../../shared/DateRangeFilter'
 import { AddressEditor } from '../../shared/AddressEditor'
 import { DatePicker } from '../../shared/DatePicker'
-import { TrashIcon, PencilIcon, StarIcon, CheckIcon, UserPlusIcon, PaperclipIcon, PlusIcon, ImageIcon } from '../../shared/icons'
+import { TrashIcon, PencilIcon, StarIcon, CheckIcon, UserPlusIcon, PaperclipIcon, PlusIcon, ImageIcon, SortIcon, Spinner } from '../../shared/icons'
 import { fmtDate, type T } from '../../shared/i18n'
 import { notify } from '../../shared/notify'
 import { useIsNarrow } from '../../shared/useIsNarrow'
@@ -207,49 +208,87 @@ export function AddressesTab({ addresses, onChange, t }: { addresses: AccountAdd
   return <AddressEditor addresses={addresses} onChange={onChange} options={opts} t={t} />
 }
 
-// ── Commandes (lecture seule) ─────────────────────────────────────────────────
+// ── Commandes (lecture seule) — scroll infini keyset + tri server-side ────────
+const ORDER_SORTABLE = new Set<AccountOrderSortKey>(['id', 'ref', 'status', 'date'])
+
 export function OrdersTab({ accountId, t }: { accountId: number; t: T }) {
-  const [rows, setRows] = useState<AccountOrder[]>([])
   const [statuses, setStatuses] = useState<Option[]>([])
   const [statusFilter, setStatusFilter] = useState<number | null>(null)
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
-  const [loading, setLoading] = useState(true)
+  const [searchInput, setSearchInput] = useState('')
+  const [search, setSearch] = useState('')
   const [tick, setTick] = useState(0)
-  useEffect(() => { setLoading(true); fetchAccountOrders(accountId).then((r) => setRows(r.items)).catch(() => null).finally(() => setLoading(false)) }, [accountId, tick])
   useEffect(() => { fetchOrderStatuses().then(setStatuses).catch(() => null) }, [])
 
-  const filtered = rows.filter((r) => {
-    if (statusFilter !== null && r.status !== statusFilter) return false
-    const d = (r.dateCreation || '').slice(0, 10)
-    if (dateFrom && d < dateFrom) return false
-    if (dateTo && d > dateTo) return false
-    return true
+  const { items, total, loading, hasMore, sentinelRef, sortCol, sortDir, toggleSort } = useKeysetList<AccountOrder>({
+    fetcher: (a) => fetchAccountOrders(accountId, { ...a, sort: a.sort as AccountOrderSortKey, search, status: statusFilter, from: dateFrom || undefined, to: dateTo || undefined }),
+    deps: [accountId, search, statusFilter, dateFrom, dateTo, tick],
+    defaultSort: 'id',
+    defaultDir: 'desc',
   })
+
+  const COLS: { id: AccountOrderSortKey; label: string; render: (r: AccountOrder) => ReactNode; width?: number }[] = [
+    { id: 'id', label: t('col_id'), width: 70, render: (r) => <span style={{ color: 'var(--color-muted-foreground)' }}>{r.id}</span> },
+    { id: 'ref', label: t('o_ref'), render: (r) => <span style={{ fontWeight: 500 }}>{r.reference || '—'}</span> },
+    { id: 'status', label: t('o_status'), render: (r) => r.statusName || `#${r.status}` },
+    { id: 'date', label: t('o_date'), render: (r) => fmtDate(r.dateCreation) },
+  ]
 
   const ctl = { ...inputCss, height: 34, width: 'auto', padding: '0 8px' } as const
   const lbl = { display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--color-muted-foreground)' } as const
-  const filters = (
-    <>
-      <label style={lbl}>{t('o_status_label')}
-        <select style={ctl} value={statusFilter ?? ''} onChange={(e) => setStatusFilter(e.target.value === '' ? null : Number(e.target.value))}>
-          <option value="">{t('o_status_all')}</option>
-          {statuses.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-        </select>
-      </label>
-      <DateRangeFilter from={dateFrom} to={dateTo} onChange={(f, dt) => { setDateFrom(f); setDateTo(dt) }} t={t} />
-    </>
-  )
 
   return (
-    <SimpleTable<AccountOrder> rows={filtered} rowKey={(r) => r.id} empty={t('o_empty')} loading={loading} loadingText={t('loading')}
-      t={t} search={(r) => `${r.reference} ${r.statusName}`} searchPlaceholder={t('ph_search_order')} filters={filters} onRefresh={() => setTick((x) => x + 1)}
-      cols={[
-        { key: 'id', label: t('col_id'), width: 70, render: (r) => <span style={{ color: 'var(--color-muted-foreground)' }}>{r.id}</span> },
-        { key: 'ref', label: t('o_ref'), essential: true, render: (r) => <span style={{ fontWeight: 500 }}>{r.reference || '—'}</span> },
-        { key: 'status', label: t('o_status'), render: (r) => r.statusName || `#${r.status}` },
-        { key: 'date', label: t('o_date'), render: (r) => fmtDate(r.dateCreation) },
-      ]} />
+    <div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <input style={{ ...inputCss, height: 34, minWidth: 180 }} value={searchInput}
+          onChange={(e) => { const v = e.target.value; setSearchInput(v); if (v === '') setSearch('') }}
+          onKeyDown={(e) => { if (e.key === 'Enter') setSearch(searchInput) }} placeholder={t('ph_search_order')} />
+        <label style={lbl}>{t('o_status_label')}
+          <select style={ctl} value={statusFilter ?? ''} onChange={(e) => setStatusFilter(e.target.value === '' ? null : Number(e.target.value))}>
+            <option value="">{t('o_status_all')}</option>
+            {statuses.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
+        </label>
+        <DateRangeFilter from={dateFrom} to={dateTo} onChange={(f, dt) => { setDateFrom(f); setDateTo(dt) }} t={t} />
+        <button style={{ ...btnGhost, height: 34, marginLeft: 'auto' }} onClick={() => setTick((x) => x + 1)} title={t('refresh')}>↻</button>
+      </div>
+
+      <div style={{ ...card, overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 520 }}>
+          <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}>
+            <tr>
+              {COLS.map((c) => {
+                const sortable = ORDER_SORTABLE.has(c.id)
+                return (
+                  <th key={c.id} style={{ ...th, ...(c.width ? { width: c.width } : {}), cursor: sortable ? 'pointer' : 'default', userSelect: 'none' }} onClick={sortable ? () => toggleSort(c.id) : undefined}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>{c.label}{sortable && <SortIcon dir={sortCol === c.id ? sortDir : null} />}</span>
+                  </th>
+                )
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {loading && items.length === 0 ? (
+              <tr><td colSpan={COLS.length} style={{ ...td, textAlign: 'center', padding: '30px 16px', color: 'var(--color-muted-foreground)' }}>{t('loading')}</td></tr>
+            ) : items.length === 0 ? (
+              <tr><td colSpan={COLS.length} style={{ ...td, textAlign: 'center', padding: '30px 16px', color: 'var(--color-muted-foreground)' }}>{t('o_empty')}</td></tr>
+            ) : items.map((r) => (
+              <tr key={r.id}>
+                {COLS.map((c) => <td key={c.id} style={td}>{c.render(r)}</td>)}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div ref={sentinelRef} style={{ height: 1 }} />
+        {loading && items.length > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '12px 16px', fontSize: 12, color: 'var(--color-muted-foreground)' }}><Spinner />{t('loading')}</div>
+        )}
+        {!hasMore && items.length > 0 && (
+          <div style={{ padding: '10px 16px', textAlign: 'center', fontSize: 12, color: 'var(--color-muted-foreground)' }}>{t('o_count', { n: total })}</div>
+        )}
+      </div>
+    </div>
   )
 }
 

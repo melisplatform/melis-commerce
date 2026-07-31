@@ -1,16 +1,17 @@
-import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
-  deleteContact, fetchContactById, fetchContactOptions, fetchContacts, fetchContactStats,
+  deleteContact, fetchContactById, fetchContactOptions, fetchContacts, fetchAllContacts, fetchContactStats,
   saveContact, fetchContactAddresses, saveContactAddresses,
-  type ContactItem, type ContactStats, type ContactAddress, type LangOption,
+  type ContactItem, type ContactStats, type ContactAddress, type LangOption, type ContactSortKey,
 } from './api'
+import { useKeysetList } from '../../shared/use-keyset-list'
 import { SearchableSelect } from '../../shared/SearchableSelect'
 import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
 import { makeT, fmtDate } from '../../shared/i18n'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
-import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, UsersKpiIcon, ToggleRightIcon, KeyIcon, ResetIcon } from '../../shared/icons'
+import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, UsersKpiIcon, ToggleRightIcon, KeyIcon, ResetIcon, SortIcon, Spinner } from '../../shared/icons'
 import { StatusBadge, Kpi, ViewModeToggle, LegacyFrame, ConfirmModal, TagsInput, TagsDisplay } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { useCaps } from '../../shared/useCaps'
@@ -35,11 +36,13 @@ const COL_LABEL: Record<string, string> = {
 }
 const cols$ = makeColStore('melis-contact-cols-v1', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['name'])
+// Colonnes triables côté serveur — doit matcher le sortMap backend (toutes sauf « civility »).
+const SORTABLE = new Set<ContactSortKey>(['id', 'status', 'firstname', 'name', 'account', 'email', 'type', 'tags', 'created'])
 
 const listCache = makeCache<{
-  items: ContactItem[]; stats: ContactStats | null
+  items: ContactItem[]; stats: ContactStats | null; total: number; cursor: string | null; hasMore: boolean
   search: string; searchInput: string; status: number | null; filterAccountId: number; filterType: string
-  sortCol: string; sortAsc: boolean; mode: 'react' | 'old'
+  sortCol: string; sortDir: 'asc' | 'desc'; mode: 'react' | 'old'
 }>()
 
 function getCellExport(c: ContactItem, id: string, t: (k: string) => string): string | number {
@@ -80,69 +83,65 @@ function ContactList({ base }: { base: string }) {
   // view: a blank tab. Derive the initial value from `mode` so a remount picks the legacy
   // iframe back up immediately, same as `mode` itself does.
   const [oldLoaded, setOldLoaded] = useState(() => (listCache.get()?.mode ?? 'react') === 'old')
-  const [items, setItems] = useState<ContactItem[]>(listCache.get()?.items ?? [])
-  const [stats, setStats] = useState<ContactStats | null>(listCache.get()?.stats ?? null)
-  const [loading, setLoading] = useState(false)
-  const [searchInput, setSearchInput] = useState(listCache.get()?.searchInput ?? '')
-  const [search, setSearch] = useState(listCache.get()?.search ?? '')
-  const [status, setStatus] = useState<number | null>(listCache.get()?.status ?? null)
-  const [filterAccountId, setFilterAccountId] = useState(listCache.get()?.filterAccountId ?? 0)
-  const [filterType, setFilterType] = useState(listCache.get()?.filterType ?? '')
+  const cached = listCache.get()
+  const [stats, setStats] = useState<ContactStats | null>(cached?.stats ?? null)
+  const [searchInput, setSearchInput] = useState(cached?.searchInput ?? '')
+  const [search, setSearch] = useState(cached?.search ?? '')
+  const [status, setStatus] = useState<number | null>(cached?.status ?? null)
+  const [filterAccountId, setFilterAccountId] = useState(cached?.filterAccountId ?? 0)
+  const [filterType, setFilterType] = useState(cached?.filterType ?? '')
   const [accounts, setAccounts] = useState<{ id: number; name: string }[]>([])
-  const [sortCol, setSortCol] = useState<string>(listCache.get()?.sortCol ?? 'id')
-  const [sortAsc, setSortAsc] = useState(listCache.get()?.sortAsc ?? false)
   const [toDelete, setToDelete] = useState<ContactItem | null>(null)
   const [tick, setTick] = useState(0)
   const [cols, setCols] = useState<ColDef[]>(cols$.load)
   const [showCols, setShowCols] = useState(false)
   const [showExport, setShowExport] = useState(false)
+  const [exportItems, setExportItems] = useState<ContactItem[]>([])
+  const [exporting, setExporting] = useState(false)
   const [expanded, setExpanded] = useState<Set<number>>(new Set())
   function toggleExpand(id: number) {
     setExpanded((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
   }
 
-  const cacheRef = useRef({ items, stats, search, searchInput, status, filterAccountId, filterType, sortCol, sortAsc, mode })
-  useEffect(() => { cacheRef.current = { items, stats, search, searchInput, status, filterAccountId, filterType, sortCol, sortAsc, mode } })
+  // Scroll infini + tri server-side + keyset (mutualisé). Ordre legacy = id desc. Le filtre « type »
+  // est désormais envoyé au serveur (plus de filtrage client, incompatible avec la pagination keyset).
+  const {
+    items, setItems, total, loading, hasMore, sentinelRef, sortCol, sortDir, setSortCol, setSortDir, toggleSort, snapshot,
+  } = useKeysetList<ContactItem>({
+    fetcher: (a) => fetchContacts({ ...a, sort: a.sort as ContactSortKey, search, status, accountId: filterAccountId || null, type: filterType || undefined }),
+    deps: [search, status, filterAccountId, filterType, tick],
+    defaultSort: 'id',
+    defaultDir: 'desc',
+    initial: cached ? { items: cached.items, total: cached.total, cursor: cached.cursor, hasMore: cached.hasMore, sortCol: cached.sortCol, sortDir: cached.sortDir } : undefined,
+    skipInitial: !!(cached && cached.items.length),
+  })
+
+  const cacheRef = useRef({ ...snapshot(), stats, search, searchInput, status, filterAccountId, filterType, mode })
+  useEffect(() => { cacheRef.current = { ...snapshot(), stats, search, searchInput, status, filterAccountId, filterType, mode } })
   useEffect(() => () => listCache.set(cacheRef.current), [])
 
   useEffect(() => { fetchContactStats().then(setStats).catch(() => null) }, [tick])
   useEffect(() => { fetchContactOptions().then((o) => setAccounts(o.accounts)).catch(() => null) }, [])
-  useEffect(() => {
-    setLoading(true)
-    fetchContacts({ search, status, accountId: filterAccountId || null }).then((r) => setItems(r.items)).catch(() => null).finally(() => setLoading(false))
-  }, [search, status, filterAccountId, tick])
 
-  const sortVal = (c: ContactItem): string | number => {
-    switch (sortCol) {
-      case 'status': return c.status; case 'firstname': return c.firstname; case 'name': return c.name
-      case 'account': return c.accountName; case 'email': return c.email; case 'type': return c.type
-      case 'tags': return c.tags; case 'created': return c.dateCreation ?? ''; default: return c.id
-    }
-  }
-  const sorted = useMemo(() => {
-    let list = filterType ? items.filter((c) => c.type === filterType) : [...items]
-    return list.sort((a, b) => {
-      const va = sortVal(a), vb = sortVal(b)
-      const cmp = typeof va === 'number' && typeof vb === 'number' ? va - vb : String(va).localeCompare(String(vb))
-      return sortAsc ? cmp : -cmp
-    })
-  }, [items, sortCol, sortAsc, filterType])
-
-  function toggleSort(id: string) { if (sortCol === id) setSortAsc((v) => !v); else { setSortCol(id); setSortAsc(true) } }
   // Réinitialiser les filtres : recherche + statut + compte + type + tri par défaut (id desc), puis refetch.
-  // On vide `items` : sinon les lignes restent affichées pendant le refetch et le clic paraît sans effet.
   function resetFilters() {
     setSearchInput(''); setSearch('')
     setStatus(null)
     setFilterAccountId(0)
     setFilterType('')
-    setSortCol('id'); setSortAsc(false)
+    setSortCol('id'); setSortDir('desc')
     setItems([])
     setTick((x) => x + 1)
   }
   async function confirmDelete() {
     if (!toDelete) return
     try { await deleteContact(toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) }
+  }
+  // Export : le keyset ne charge qu'une page → on récupère TOUT le jeu filtré via curseur.
+  async function openExport() {
+    setExporting(true)
+    try { const all = await fetchAllContacts({ search, status, accountId: filterAccountId || null, type: filterType || undefined }); setExportItems(all); setShowExport(true) }
+    catch { /* ignore */ } finally { setExporting(false) }
   }
   const FILTERS: { k: string; v: number | null; dot?: string }[] = [{ k: 'f_all', v: null }, { k: 'f_active', v: 1, dot: '#10b981' }, { k: 'f_inactive', v: 0, dot: '#ef4444' }]
 
@@ -215,7 +214,7 @@ function ContactList({ base }: { base: string }) {
               <button style={{ ...btnGhost, height: narrow ? '100%' : 36, minHeight: narrow ? 36 : undefined, width: narrow ? '100%' : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} onClick={() => setShowCols((v) => !v)}><GripIcon />{t('columns')}</button>
               {showCols && <ColManager cols={cols} labelFor={(id) => t(COL_LABEL[id])} onChange={setCols} onClose={() => setShowCols(false)} save={cols$.save} defaults={cols$.DEFAULT} t={t} />}
             </div>
-            {can('export') && <button style={{ ...btnGhost, height: narrow ? 'auto' : 36, minHeight: narrow ? 36 : undefined, flex: narrow ? 1 : undefined, minWidth: narrow ? 0 : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} onClick={() => setShowExport(true)}><FileDownIcon />{t('export')}</button>}
+            {can('export') && <button disabled={exporting} style={{ ...btnGhost, height: narrow ? 'auto' : 36, minHeight: narrow ? 36 : undefined, flex: narrow ? 1 : undefined, minWidth: narrow ? 0 : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px', opacity: exporting ? 0.6 : 1 }} onClick={openExport}>{exporting ? <Spinner /> : <FileDownIcon />}{t('export')}</button>}
           </div>
         </div>
 
@@ -224,18 +223,24 @@ function ContactList({ base }: { base: string }) {
             <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}>
               <tr>
                 {hasHidden && <th style={{ ...th, width: 32 }} />}
-                {visible.map(({ id }) => (
-                  <th key={id} style={{ ...th, cursor: 'pointer', ...(id === 'id' ? { width: 70 } : {}) }} onClick={() => toggleSort(id)}>
-                    {t(COL_LABEL[id])}{sortCol === id ? ` ${sortAsc ? '↑' : '↓'}` : ''}
-                  </th>
-                ))}
+                {visible.map(({ id }) => {
+                  const sortable = SORTABLE.has(id as ContactSortKey)
+                  return (
+                    <th key={id} style={{ ...th, cursor: sortable ? 'pointer' : 'default', ...(id === 'id' ? { width: 70 } : {}) }} onClick={sortable ? () => toggleSort(id) : undefined}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                        {t(COL_LABEL[id])}
+                        {sortable && <SortIcon dir={sortCol === id ? sortDir : null} />}
+                      </span>
+                    </th>
+                  )
+                })}
                 <th style={{ ...th, width: 80, position: 'sticky', right: 0, background: 'var(--color-muted,rgba(0,0,0,.03))' }} />
               </tr>
             </thead>
             <tbody>
-              {sorted.length === 0 && !loading ? (
+              {items.length === 0 && !loading ? (
                 <tr><td style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: '40px 16px' }} colSpan={totalCols}>{t('empty')}</td></tr>
-              ) : sorted.map((c) => (
+              ) : items.map((c) => (
                 <Fragment key={c.id}>
                   <tr>
                     {hasHidden && (
@@ -262,13 +267,19 @@ function ContactList({ base }: { base: string }) {
               ))}
             </tbody>
           </table>
-          <div style={{ padding: '10px 16px', textAlign: 'center', fontSize: 12, color: 'var(--color-muted-foreground)' }}>
-            {loading ? t('loading') : t('count', { n: items.length })}
-          </div>
+          <div ref={sentinelRef} style={{ height: 1 }} />
+          {loading && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '14px 16px', fontSize: 12, color: 'var(--color-muted-foreground)' }}>
+              <Spinner />{t('loading')}
+            </div>
+          )}
+          {!hasMore && items.length > 0 && (
+            <div style={{ padding: '10px 16px', textAlign: 'center', fontSize: 12, color: 'var(--color-muted-foreground)' }}>{t('count', { n: total })}</div>
+          )}
         </div>
       </div>
 
-      {showExport && <ExportModal cols={cols} items={items} getCell={(c, id) => getCellExport(c, id, t)} labelFor={(id) => t(COL_LABEL[id])} filename={t('exp_filename')} sheetTitle={t('title')} t={t} onClose={() => setShowExport(false)} />}
+      {showExport && <ExportModal cols={cols} items={exportItems} getCell={(c, id) => getCellExport(c, id, t)} labelFor={(id) => t(COL_LABEL[id])} filename={t('exp_filename')} sheetTitle={t('title')} t={t} onClose={() => setShowExport(false)} />}
 
       {toDelete && (
         <ConfirmModal title={t('del_title')} message={t('del_confirm', { u: fullName(toDelete) })}

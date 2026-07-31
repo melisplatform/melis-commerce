@@ -50,31 +50,60 @@ class MelisComReactApiClientsGroupController extends MelisAbstractActionControll
     {
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
         try {
-            $limit  = min(9999, max(1, (int) $this->params()->fromQuery('limit', 50)));
-            $page   = max(1, (int) $this->params()->fromQuery('page', 1));
+            $limit  = min(9999, max(1, (int) $this->params()->fromQuery('limit', 25)));
             $search = trim((string) ($this->params()->fromQuery('search', '') ?? ''));
             $rawSt  = $this->params()->fromQuery('status', '');
             $status = ($rawSt !== '' && $rawSt !== null) ? (int) $rawSt : null;
 
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
 
-            $where = []; $params = [];
-            if ($status !== null) { $where[] = 'cgroup_status = ?'; $params[] = $status; }
-            if ($search !== '') { $where[] = 'cgroup_name LIKE ?'; $params[] = '%' . $search . '%'; }
-            $wc = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+            $filterWhere = []; $filterParams = [];
+            if ($status !== null) { $filterWhere[] = 'cgroup_status = ?'; $filterParams[] = $status; }
+            if ($search !== '') { $filterWhere[] = 'cgroup_name LIKE ?'; $filterParams[] = '%' . $search . '%'; }
 
-            $total = (int) ((array) iterator_to_array($db->query("SELECT COUNT(*) AS t FROM melis_ecom_client_groups $wc", $params))[0])['t'];
+            $sortMap = [
+                'id'     => 'cgroup_id',
+                'name'   => "COALESCE(cgroup_name,'')",
+                'status' => 'cgroup_status',
+            ];
+            $sortKey  = (string) $this->params()->fromQuery('sort', 'id');
+            if (!isset($sortMap[$sortKey])) { $sortKey = 'id'; }
+            $sortExpr = $sortMap[$sortKey];
+            $dir = strtolower((string) $this->params()->fromQuery('dir', 'desc')) === 'asc' ? 'ASC' : 'DESC';
+            $op  = $dir === 'ASC' ? '>' : '<';
 
-            $offset = ($page - 1) * $limit;
-            $rows = $db->query(
-                "SELECT * FROM melis_ecom_client_groups $wc ORDER BY cgroup_id DESC LIMIT ? OFFSET ?",
-                array_merge($params, [$limit, $offset])
-            );
+            $countWhere = $filterWhere ? 'WHERE ' . implode(' AND ', $filterWhere) : '';
+            $total = (int) ((array) iterator_to_array($db->query("SELECT COUNT(*) AS t FROM melis_ecom_client_groups $countWhere", $filterParams))[0])['t'];
 
-            $items = [];
-            foreach ($rows as $r) { $items[] = $this->formatGroup((array) $r); }
+            $dataWhere = $filterWhere; $dataParams = $filterParams;
+            $after = (string) ($this->params()->fromQuery('after', '') ?? '');
+            if ($after !== '') {
+                $cur = json_decode((string) base64_decode($after, true), true);
+                if (is_array($cur) && array_key_exists('v', $cur) && array_key_exists('id', $cur)) {
+                    $dataWhere[]  = "($sortExpr $op ? OR ($sortExpr = ? AND cgroup_id $op ?))";
+                    $dataParams[] = $cur['v']; $dataParams[] = $cur['v']; $dataParams[] = (int) $cur['id'];
+                }
+            }
+            $dataWhereClause = $dataWhere ? 'WHERE ' . implode(' AND ', $dataWhere) : '';
 
-            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items, 'total' => $total, 'page' => $page, 'limit' => $limit]]);
+            $rows = iterator_to_array($db->query(
+                "SELECT *, $sortExpr AS __sortval FROM melis_ecom_client_groups $dataWhereClause ORDER BY $sortExpr $dir, cgroup_id $dir LIMIT ?",
+                array_merge($dataParams, [$limit])
+            ));
+
+            $items = []; $lastSortVal = null; $lastId = null;
+            foreach ($rows as $r) {
+                $a           = (array) $r;
+                $lastSortVal = $a['__sortval'] ?? null;
+                $lastId      = (int) ($a['cgroup_id'] ?? 0);
+                $items[]     = $this->formatGroup($a);
+            }
+            $nextCursor = null;
+            if (count($rows) === $limit && $lastId !== null) {
+                $nextCursor = base64_encode((string) json_encode(['v' => $lastSortVal, 'id' => $lastId]));
+            }
+
+            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items, 'total' => $total, 'nextCursor' => $nextCursor, 'limit' => $limit]]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
 

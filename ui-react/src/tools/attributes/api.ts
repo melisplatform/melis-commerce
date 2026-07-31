@@ -22,7 +22,8 @@ export interface AttributeDetail {
   valuesCount: number
 }
 
-export type AttributeListResult = ListResult<AttributeItem>
+export type AttributeSortKey = 'id' | 'name' | 'reference' | 'type' | 'status' | 'visible' | 'searchable' | 'values'
+export interface AttributeListResult { items: AttributeItem[]; total: number; nextCursor: string | null }
 
 /** Valeur typée d'une traduction de valeur : string (varchar/text/datetime), number (int/float), boolean (bool), ou null (binary / vide). */
 export type AttributeValueRaw = string | number | boolean | null
@@ -32,15 +33,29 @@ export interface AttributeValueItem { id: number; reference: string; translation
 export interface AttributeValuesResult { items: AttributeValueItem[]; typeColumn: string }
 
 export function fetchAttributes(params: {
-  search?: string; status?: number | null; typeId?: number | null; page?: number; limit?: number
+  search?: string; status?: number | null; typeId?: number | null; limit?: number; sort?: AttributeSortKey; dir?: 'asc' | 'desc'; after?: string | null
 } = {}): Promise<AttributeListResult> {
   const qs = new URLSearchParams()
   if (params.search) qs.set('search', params.search)
   if (params.status !== undefined && params.status !== null) qs.set('status', String(params.status))
   if (params.typeId !== undefined && params.typeId !== null) qs.set('typeId', String(params.typeId))
-  qs.set('page', String(params.page ?? 1))
-  qs.set('limit', String(params.limit ?? 50))
+  if (params.limit) qs.set('limit', String(params.limit))
+  if (params.sort) qs.set('sort', params.sort)
+  if (params.dir) qs.set('dir', params.dir)
+  if (params.after) qs.set('after', params.after)
   return apiFetch<AttributeListResult>(`/melis/react-api/attributes?${qs}`)
+}
+
+/** Tous les éléments filtrés (export) via boucle de curseur keyset. */
+export async function fetchAllAttributes(params: { search?: string; status?: number | null; typeId?: number | null } = {}): Promise<AttributeItem[]> {
+  const all: AttributeItem[] = []
+  let after: string | null = null
+  do {
+    const rr: AttributeListResult = await fetchAttributes({ ...params, limit: 200, after })
+    all.push(...rr.items)
+    after = rr.nextCursor
+  } while (after)
+  return all
 }
 
 export const fetchAttributeStats   = () => apiFetch<AttributeStats>('/melis/react-api/attributes/stats')

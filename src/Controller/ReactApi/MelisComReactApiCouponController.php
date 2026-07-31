@@ -73,27 +73,66 @@ class MelisComReactApiCouponController extends MelisAbstractActionController
     {
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
         try {
-            $limit  = min(9999, max(1, (int) $this->params()->fromQuery('limit', 50)));
+            $limit  = min(9999, max(1, (int) $this->params()->fromQuery('limit', 25)));
             $search = trim((string) ($this->params()->fromQuery('search', '') ?? ''));
             $rawSt  = $this->params()->fromQuery('status', '');
             $status = ($rawSt !== '' && $rawSt !== null) ? (int) $rawSt : null;
 
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
 
-            $where = []; $params = [];
-            if ($status !== null) { $where[] = 'coup_status = ?'; $params[] = $status; }
-            if ($search !== '') { $where[] = 'coup_code LIKE ?'; $params[] = '%' . $search . '%'; }
-            $wc = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+            $filterWhere = []; $filterParams = [];
+            if ($status !== null) { $filterWhere[] = 'coup_status = ?'; $filterParams[] = $status; }
+            if ($search !== '')   { $filterWhere[] = 'coup_code LIKE ?'; $filterParams[] = '%' . $search . '%'; }
 
-            $total = (int) ((array) iterator_to_array($db->query("SELECT COUNT(*) AS t FROM melis_ecom_coupon $wc", $params))[0])['t'];
+            // Tri server-side (whitelist non-null). « discount » = pourcentage sinon valeur fixe.
+            $sortMap = [
+                'id'       => 'coup_id',
+                'code'     => "COALESCE(coup_code,'')",
+                'status'   => 'coup_status',
+                'discount' => 'COALESCE(coup_percentage, coup_discount_value, 0)',
+                'uses'     => 'coup_current_use_number',
+                'valid'    => "COALESCE(coup_date_valid_end,'1000-01-01 00:00:00')",
+            ];
+            $sortKey  = (string) $this->params()->fromQuery('sort', 'id');
+            if (!isset($sortMap[$sortKey])) { $sortKey = 'id'; }
+            $sortExpr = $sortMap[$sortKey];
+            $dir = strtolower((string) $this->params()->fromQuery('dir', 'desc')) === 'asc' ? 'ASC' : 'DESC';
+            $op  = $dir === 'ASC' ? '>' : '<';
+
+            $countWhere = $filterWhere ? 'WHERE ' . implode(' AND ', $filterWhere) : '';
+            $total = (int) ((array) iterator_to_array($db->query("SELECT COUNT(*) AS t FROM melis_ecom_coupon $countWhere", $filterParams))[0])['t'];
 
             $curSym = "(SELECT cur_symbol FROM melis_ecom_currency WHERE cur_default = 1 LIMIT 1)";
-            $rows = $db->query("SELECT *, $curSym AS currency_symbol FROM melis_ecom_coupon $wc ORDER BY coup_id DESC LIMIT ?", array_merge($params, [$limit]));
 
-            $items = [];
-            foreach ($rows as $r) { $items[] = $this->formatCoupon((array) $r); }
+            $dataWhere = $filterWhere; $dataParams = $filterParams;
+            $after = (string) ($this->params()->fromQuery('after', '') ?? '');
+            if ($after !== '') {
+                $cur = json_decode((string) base64_decode($after, true), true);
+                if (is_array($cur) && array_key_exists('v', $cur) && array_key_exists('id', $cur)) {
+                    $dataWhere[]  = "($sortExpr $op ? OR ($sortExpr = ? AND coup_id $op ?))";
+                    $dataParams[] = $cur['v']; $dataParams[] = $cur['v']; $dataParams[] = (int) $cur['id'];
+                }
+            }
+            $dataWhereClause = $dataWhere ? 'WHERE ' . implode(' AND ', $dataWhere) : '';
 
-            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items, 'total' => $total]]);
+            $rows = iterator_to_array($db->query(
+                "SELECT *, $curSym AS currency_symbol, $sortExpr AS __sortval FROM melis_ecom_coupon $dataWhereClause ORDER BY $sortExpr $dir, coup_id $dir LIMIT ?",
+                array_merge($dataParams, [$limit])
+            ));
+
+            $items = []; $lastSortVal = null; $lastId = null;
+            foreach ($rows as $r) {
+                $a           = (array) $r;
+                $lastSortVal = $a['__sortval'] ?? null;
+                $lastId      = (int) ($a['coup_id'] ?? 0);
+                $items[]     = $this->formatCoupon($a);
+            }
+            $nextCursor = null;
+            if (count($rows) === $limit && $lastId !== null) {
+                $nextCursor = base64_encode((string) json_encode(['v' => $lastSortVal, 'id' => $lastId]));
+            }
+
+            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items, 'total' => $total, 'nextCursor' => $nextCursor]]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
 

@@ -7,17 +7,32 @@ export interface CurrencyItem {
 
 export interface CurrencyStats { total: number; active: number; inactive: number }
 
-export type CurrencyListResult = ListResult<CurrencyItem>
+export type CurrencySortKey = 'id' | 'default' | 'status' | 'symbol' | 'code' | 'name'
+export interface CurrencyListResult { items: CurrencyItem[]; total: number; nextCursor: string | null }
 
 export function fetchCurrencies(params: {
-  search?: string; status?: number | null; page?: number; limit?: number
+  search?: string; status?: number | null; limit?: number; sort?: CurrencySortKey; dir?: 'asc' | 'desc'; after?: string | null
 } = {}): Promise<CurrencyListResult> {
   const qs = new URLSearchParams()
   if (params.search) qs.set('search', params.search)
   if (params.status !== undefined && params.status !== null) qs.set('status', String(params.status))
-  qs.set('page', String(params.page ?? 1))
-  qs.set('limit', String(params.limit ?? 50))
+  if (params.limit) qs.set('limit', String(params.limit))
+  if (params.sort) qs.set('sort', params.sort)
+  if (params.dir) qs.set('dir', params.dir)
+  if (params.after) qs.set('after', params.after)
   return apiFetch<CurrencyListResult>(`/melis/react-api/currencies?${qs}`)
+}
+
+/** Tous les éléments filtrés (export) via boucle de curseur keyset. */
+export async function fetchAllCurrencies(params: { search?: string; status?: number | null } = {}): Promise<CurrencyItem[]> {
+  const all: CurrencyItem[] = []
+  let after: string | null = null
+  do {
+    const rr: CurrencyListResult = await fetchCurrencies({ ...params, limit: 200, after })
+    all.push(...rr.items)
+    after = rr.nextCursor
+  } while (after)
+  return all
 }
 
 export const fetchCurrencyStats = () => apiFetch<CurrencyStats>('/melis/react-api/currencies/stats')

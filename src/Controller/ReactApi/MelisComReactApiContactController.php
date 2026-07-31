@@ -74,58 +74,100 @@ class MelisComReactApiContactController extends MelisAbstractActionController
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
 
         try {
-            $page      = max(1, (int) $this->params()->fromQuery('page', 1));
             $limit     = min(9999, max(1, (int) $this->params()->fromQuery('limit', 25)));
             $search    = trim((string) ($this->params()->fromQuery('search', '') ?? ''));
             $rawStatus = $this->params()->fromQuery('status', '');
             $status    = ($rawStatus !== '' && $rawStatus !== null) ? (int) $rawStatus : null;
             $rawAcc    = $this->params()->fromQuery('accountId', '');
             $accountId = ($rawAcc !== '' && $rawAcc !== null) ? (int) $rawAcc : null;
-            $offset    = ($page - 1) * $limit;
-            $lang      = $this->langId();
+            $type      = trim((string) ($this->params()->fromQuery('type', '') ?? ''));
+            $lang      = (int) $this->langId();
 
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
-
-            $where  = [];
-            $params = [];
-            if ($status !== null)    { $where[] = 'p.cper_status = ?';    $params[] = $status; }
-            if ($accountId !== null) { $where[] = 'p.cper_client_id = ?'; $params[] = $accountId; }
-            if ($search !== '') {
-                $like    = '%' . $search . '%';
-                $where[] = '(p.cper_firstname LIKE ? OR p.cper_name LIKE ? OR p.cper_email LIKE ? OR p.cper_tags LIKE ?)';
-                $params  = array_merge($params, [$like, $like, $like, $like]);
-            }
-            $whereClause = $where ? 'WHERE ' . implode(' AND ', $where) : '';
-
-            $countRow = iterator_to_array(
-                $db->query("SELECT COUNT(*) AS total FROM melis_ecom_client_person p $whereClause", $params)
-            );
-            $total = (int) ($countRow[0]['total'] ?? 0);
-
             $mode = $this->accountNameMode();
-            $dataSql = "
+
+            // Filtres (communs au COUNT sur `client_person` seul et à la requête data). Le filtre
+            // « type » (cper_type) était appliqué côté client → déplacé server-side pour le keyset.
+            $filterWhere = []; $filterParams = [];
+            if ($status !== null)    { $filterWhere[] = 'p.cper_status = ?';    $filterParams[] = $status; }
+            if ($accountId !== null) { $filterWhere[] = 'p.cper_client_id = ?'; $filterParams[] = $accountId; }
+            if ($type !== '')        { $filterWhere[] = 'p.cper_type = ?';      $filterParams[] = $type; }
+            if ($search !== '') {
+                $like = '%' . $search . '%';
+                $filterWhere[] = '(p.cper_firstname LIKE ? OR p.cper_name LIKE ? OR p.cper_email LIKE ? OR p.cper_tags LIKE ?)';
+                $filterParams = array_merge($filterParams, [$like, $like, $like, $like]);
+            }
+
+            $countWhere = $filterWhere ? 'WHERE ' . implode(' AND ', $filterWhere) : '';
+            $total = (int) (iterator_to_array($db->query("SELECT COUNT(*) AS total FROM melis_ecom_client_person p $countWhere", $filterParams))[0]['total'] ?? 0);
+
+            // Nom du compte affiché selon le mode. Tri server-side whitelisté ; « civility » non triable.
+            $accExpr = "COALESCE(c.cli_name,'')";
+            if ($mode === 'company_name')     { $accExpr = "COALESCE(c_comp.ccomp_name,'')"; }
+            elseif ($mode === 'contact_name') { $accExpr = "CONCAT(COALESCE(c_dcp.cper_firstname,''),' ',COALESCE(c_dcp.cper_name,''))"; }
+            $sortMap = [
+                'id'        => 'p.cper_id',
+                'status'    => 'p.cper_status',
+                'firstname' => "COALESCE(p.cper_firstname,'')",
+                'name'      => "COALESCE(p.cper_name,'')",
+                'account'   => $accExpr,
+                'email'     => "COALESCE(p.cper_email,'')",
+                'type'      => 'p.cper_type',
+                'tags'      => "COALESCE(p.cper_tags,'')",
+                'created'   => "COALESCE(p.cper_date_creation,'1000-01-01 00:00:00')",
+            ];
+            $sortKey  = (string) $this->params()->fromQuery('sort', 'id');
+            if (!isset($sortMap[$sortKey])) { $sortKey = 'id'; }
+            $sortExpr = $sortMap[$sortKey];
+            $dir = strtolower((string) $this->params()->fromQuery('dir', 'desc')) === 'asc' ? 'ASC' : 'DESC';
+            $op  = $dir === 'ASC' ? '>' : '<';
+
+            // $lang inliné (int) → aucun paramètre dans le SELECT/JOIN, compatible keyset.
+            $joins = "LEFT JOIN melis_ecom_client c ON c.cli_id = p.cper_client_id
+                      LEFT JOIN melis_ecom_civility_trans civ ON civ.civt_civ_id = p.cper_civility AND civ.civt_lang_id = $lang
+                      " . $this->accountNameJoinSql('c');
+
+            $dataWhere = $filterWhere; $dataParams = $filterParams;
+            $after = (string) ($this->params()->fromQuery('after', '') ?? '');
+            if ($after !== '') {
+                $cur = json_decode((string) base64_decode($after, true), true);
+                if (is_array($cur) && array_key_exists('v', $cur) && array_key_exists('id', $cur)) {
+                    $dataWhere[]  = "($sortExpr $op ? OR ($sortExpr = ? AND p.cper_id $op ?))";
+                    $dataParams[] = $cur['v']; $dataParams[] = $cur['v']; $dataParams[] = (int) $cur['id'];
+                }
+            }
+            $dataWhereClause = $dataWhere ? 'WHERE ' . implode(' AND ', $dataWhere) : '';
+
+            $rows = iterator_to_array($db->query("
                 SELECT p.cper_id, p.cper_status, p.cper_type, p.cper_civility, p.cper_firstname,
                        p.cper_name, p.cper_email, p.cper_client_id, p.cper_job_title, p.cper_tel_mobile,
                        p.cper_tags, p.cper_date_creation, p.cper_date_edit,
                        c.cli_name, civ.civt_min_name AS civility_name,
                        c_comp.ccomp_name AS dyn_company_name,
-                       c_dcp.cper_firstname AS dyn_contact_firstname, c_dcp.cper_name AS dyn_contact_name
+                       c_dcp.cper_firstname AS dyn_contact_firstname, c_dcp.cper_name AS dyn_contact_name,
+                       $sortExpr AS __sortval
                 FROM melis_ecom_client_person p
-                LEFT JOIN melis_ecom_client c ON c.cli_id = p.cper_client_id
-                LEFT JOIN melis_ecom_civility_trans civ ON civ.civt_civ_id = p.cper_civility AND civ.civt_lang_id = ?
-                " . $this->accountNameJoinSql('c') . "
-                $whereClause
-                ORDER BY p.cper_id DESC
-                LIMIT ? OFFSET ?
-            ";
-            $rows = $db->query($dataSql, array_merge([$lang], $params, [$limit, $offset]));
+                $joins
+                $dataWhereClause
+                ORDER BY $sortExpr $dir, p.cper_id $dir
+                LIMIT ?
+            ", array_merge($dataParams, [$limit])));
 
-            $items = [];
-            foreach ($rows as $row) { $items[] = $this->formatContact((array) $row, $mode); }
+            $items = []; $lastSortVal = null; $lastId = null;
+            foreach ($rows as $row) {
+                $a           = (array) $row;
+                $lastSortVal = $a['__sortval'] ?? null;
+                $lastId      = (int) ($a['cper_id'] ?? 0);
+                $items[]     = $this->formatContact($a, $mode);
+            }
+            $nextCursor = null;
+            if (count($rows) === $limit && $lastId !== null) {
+                $nextCursor = base64_encode((string) json_encode(['v' => $lastSortVal, 'id' => $lastId]));
+            }
 
             return $this->jsonResponse([
                 'success' => true,
-                'data'    => ['items' => $items, 'total' => $total, 'page' => $page, 'limit' => $limit],
+                'data'    => ['items' => $items, 'total' => $total, 'nextCursor' => $nextCursor, 'limit' => $limit],
             ]);
         } catch (\Throwable $e) {
             return $this->errorResponse($e);
@@ -469,28 +511,76 @@ class MelisComReactApiContactController extends MelisAbstractActionController
     {
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
         try {
-            $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
-            $mode = $this->accountNameMode();
-            $rows = $db->query(
-                'SELECT c.cli_id, c.cli_name, c.cli_status, cpr.cpr_default_client AS is_default_account,
-                        (SELECT car.car_default_person FROM melis_ecom_client_account_rel car
-                         WHERE car.car_client_id = cpr.cpr_client_id AND car.car_client_person_id = cpr.cpr_client_person_id LIMIT 1) AS is_main,
-                        c_comp.ccomp_name AS dyn_company_name,
-                        c_dcp.cper_firstname AS dyn_contact_firstname, c_dcp.cper_name AS dyn_contact_name
-                 FROM melis_ecom_client_person_rel cpr
-                 JOIN melis_ecom_client c ON c.cli_id = cpr.cpr_client_id
-                 ' . $this->accountNameJoinSql('c') . '
-                 WHERE cpr.cpr_client_person_id = ? ORDER BY c.cli_name', [$this->routeId()]
-            );
-            $items = [];
-            foreach ($rows as $r) {
+            $db        = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
+            $mode      = $this->accountNameMode();
+            $contactId = (int) $this->routeId();
+
+            $limit = (int) $this->params()->fromQuery('limit', 25);
+            if ($limit < 1) { $limit = 25; } elseif ($limit > 500) { $limit = 500; }
+
+            // Nom du compte mode-dependent (comme la liste Comptes).
+            $nameExpr = "COALESCE(c.cli_name,'')";
+            if ($mode === 'company_name')     { $nameExpr = "COALESCE(c_comp.ccomp_name,'')"; }
+            elseif ($mode === 'contact_name') { $nameExpr = "CONCAT(COALESCE(c_dcp.cper_firstname,''),' ',COALESCE(c_dcp.cper_name,''))"; }
+            $isMainExpr = "(SELECT car.car_default_person FROM melis_ecom_client_account_rel car
+                            WHERE car.car_client_id = cpr.cpr_client_id AND car.car_client_person_id = cpr.cpr_client_person_id LIMIT 1)";
+            $join = "FROM melis_ecom_client_person_rel cpr
+                     JOIN melis_ecom_client c ON c.cli_id = cpr.cpr_client_id
+                     " . $this->accountNameJoinSql('c');
+
+            $filterWhere  = ['cpr.cpr_client_person_id = ?'];
+            $filterParams = [$contactId];
+            $search = trim((string) ($this->params()->fromQuery('search', '') ?? ''));
+            if ($search !== '') { $filterWhere[] = "$nameExpr LIKE ?"; $filterParams[] = '%' . $search . '%'; }
+
+            $sortMap = [
+                'id'          => 'c.cli_id',
+                'account'     => $nameExpr,
+                'status'      => 'c.cli_status',
+                'def_account' => 'cpr.cpr_default_client',
+                'def_contact' => "COALESCE($isMainExpr,0)",
+            ];
+            $sortKey = (string) $this->params()->fromQuery('sort', 'account');
+            if (!isset($sortMap[$sortKey])) { $sortKey = 'account'; }
+            $sortExpr = $sortMap[$sortKey];
+            $dir = strtolower((string) $this->params()->fromQuery('dir', 'asc')) === 'desc' ? 'DESC' : 'ASC';
+            $op  = $dir === 'ASC' ? '>' : '<';
+
+            $countWhere = 'WHERE ' . implode(' AND ', $filterWhere);
+            $total = (int) ((array) iterator_to_array($db->query("SELECT COUNT(*) AS t $join $countWhere", $filterParams))[0])['t'];
+
+            $dataWhere = $filterWhere; $dataParams = $filterParams;
+            $after = (string) ($this->params()->fromQuery('after', '') ?? '');
+            if ($after !== '') {
+                $cur = json_decode((string) base64_decode($after, true), true);
+                if (is_array($cur) && array_key_exists('v', $cur) && array_key_exists('id', $cur)) {
+                    $dataWhere[]  = "($sortExpr $op ? OR ($sortExpr = ? AND c.cli_id $op ?))";
+                    $dataParams[] = $cur['v']; $dataParams[] = $cur['v']; $dataParams[] = (int) $cur['id'];
+                }
+            }
+            $dataWhereClause = 'WHERE ' . implode(' AND ', $dataWhere);
+            $sql = "SELECT c.cli_id, c.cli_name, c.cli_status, cpr.cpr_default_client AS is_default_account,
+                           $isMainExpr AS is_main,
+                           c_comp.ccomp_name AS dyn_company_name,
+                           c_dcp.cper_firstname AS dyn_contact_firstname, c_dcp.cper_name AS dyn_contact_name,
+                           $sortExpr AS __sortval
+                    $join $dataWhereClause ORDER BY $sortExpr $dir, c.cli_id $dir LIMIT ?";
+            $dataParams[] = $limit;
+
+            $items = []; $lastSortVal = null; $lastId = null;
+            foreach ($db->query($sql, $dataParams) as $r) {
                 $r = (array) $r;
+                $lastSortVal = $r['__sortval'] ?? null; $lastId = (int) $r['cli_id'];
                 $items[] = [
                     'id' => (int) $r['cli_id'], 'name' => $this->resolveAccountName($r, $mode), 'status' => (int) $r['cli_status'],
                     'isDefaultAccount' => (int) ($r['is_default_account'] ?? 0), 'isMain' => (int) ($r['is_main'] ?? 0),
                 ];
             }
-            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items]]);
+            $nextCursor = null;
+            if (count($items) === $limit && $lastId !== null) {
+                $nextCursor = base64_encode((string) json_encode(['v' => $lastSortVal, 'id' => $lastId]));
+            }
+            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items, 'total' => $total, 'nextCursor' => $nextCursor, 'limit' => $limit]]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
 
