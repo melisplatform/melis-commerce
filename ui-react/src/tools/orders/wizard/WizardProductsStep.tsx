@@ -117,6 +117,12 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
     if (!isNaN(n)) setQty(variantId, n)
   }
 
+  function next() {
+    if (!country) { notify('ko', t('checkout_step_products'), t('checkout_country_required')); return }
+    if (basket.length === 0) { notify('ko', t('checkout_step_products'), t('checkout_basket_empty')); return }
+    onNext(country)
+  }
+
   const totalPages = Math.max(1, Math.ceil(total / 25))
   const basketTotal = basket.reduce((s, l) => s + (l.lineTotal ?? 0), 0)
 
@@ -238,7 +244,7 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
 
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <button style={btnGhost} onClick={onBack}>{t('checkout_back')}</button>
-              <button style={btnPrimary} disabled={!country || basket.length === 0} onClick={() => country && onNext(country)}>{t('checkout_next')}</button>
+              <button style={btnPrimary} onClick={next}>{t('checkout_next')}</button>
             </div>
           </div>
         </div>

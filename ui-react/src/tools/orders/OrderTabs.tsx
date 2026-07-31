@@ -423,6 +423,7 @@ export function MessagesTab({ orderId, messages, t, onSaved, can }: {
   orderId: number; messages: OrderMessage[]; t: T; onSaved?: () => void; can?: (cap: string) => boolean
 }) {
   const navigate = useNavigate()
+  const narrow = useIsNarrow()
   const allow = (cap: string) => (can ? can(cap) : true)
   const [list, setList] = useState(messages)
   const [text, setText] = useState('')
@@ -471,11 +472,14 @@ export function MessagesTab({ orderId, messages, t, onSaved, can }: {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             {groups.map((g) => (
               <div key={g.key} style={{ position: 'relative' }}>
-                <div style={{ border: '1px solid var(--color-border)', borderRadius: 6, padding: '4px 8px', textAlign: 'center', lineHeight: 1.2, width: 40, marginLeft: 46 }}>
+                <div style={{ border: '1px solid var(--color-border)', borderRadius: 6, padding: '4px 8px', textAlign: 'center', lineHeight: 1.2, width: 40, marginLeft: narrow ? 0 : 46 }}>
                   <div style={{ fontSize: 13, fontWeight: 700 }}>{g.day}</div>
                   <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--color-muted-foreground)' }}>{g.month}</div>
                 </div>
-                <div style={{ position: 'absolute', left: 66, top: 38, bottom: 0, width: 2, background: 'var(--color-primary)' }} />
+                {/* Rail verticale reliant la pastille de date aux pastilles de message — n'a de sens
+                    que quand la rail à gauche de chaque message existe (desktop) ; sur narrow cette
+                    rail disparaît (voir plus bas), la ligne n'aurait donc plus rien à relier. */}
+                {!narrow && <div style={{ position: 'absolute', left: 66, top: 38, bottom: 0, width: 2, background: 'var(--color-primary)' }} />}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginTop: 12 }}>
                   {g.items.map((m) => {
                     // Distinction visuelle expéditeur : ADMIN (bleu) vs CLIENT (vert).
@@ -484,14 +488,18 @@ export function MessagesTab({ orderId, messages, t, onSaved, can }: {
                     const rLabel = isAdmin ? t('msg_author_admin') : t('msg_author_client')
                     return (
                     <div key={m.id} style={{ display: 'flex', position: 'relative' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', width: 150, flexShrink: 0, paddingTop: 12 }}>
+                      {/* Rail gauche (étiquette + pastille + trait de liaison) : redondante sur narrow
+                          avec le badge déjà affiché dans l'en-tête de la bulle (nom + rLabel un peu
+                          plus bas) — un rail large fixe (150px) y laisserait trop peu de place pour le
+                          message sur un écran étroit (Mantis #10850). */}
+                      {!narrow && <div style={{ display: 'flex', alignItems: 'center', width: 150, flexShrink: 0, paddingTop: 12 }}>
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, width: 58, color: rColor, fontSize: 10, fontWeight: 700, letterSpacing: '.03em', whiteSpace: 'nowrap' }}>
                           {rLabel}<MessageSquareIcon />
                         </span>
                         <div style={{ width: 9, height: 9, background: rColor, flexShrink: 0, marginLeft: 4 }} />
                         <div style={{ flex: 1, height: 2, background: rColor }} />
-                      </div>
-                      <div style={{ flex: 1, borderRadius: 8, padding: 14, borderLeft: `3px solid ${rColor}`,
+                      </div>}
+                      <div style={{ flex: 1, minWidth: 0, borderRadius: 8, padding: 14, borderLeft: `3px solid ${rColor}`,
                         border: `1px solid color-mix(in srgb, ${rColor} 30%, var(--color-border))`, borderLeftWidth: 3,
                         background: `color-mix(in srgb, ${rColor} 6%, transparent)` }}>
                         <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>

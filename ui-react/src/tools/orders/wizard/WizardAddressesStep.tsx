@@ -212,7 +212,7 @@ export function WizardAddressesStep({ clientId, onBack, onNext }: {
 
       <div style={{ marginTop: 20, display: 'flex', justifyContent: 'space-between' }}>
         <button style={btnGhost} onClick={onBack}>{t('checkout_back')}</button>
-        <button style={btnPrimary} disabled={validating || !deliveryId || (!sameAsDelivery && !billingId)} onClick={next}>
+        <button style={btnPrimary} disabled={validating} onClick={next}>
           {validating ? '…' : t('checkout_next')}
         </button>
       </div>
