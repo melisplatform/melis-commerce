@@ -1,5 +1,6 @@
 <?php 
 	return array(
+	    'tr_meliscommerce_ws_desc_attribute' => 'Commerce catalog: product attribute & attribute-value lookup (translations, per product).',
 	    'tr_meliscommerce_attribute_list_page' => 'Attributes',
 	    'tr_meliscommerce_attribute_list_page_description' => 'Find here the different attributes. They correspond to the product characteristics.',
 	    'tr_meliscommerce_attribute_list_header_title' => 'Attribute list',

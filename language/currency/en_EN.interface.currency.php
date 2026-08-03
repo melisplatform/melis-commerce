@@ -1,5 +1,6 @@
 <?php
 return array(
+    'tr_meliscommerce_ws_desc_currency' => 'Commerce: currency lookup (list, default currency, countries using a currency).',
     'tr_meliscommerce_currencies' => 'Currencies',
     'tr_meliscommerce_currencies_description' => 'Find here the different currencies. You can activate/deactivate, add or delete currencies and define the default currency depending on the needs of your sites.<br>The default currency cannot be deleted.',
     'tr_meliscommerce_currency' => 'Currency',

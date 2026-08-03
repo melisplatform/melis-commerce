@@ -1,5 +1,7 @@
 <?php 
 return array(
+    'tr_meliscommerce_ws_desc_product' => 'Catalogue commerce : consultation des produits (détails, textes, prix, attributs, déclinaisons, SEO).',
+    'tr_meliscommerce_ws_desc_productsearch' => 'Catalogue commerce : recherche de produits (par texte, recherche complète, par catégorie).',
     'tr_meliscommerce_products_Products' => 'Produits',
     'tr_meliscommerce_products_Products_description' => 'Saisissez ici les détails de votre produit.',
     'tr_meliscommerce_products_Product_lists' => 'Liste des produits',

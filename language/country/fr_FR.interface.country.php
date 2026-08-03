@@ -1,5 +1,6 @@
 <?php 
 return array(
+    'tr_meliscommerce_ws_desc_country' => 'Commerce : consultation des pays (liste, par id, pays avec sa devise).',
     'tr_meliscommerce_countries' => 'Pays',
     'tr_meliscommerce_countries_description' => 'Retrouvez ici les différents Pays. Vous pouvez activer/désactiver, ajouter ou supprimer les pays et définir leur devise en fonction des besoins de vos sites.',
     'tr_meliscommerce_country' => 'Pays',

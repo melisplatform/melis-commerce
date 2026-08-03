@@ -1,5 +1,6 @@
 <?php 
-    return array(      
+    return array(
+        'tr_meliscommerce_ws_desc_price' => 'Catalogue commerce : prix résolu d\'un item pour un pays et un groupe client.',
         'tr_meliscommerce_prices_tab' => 'Prix',
         // tab content prices
         'tr_meliscommerce_prices_tab_header' => 'Prix',

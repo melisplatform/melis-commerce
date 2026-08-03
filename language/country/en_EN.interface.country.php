@@ -1,5 +1,6 @@
 <?php 
 return array(
+    'tr_meliscommerce_ws_desc_country' => 'Commerce: country lookup (list, by id, country with currency).',
     'tr_meliscommerce_countries' => 'Countries',
     'tr_meliscommerce_countries_description' => 'Find here the different countries. You can activate/deactivate, add or delete countries and define their currency depending on the needs of your sites.',
     'tr_meliscommerce_country' => 'Country',

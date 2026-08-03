@@ -1,5 +1,6 @@
 <?php
 return array(
+    'tr_meliscommerce_ws_desc_currency' => 'Commerce : consultation des devises (liste, devise par défaut, pays utilisant une devise).',
     'tr_meliscommerce_currencies' => 'Devises',
     'tr_meliscommerce_currencies_description' => 'Retrouvez ici les différentes devises. Vous pouvez activer/désactiver, ajouter ou supprimer les devises et définir la devise par défaut en fonction des besoins de vos sites.<br>La devise par défaut ne peut être supprimée.',
     'tr_meliscommerce_currency' => 'Devise',

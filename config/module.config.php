@@ -130,6 +130,7 @@ return [
             'MelisComVariantService'                        => \MelisCommerce\Service\MelisComVariantService::class,
             'MelisComDuplicationService'                    => \MelisCommerce\Service\MelisComDuplicationService::class,
             'MelisComCurrencyService'                       => \MelisCommerce\Service\MelisComCurrencyService::class,
+            'MelisComCountryService'                        => \MelisCommerce\Service\MelisComCountryService::class,
             'MelisComLinksService'                          => \MelisCommerce\Service\MelisComLinksService::class,
             'MelisComClientGroupsService'                   => \MelisCommerce\Service\MelisComClientGroupsService::class,
             'MelisComPriceService'                          => \MelisCommerce\Service\MelisComPriceService::class,

@@ -1,5 +1,6 @@
 <?php 
 	return array(
+        'tr_meliscommerce_ws_desc_variant' => 'Catalogue commerce : consultation des déclinaisons produit (stocks, prix, attributs, SEO).',
         //Headers
 	    'tr_meliscommerce_variants_Products' => 'Produits',
 	    'tr_meliscommerce_varaints' => 'Variants',
