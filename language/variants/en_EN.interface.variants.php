@@ -1,5 +1,6 @@
 <?php 
 	return array(
+        'tr_meliscommerce_ws_desc_variant' => 'Commerce catalog: product variant lookup (stocks, prices, attributes, SEO).',
         //Headers
 	    'tr_meliscommerce_variants_Products' => 'Products',
 	    'tr_meliscommerce_varaints' => 'Variants',

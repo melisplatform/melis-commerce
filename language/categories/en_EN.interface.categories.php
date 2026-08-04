@@ -1,5 +1,6 @@
 <?php 
 	return array(
+        'tr_meliscommerce_ws_desc_category' => 'Commerce catalog: category lookup (tree, breadcrumb, products, SEO, translations).',
         'tr_meliscommerce_categories_Categories' => 'Catalogs',
 	    'tr_meliscommerce_categories_Categories_title' => 'Catalogs / Categories',
 	    'tr_meliscommerce_categories_Categories_title_description' => 'Manage here your catalogs and your categories. You can define their order by drag and drop.',

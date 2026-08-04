@@ -435,7 +435,7 @@ class MelisComDuplicationService extends MelisComGeneralService
                         $newDir = 'public/media/commerce/'.$arrayParameters['docRelation'].'/'.$arrayParameters['newDocRelationId'].'/';
                         if(!is_dir($newDir))
                         {
-                            mkdir($newDir, 0777, true);
+                            mkdir($newDir, 0755, true);
                         }
                         
                         // Just to be sure that the target Directory is exsting, else do nothing

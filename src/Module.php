@@ -194,6 +194,8 @@ class Module
             include __DIR__ . '/../config/module.config.php',
             include __DIR__ . '/../config/app.emails.php',
             include __DIR__ . '/../config/diagnostic.config.php',
+            // Web services (microservices) exposed by this module
+            include __DIR__ . '/../config/app.microservice.php',
 
             include __DIR__ . '/../config/interface/app.interface.general.php',
             include __DIR__ . '/../config/interface/app.interface.documents.php',

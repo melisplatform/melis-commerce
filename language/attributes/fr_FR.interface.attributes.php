@@ -1,5 +1,6 @@
 <?php 
 	return array(
+	    'tr_meliscommerce_ws_desc_attribute' => 'Catalogue commerce : consultation des attributs et valeurs d\'attributs (traductions, par produit).',
 	    'tr_meliscommerce_attribute_list_page' => 'Attributs',
 	    'tr_meliscommerce_attribute_list_page_description' => 'Retrouvez ici les différents attributs. Ils correspondent aux caractéristiques des produits.',
 	    'tr_meliscommerce_attribute_list_header_title' => 'Liste des attributs',

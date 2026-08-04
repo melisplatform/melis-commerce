@@ -1,5 +1,6 @@
 <?php 
 	return array(
+        'tr_meliscommerce_ws_desc_category' => 'Catalogue commerce : consultation des catégories (arbre, fil d\'ariane, produits, SEO, traductions).',
         'tr_meliscommerce_categories_Categories' => 'Catalogues',
 	    'tr_meliscommerce_categories_Categories_title' => 'Catalogues / Catégories',
 	    'tr_meliscommerce_categories_Categories_title_description' => 'Gérez ici vos catalogues et vos catégories. Vous pouvez définir leur ordre par glisser-déposer.',

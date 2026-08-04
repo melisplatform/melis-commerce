@@ -1,5 +1,7 @@
 <?php 
 return array(
+    'tr_meliscommerce_ws_desc_product' => 'Commerce catalog: product lookup (details, texts, prices, attributes, variants, SEO).',
+    'tr_meliscommerce_ws_desc_productsearch' => 'Commerce catalog: product search (by text, full search, by category).',
     'tr_meliscommerce_products_Products' => 'Products',
     'tr_meliscommerce_products_Products_description' => 'Enter here the details of your product.',
     'tr_meliscommerce_products_Product_lists' => 'Product list',

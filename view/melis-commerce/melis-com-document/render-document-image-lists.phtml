@@ -67,10 +67,10 @@
 		?>
                 <div class="imageDocumentItem image <?= $image['dtype_code'].' ' . $image['dtype_sub_code'] .' ' . $image['rdoc_country_id']; ?>">
                 	<div class="me-p-image">
-                	<img src="<?= $imageLoc; ?>"/>
+                	<img src="<?= $this->escapeHtmlAttr($imageLoc); ?>"/>
                 		<div class="hover-details">
-                			<div class="me-p-btn-cont" data-doc-id="<?= $image['doc_id']; ?>" data-doc-type="image">
-                				<a class="viewImageDocument" href="<?= $imageLoc; ?>" data-lightbox="selected-images-<?= $docRelationType.'-'.$docRelationId; ?>" data-title="<?= $image['doc_name'] . ' | ' . $image['dtype_name'] . ' | ' . $image['country_name']; ?>">
+                			<div class="me-p-btn-cont" data-doc-id="<?= $this->escapeHtmlAttr($image['doc_id']); ?>" data-doc-type="image">
+                				<a class="viewImageDocument" href="<?= $this->escapeHtmlAttr($imageLoc); ?>" data-lightbox="selected-images-<?= $this->escapeHtmlAttr($docRelationType.'-'.$docRelationId); ?>" data-title="<?= $this->escapeHtmlAttr($image['doc_name'] . ' | ' . $image['dtype_name'] . ' | ' . $image['country_name']); ?>">
                 					<i class="fa fa-eye"></i>
                 				</a>
                 				<a class="editImageDocumentModal" data-doc-id="<?= $image['doc_id']; ?>">
