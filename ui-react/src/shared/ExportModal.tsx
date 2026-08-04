@@ -1,14 +1,21 @@
-import { useState, type CSSProperties } from 'react'
+import { useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
 import { card, iconBtn, btnGhost, btnPrimary, panelCss, panelTitle } from './styles'
 import { GripIcon, ExcelIcon, FileTextIcon, FileDownIcon } from './icons'
 import { useIsNarrow } from './useIsNarrow'
+import { usePointerDrag } from './usePointerDrag'
 import type { ColDef } from './columns'
 import type { T } from './i18n'
+
+const HIDDEN_SENTINEL = '__panel_excluded__'
+const VISIBLE_SENTINEL = '__panel_included__'
 
 /**
  * Modale d'export générique (CSV / Excel) — même design que l'outil Users natif.
  * Excel via le SheetJS partagé par l'hôte (window.MelisXLSX), repli CSV si absent.
  * L'appelant fournit les lignes (`items`), `getCell(item, colId)` et `labelFor(colId)`.
+ *
+ * Glisser-déposer via Pointer Events (usePointerDrag), pas HTML5 `draggable` — ce dernier ne se
+ * déclenche jamais sur un geste tactile mobile (même bug que CatalogTree, Mantis #10843).
  */
 export function ExportModal<TItem>({ cols, items, getCell, labelFor, filename, sheetTitle, t, onClose }: {
   cols: ColDef[]; items: TItem[]; getCell: (it: TItem, colId: string) => string | number
@@ -19,32 +26,49 @@ export function ExportModal<TItem>({ cols, items, getCell, labelFor, filename, s
   const [excluded, setExcluded] = useState<ColDef[]>(() => cols.filter((c) => !c.visible))
   const [format, setFormat] = useState<'xlsx' | 'csv'>('xlsx')
   const [exporting, setExporting] = useState(false)
-  const [dragId, setDragId] = useState<string | null>(null)
-  const [over, setOver] = useState<{ id: string; panel: 'included' | 'excluded' } | null>(null)
+  const pointerDrag = usePointerDrag<string>('data-col-item', (raw) => raw)
+  // Visual-only highlight state — the drop DECISION reads the local `currentOverId` closure var
+  // in `startItemDrag` instead (avoids a stale-closure read of React state — see ColManager.tsx
+  // / CatalogTree.tsx for the same need).
+  const [over, setOver] = useState<{ dragId: string; overId: string | null } | null>(null)
 
-  function drop(panel: 'included' | 'excluded') {
-    if (!dragId) return
-    const src = [...included, ...excluded].find((c) => c.id === dragId)!
+  function drop(panel: 'included' | 'excluded', dragId: string, overId: string | null) {
+    const src = [...included, ...excluded].find((c) => c.id === dragId)
+    if (!src) return
     const inc = included.filter((c) => c.id !== dragId)
     const exc = excluded.filter((c) => c.id !== dragId)
     if (panel === 'included') {
-      const dst = over?.id
-      if (!dst || dst === '__panel__') setIncluded([...inc, src])
-      else { const i = inc.findIndex((c) => c.id === dst); setIncluded(i === -1 ? [...inc, src] : [...inc.slice(0, i), src, ...inc.slice(i)]) }
+      if (!overId || overId === VISIBLE_SENTINEL) setIncluded([...inc, src])
+      else { const i = inc.findIndex((c) => c.id === overId); setIncluded(i === -1 ? [...inc, src] : [...inc.slice(0, i), src, ...inc.slice(i)]) }
       setExcluded(exc)
     } else { setIncluded(inc); setExcluded([...exc, src]) }
-    setDragId(null); setOver(null)
   }
 
-  function item(col: ColDef, panel: 'included' | 'excluded') {
-    const isOver = over?.id === col.id && over?.panel === panel
+  function startItemDrag(colId: string) {
+    return (e: ReactPointerEvent) => {
+      e.stopPropagation(); e.preventDefault()
+      let currentOverId: string | null = null
+      setOver({ dragId: colId, overId: null })
+      pointerDrag.startDrag(colId, {
+        onHover: (targetId) => { currentOverId = targetId; setOver({ dragId: colId, overId: targetId }) },
+        onLeave: () => { currentOverId = null; setOver({ dragId: colId, overId: null }) },
+        onDrop: (targetId) => {
+          const finalTarget = targetId ?? currentOverId
+          const panel = finalTarget === HIDDEN_SENTINEL || excluded.some((c) => c.id === finalTarget) ? 'excluded' : 'included'
+          drop(panel, colId, finalTarget)
+          setOver(null)
+        },
+        onCancel: () => setOver(null),
+      })
+    }
+  }
+
+  function item(col: ColDef) {
+    const isOver = over?.overId === col.id
     return (
-      <div key={col.id} draggable
-        onDragStart={() => setDragId(col.id)}
-        onDragEnd={() => { setDragId(null); setOver(null) }}
-        onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); if (over?.id !== col.id || over?.panel !== panel) setOver({ id: col.id, panel }) }}
-        onDrop={(e) => { e.preventDefault(); drop(panel) }}
-        style={{ display: 'flex', alignItems: 'center', gap: 8, borderRadius: 8, padding: '6px 8px', fontSize: 14, cursor: 'grab', userSelect: 'none', opacity: dragId === col.id ? 0.4 : 1, background: isOver ? 'color-mix(in srgb, var(--color-primary) 12%, transparent)' : 'transparent' }}>
+      <div key={col.id} data-col-item={col.id}
+        onPointerDown={startItemDrag(col.id)}
+        style={{ display: 'flex', alignItems: 'center', gap: 8, borderRadius: 8, padding: '6px 8px', fontSize: 14, cursor: 'grab', userSelect: 'none', touchAction: 'none', opacity: over?.dragId === col.id ? 0.4 : 1, background: isOver ? 'color-mix(in srgb, var(--color-primary) 12%, transparent)' : 'transparent' }}>
         <GripIcon /><span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{labelFor(col.id)}</span>
       </div>
     )
@@ -82,11 +106,10 @@ export function ExportModal<TItem>({ cols, items, getCell, labelFor, filename, s
 
   const empty: CSSProperties = { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: 'var(--color-muted-foreground)', opacity: 0.5, padding: '16px 0' }
   const pane = (which: 'included' | 'excluded', list: ColDef[]) => (
-    <div style={panelCss}
-      onDragOver={(e) => { e.preventDefault(); if (over?.id !== '__panel__' || over?.panel !== which) setOver({ id: '__panel__', panel: which }) }}
-      onDrop={(e) => { e.preventDefault(); drop(which) }}>
+    <div data-col-item={which === 'included' ? VISIBLE_SENTINEL : HIDDEN_SENTINEL}
+      style={{ ...panelCss, ...(over && over.overId === (which === 'included' ? VISIBLE_SENTINEL : HIDDEN_SENTINEL) ? { borderColor: 'color-mix(in srgb, var(--color-primary) 40%, transparent)', background: 'color-mix(in srgb, var(--color-primary) 5%, transparent)' } : {}) }}>
       <p style={panelTitle}>{which === 'included' ? t('exp_included') : t('exp_excluded')}</p>
-      {list.length === 0 ? <div style={empty}>{t('drag_here')}</div> : list.map((c) => item(c, which))}
+      {list.length === 0 ? <div style={empty}>{t('drag_here')}</div> : list.map((c) => item(c))}
     </div>
   )
 
