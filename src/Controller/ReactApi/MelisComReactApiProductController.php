@@ -1080,6 +1080,15 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         $bytes = base64_decode($data, true);
         if ($bytes === false || $bytes === '') { throw new \RuntimeException('Fichier invalide.'); }
 
+        // Sécurité : le dossier /media/commerce est servi par le serveur web. Sans allow-list
+        // d'extension, un fichier .php (ou .phtml…) y serait exécutable → RCE. On refuse toute
+        // extension hors liste (images + documents), comme le font déjà Account/Order.
+        $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+        $allowedExt = $kind === 'image'
+            ? ['jpg','jpeg','png','gif','webp','svg','bmp','ico']
+            : ['jpg','jpeg','png','gif','webp','svg','bmp','ico','pdf','doc','docx','xls','xlsx','ppt','pptx','odt','ods','odp','txt','csv','rtf','zip'];
+        if (!in_array($ext, $allowedExt, true)) { throw new \RuntimeException('Extension de fichier non autorisée.'); }
+
         $docroot = (string) ($_SERVER['DOCUMENT_ROOT'] ?? '');
         if ($docroot === '' || !is_dir($docroot)) { $docroot = getcwd() ?: '/var/www/melis/public'; }
         $dir = rtrim($docroot, '/') . '/media/commerce/' . $prdId;

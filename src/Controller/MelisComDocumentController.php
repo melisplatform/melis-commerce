@@ -305,7 +305,9 @@ class MelisComDocumentController extends MelisAbstractActionController
                     $maxSize = $confDocUpload['maxUploadSize'];
 
                     $uploadedFile = $request->getFiles()->toArray()['doc_path'];
-                    $fileName = $uploadedFile['name'];
+                    // Sécurité : nom fourni par le client → basename() (empêche une traversée « ../ »
+                    // dans la destination/rename qui écrirait hors de public/media/commerce).
+                    $fileName = basename((string) $uploadedFile['name']);
                     $formattedFileName = $this->getFormattedFileName($fileName);
 
 
@@ -908,7 +910,7 @@ class MelisComDocumentController extends MelisAbstractActionController
             $status = true;
         }
         else {
-            $status = mkdir($path, 0777, true);
+            $status = mkdir($path, 0755, true);
             $this->createFolder($folderType, $folderId);
         }
 
