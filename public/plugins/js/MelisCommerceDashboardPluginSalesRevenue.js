@@ -181,7 +181,8 @@ var commerceDashboardPluginSalesRevenue = (function($, window) {
                         charts.commerceDashboardPluginSalesRevenueChartStackedBars.options
                     );
             }).fail(function (xhr, textStatus, errorThrown) {
-                console.log("ERROR !! Status = " + textStatus + "\n Error = " + errorThrown + "\n xhr = " + xhr.statusText);
+                // Échec silencieux : un widget de dashboard qui n'obtient pas ses stats ne doit ni
+                // polluer la console ni bloquer le chargement de la plateforme (ticket 0010871).
             });
         }
 
