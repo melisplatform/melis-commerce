@@ -29,7 +29,7 @@ const COL_LABEL: Record<string, string> = {
   id: 'col_id', name: 'col_name', reference: 'col_reference', type: 'col_type',
   status: 'col_status', visible: 'col_visible', searchable: 'col_searchable', values: 'col_values',
 }
-const cols$ = makeColStore('melis-attribute-cols-v1', COL_ORDER)
+const cols$ = makeColStore('melis-attribute-cols-v2', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['name'])
 
 const SORTABLE = new Set<AttributeSortKey>(['id', 'name', 'reference', 'type', 'status', 'visible', 'searchable', 'values'])

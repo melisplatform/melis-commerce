@@ -38,7 +38,7 @@ const COL_LABEL: Record<string, string> = {
   contact: 'col_contact', company: 'col_company', orders: 'col_orders', lastOrder: 'col_last_order', created: 'col_created',
 }
 // v2 : jeu de colonnes changé (legacy) → on invalide les préférences persistées de v1.
-const cols$ = makeColStore('melis-account-cols-v2', COL_ORDER)
+const cols$ = makeColStore('melis-account-cols-v3', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['name'])
 // Colonnes triables côté serveur — doit matcher le sortMap backend (« orders »/« lastOrder » = agrégats, exclus).
 const SORTABLE = new Set<AccountSortKey>(['id', 'status', 'group', 'name', 'contact', 'company', 'created'])

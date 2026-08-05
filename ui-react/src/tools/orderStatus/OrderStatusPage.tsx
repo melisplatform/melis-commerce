@@ -25,7 +25,7 @@ const TOOL_MELIS_KEY = 'meliscommerce_order_status_tool_page'
 
 const COL_ORDER = ['id', 'color', 'name', 'status'] as const
 const COL_LABEL: Record<string, string> = { id: 'col_id', color: 'col_color', name: 'col_name', status: 'col_status' }
-const cols$ = makeColStore('melis-order-status-cols-v1', COL_ORDER)
+const cols$ = makeColStore('melis-order-status-cols-v2', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['name'])
 
 const SORTABLE = new Set<OrderStatusSortKey>(['id', 'name', 'status'])

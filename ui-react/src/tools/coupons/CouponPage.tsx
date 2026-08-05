@@ -31,7 +31,7 @@ const COL_ORDER = ['id', 'code', 'status', 'discount', 'uses', 'valid'] as const
 const COL_LABEL: Record<string, string> = {
   id: 'col_id', code: 'col_code', status: 'col_status', discount: 'col_discount', uses: 'col_uses', valid: 'col_valid',
 }
-const cols$ = makeColStore('melis-coupon-cols-v1', COL_ORDER)
+const cols$ = makeColStore('melis-coupon-cols-v2', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['code'])
 // Colonnes triables côté serveur — doit matcher le sortMap backend.
 const SORTABLE = new Set<CouponSortKey>(['id', 'code', 'status', 'discount', 'uses', 'valid'])

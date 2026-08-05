@@ -38,7 +38,7 @@ const COL_LABEL: Record<string, string> = {
   products: 'col_products', total: 'col_total',
   firstname: 'col_firstname', name: 'col_name', company: 'col_company', date: 'col_date',
 }
-const cols$ = makeColStore('melis-order-cols-v2', COL_ORDER)
+const cols$ = makeColStore('melis-order-cols-v3', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['reference'])
 // Colonnes triables côté serveur — doit matcher le sortMap backend (« products »/« total » = agrégats, exclus).
 const SORTABLE = new Set<OrderSortKey>(['id', 'reference', 'status', 'firstname', 'name', 'company', 'date'])

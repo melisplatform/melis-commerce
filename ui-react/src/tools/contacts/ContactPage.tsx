@@ -34,7 +34,7 @@ const COL_LABEL: Record<string, string> = {
   id: 'col_id', status: 'col_status', firstname: 'col_firstname', name: 'col_name', account: 'col_account',
   email: 'col_email', type: 'col_type', tags: 'col_tags', created: 'col_created',
 }
-const cols$ = makeColStore('melis-contact-cols-v1', COL_ORDER)
+const cols$ = makeColStore('melis-contact-cols-v2', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['name'])
 // Colonnes triables côté serveur — doit matcher le sortMap backend (toutes sauf « civility »).
 const SORTABLE = new Set<ContactSortKey>(['id', 'status', 'firstname', 'name', 'account', 'email', 'type', 'tags', 'created'])

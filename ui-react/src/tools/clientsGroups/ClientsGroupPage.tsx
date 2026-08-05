@@ -26,7 +26,7 @@ const GENERAL_GROUP_ID = 1
 
 const COL_ORDER = ['id', 'name', 'status'] as const
 const COL_LABEL: Record<string, string> = { id: 'col_id', name: 'col_name', status: 'col_status' }
-const cols$ = makeColStore('melis-clients-group-cols-v1', COL_ORDER)
+const cols$ = makeColStore('melis-clients-group-cols-v2', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['name'])
 
 const SORTABLE = new Set<ClientsGroupSortKey>(['id', 'name', 'status'])

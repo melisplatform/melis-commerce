@@ -26,7 +26,7 @@ const COL_ORDER = ['id', 'flag', 'status', 'name', 'currency'] as const
 const COL_LABEL: Record<string, string> = {
   id: 'col_id', flag: 'col_flag', status: 'col_status', name: 'col_name', currency: 'col_currency',
 }
-const cols$ = makeColStore('melis-country-cols-v1', COL_ORDER)
+const cols$ = makeColStore('melis-country-cols-v2', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['name'])
 
 const SORTABLE = new Set<CountrySortKey>(['id', 'status', 'name', 'currency'])

@@ -24,7 +24,7 @@ const COL_ORDER = ['id', 'flag', 'status', 'locale', 'name'] as const
 const COL_LABEL: Record<string, string> = {
   id: 'col_id', flag: 'col_flag', status: 'col_status', locale: 'col_locale', name: 'col_name',
 }
-const cols$ = makeColStore('melis-language-cols-v1', COL_ORDER)
+const cols$ = makeColStore('melis-language-cols-v2', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['name'])
 
 const SORTABLE = new Set<LanguageSortKey>(['id', 'status', 'locale', 'name'])

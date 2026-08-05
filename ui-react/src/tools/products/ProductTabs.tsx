@@ -945,7 +945,7 @@ const VARIANT_COL_LABEL: Record<string, string> = {
   id: 'var_col_id', main: 'var_col_main', image: 'col_image', status: 'col_status', sku: 'var_col_sku', attrs: 'var_col_attrs',
 }
 const VARIANT_COL_WIDTH: Record<string, number> = { id: 50, main: 60, image: 70, status: 70 }
-const variantCols$ = makeColStore('melis-product-variant-cols-v1', VARIANT_COL_ORDER)
+const variantCols$ = makeColStore('melis-product-variant-cols-v2', VARIANT_COL_ORDER)
 const VARIANT_ESSENTIAL_COLS = new Set(['sku'])
 const VARIANT_SORTABLE = new Set<ProductVariantSortKey>(['id', 'main', 'status', 'sku'])
 

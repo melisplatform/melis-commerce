@@ -26,7 +26,7 @@ const COL_ORDER = ['id', 'default', 'status', 'symbol', 'code', 'name'] as const
 const COL_LABEL: Record<string, string> = {
   id: 'col_id', default: 'col_default', status: 'col_status', symbol: 'col_symbol', code: 'col_code', name: 'col_name',
 }
-const cols$ = makeColStore('melis-currency-cols-v1', COL_ORDER)
+const cols$ = makeColStore('melis-currency-cols-v2', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['code'])
 
 const SORTABLE = new Set<CurrencySortKey>(['id', 'default', 'status', 'symbol', 'code', 'name'])
