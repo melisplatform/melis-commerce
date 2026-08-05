@@ -266,8 +266,8 @@ $(function () {
                     charts.commerceDashboardOrdersLineGraph.options
                 );
             }).fail(function (xhr, textStatus, errorThrown) {
-                console.log("ERROR !! Status = " + textStatus + "\n Error = " + errorThrown + "\n xhr = " + xhr.statusText);
-                alert( translations.tr_meliscore_error_message );
+                // Échec silencieux : pas d'alert bloquante ni de bruit console au chargement de la
+                // plateforme (ticket 0010871). Le widget reste simplement vide.
             });
         };
 
