@@ -21,6 +21,7 @@ import { fmtDate, type T } from '../../shared/i18n'
 import { notify } from '../../shared/notify'
 import { useIsNarrow } from '../../shared/useIsNarrow'
 import type { Option } from '../../shared/api'
+import { FormErrorBanner } from '../../shared/melis-form-errors'
 
 /** Lit un fichier en data URL base64 (pour le logo société). */
 function readFileDataUrl(file: File): Promise<string> {
@@ -381,7 +382,7 @@ export function FilesTab({ accountId, t, can }: { accountId: number; t: T; can?:
             </div>
             <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
               <p style={{ margin: 0, fontSize: 13, color: 'var(--color-muted-foreground)' }}>{t('fi_modal_desc')}</p>
-              {merr && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14 }}>{merr}</div>}
+              {merr && <FormErrorBanner title={merr} />}
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <button style={{ ...btnGhost, height: 36 }} onClick={() => fileRef.current?.click()}>{t('fi_select')}</button>
                 <span style={{ fontSize: 13, color: file ? 'var(--color-foreground)' : 'var(--color-muted-foreground)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file ? file.name : '—'}</span>

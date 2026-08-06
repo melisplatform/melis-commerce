@@ -19,6 +19,7 @@ import { ExportModal } from '../../shared/ExportModal'
 import { ColManager } from '../../shared/ColManager'
 import { openSubTab, updateSubLabel } from '../../shared/subtabs'
 import { useCaps } from '../../shared/useCaps'
+import { FormErrorBanner, type FormIssue } from '../../shared/melis-form-errors'
 
 const TOOL_MELIS_KEY = 'meliscommerce_country_list_container'
 
@@ -26,7 +27,7 @@ const COL_ORDER = ['id', 'flag', 'status', 'name', 'currency'] as const
 const COL_LABEL: Record<string, string> = {
   id: 'col_id', flag: 'col_flag', status: 'col_status', name: 'col_name', currency: 'col_currency',
 }
-const cols$ = makeColStore('melis-country-cols-v1', COL_ORDER)
+const cols$ = makeColStore('melis-country-cols-v2', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['name'])
 
 const SORTABLE = new Set<CountrySortKey>(['id', 'status', 'name', 'currency'])
@@ -358,6 +359,7 @@ function CountryForm({ id, base }: { id: string; base: string }) {
   const [errName, setErrName] = useState(false)
   const [errCurrency, setErrCurrency] = useState(false)
   const [formError, setFormError] = useState(false)
+  const [formIssues, setFormIssues] = useState<FormIssue[]>([])
 
   useEffect(() => {
     openSubTab(base, { id: subTabPath, label: isEdit ? t('loading') : t('new'), path: subTabPath })
@@ -390,9 +392,11 @@ function CountryForm({ id, base }: { id: string; base: string }) {
 
   async function submit() {
     const trimmed = name.trim()
-    if (!trimmed) { setErrName(true); setFormError(true); return }
-    if (!currencyId) { setErrCurrency(true); setFormError(true); return }
-    setFormError(false)
+    const issues: FormIssue[] = []
+    if (!trimmed) { setErrName(true); issues.push({ message: t('err_name_required') }) } else setErrName(false)
+    if (!currencyId) { setErrCurrency(true); issues.push({ message: t('err_currency_required') }) } else setErrCurrency(false)
+    if (issues.length) { setFormIssues(issues); setFormError(true); return }
+    setFormError(false); setFormIssues([])
     setSaving(true)
     try {
       const payload = {
@@ -432,7 +436,7 @@ function CountryForm({ id, base }: { id: string; base: string }) {
         </div>
       </div>
 
-      {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14 }}>{t('err_required_fields')}</div>}
+      {formError && <FormErrorBanner title={t('err_required_fields')} issues={formIssues} />}
 
       {isEdit && !country ? (
         <div style={{ padding: 40, display: 'flex', justifyContent: 'center', color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>

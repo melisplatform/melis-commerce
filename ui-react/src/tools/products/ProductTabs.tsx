@@ -22,6 +22,7 @@ import type { Option } from '../../shared/api'
 import { notify } from '../../shared/notify'
 import { fetchCatalogTree, type CatNode, type LangOption } from '../catalog/api'
 import { fetchPageTree, type PageNode } from './api'
+import { FormErrorBanner, type FormIssue } from '../../shared/melis-form-errors'
 
 type TFn = (k: string, v?: Record<string, string | number>) => string
 
@@ -429,6 +430,7 @@ export function MediaModal({ kind, doc, pendingDoc, countries, t, onClose, onSav
   const [addingType, setAddingType] = useState(false)
   const [typeError, setTypeError] = useState('')
   const [countryError, setCountryError] = useState('')
+  const [formIssues, setFormIssues] = useState<FormIssue[]>([])
   const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -447,10 +449,11 @@ export function MediaModal({ kind, doc, pendingDoc, countries, t, onClose, onSav
 
   async function save() {
     if (!isEdit && !isEditPending && !fileData) return
-    let ok = true
-    if (!typeId) { setTypeError(t('modal_err_type')); ok = false } else setTypeError('')
-    if (countryId == null) { setCountryError(t('modal_err_country')); ok = false } else setCountryError('')
-    if (!ok) return
+    const issues: FormIssue[] = []
+    if (!typeId) { setTypeError(t('modal_err_type')); issues.push({ message: t('modal_err_type') }) } else setTypeError('')
+    if (countryId == null) { setCountryError(t('modal_err_country')); issues.push({ message: t('modal_err_country') }) } else setCountryError('')
+    setFormIssues(issues)
+    if (issues.length) return
     setSaving(true)
     try {
       if (isEdit && doc) {
@@ -488,6 +491,7 @@ export function MediaModal({ kind, doc, pendingDoc, countries, t, onClose, onSav
           <p style={{ margin: 0, fontSize: 13, color: 'var(--color-muted-foreground)' }}>
             {kind === 'image' ? t('modal_text_prod_image') : t('modal_text_prod_file')}
           </p>
+          {formIssues.length > 0 && <FormErrorBanner title={t('err_required_fields')} issues={formIssues} />}
           {kind === 'image' && (
             <div style={{ width: '100%', height: 180, background: 'var(--color-muted,rgba(0,0,0,.04))', borderRadius: 6, border: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', cursor: 'pointer' }}
               onClick={() => fileRef.current?.click()}>
@@ -945,7 +949,7 @@ const VARIANT_COL_LABEL: Record<string, string> = {
   id: 'var_col_id', main: 'var_col_main', image: 'col_image', status: 'col_status', sku: 'var_col_sku', attrs: 'var_col_attrs',
 }
 const VARIANT_COL_WIDTH: Record<string, number> = { id: 50, main: 60, image: 70, status: 70 }
-const variantCols$ = makeColStore('melis-product-variant-cols-v1', VARIANT_COL_ORDER)
+const variantCols$ = makeColStore('melis-product-variant-cols-v2', VARIANT_COL_ORDER)
 const VARIANT_ESSENTIAL_COLS = new Set(['sku'])
 const VARIANT_SORTABLE = new Set<ProductVariantSortKey>(['id', 'main', 'status', 'sku'])
 

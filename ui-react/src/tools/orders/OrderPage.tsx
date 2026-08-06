@@ -28,6 +28,7 @@ import OrderCheckoutWizard from './wizard/OrderCheckoutWizard'
 import { FileDownIcon, GripIcon } from '../../shared/icons'
 import { useCaps } from '../../shared/useCaps'
 import { useExternalBrickComponent } from '../../shared/externalBricks'
+import { FormErrorBanner, type FormIssue } from '../../shared/melis-form-errors'
 
 const TOOL_MELIS_KEY = 'meliscommerce_order_list_page'
 const CANCELLED_STATUS = 5
@@ -38,7 +39,7 @@ const COL_LABEL: Record<string, string> = {
   products: 'col_products', total: 'col_total',
   firstname: 'col_firstname', name: 'col_name', company: 'col_company', date: 'col_date',
 }
-const cols$ = makeColStore('melis-order-cols-v2', COL_ORDER)
+const cols$ = makeColStore('melis-order-cols-v3', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['reference'])
 // Colonnes triables côté serveur — doit matcher le sortMap backend (« products »/« total » = agrégats, exclus).
 const SORTABLE = new Set<OrderSortKey>(['id', 'reference', 'status', 'firstname', 'name', 'company', 'date'])
@@ -353,6 +354,7 @@ function OrderForm({ id, base }: { id: string; base: string }) {
   const [localReference, setLocalReference] = useState('')
   const [errReference, setErrReference]     = useState(false)
   const [formError, setFormError]           = useState(false)
+  const [formIssues, setFormIssues]         = useState<FormIssue[]>([])
 
   useEffect(() => {
     openSubTab(base, { id: subTabPath, label: isEdit ? t('loading') : t('new'), path: subTabPath })
@@ -390,8 +392,10 @@ function OrderForm({ id, base }: { id: string; base: string }) {
   }, [capsLoaded])
 
   async function submit() {
-    if (!localReference.trim()) { setErrReference(true); setFormError(true); return }
-    setFormError(false)
+    const issues: FormIssue[] = []
+    if (!localReference.trim()) { setErrReference(true); issues.push({ message: t('err_reference_required') }) } else setErrReference(false)
+    if (issues.length) { setFormIssues(issues); setFormError(true); return }
+    setFormError(false); setFormIssues([])
     setSaving(true)
     try {
       if (isEdit && orderId) {
@@ -433,7 +437,7 @@ function OrderForm({ id, base }: { id: string; base: string }) {
       ) : (
         <>
           <Tabs tabs={TABS} active={activeTab} onChange={setActiveTab} />
-          {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, marginBottom: 16 }}>{t('err_required_fields')}</div>}
+          {formError && <FormErrorBanner title={t('err_required_fields')} issues={formIssues} style={{ marginBottom: 16 }} />}
           <div>
             {activeTab === 'information' && (
               <InformationTab

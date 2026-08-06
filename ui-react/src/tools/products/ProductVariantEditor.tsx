@@ -18,6 +18,7 @@ import { DatePicker } from '../../shared/DatePicker'
 import { PlusIcon, TrashIcon, PencilIcon, EyeIcon, ArrowLeftIcon, ImageIcon, SettingsIcon, PaperclipIcon, CubesIcon, SortIcon, Spinner } from '../../shared/icons'
 import { StatusBadge, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
+import { FormErrorBanner } from '../../shared/melis-form-errors'
 import { Tabs, type TabDef } from '../../shared/Tabs'
 import { InfoDot, FlagSwitcher, MediaModal, Lightbox, hoverCircle, ImageFilters, passesImageFilter, type PendingMedia } from './ProductTabs'
 import { ExpandToggle, HiddenColsRow } from '../../shared/ExpandableRow'
@@ -122,7 +123,7 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
       </div>
 
       <Tabs tabs={TABS} active={tab} onChange={setTab} />
-      {err && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, marginBottom: 12 }}>{err}</div>}
+      {err && <FormErrorBanner title={err} style={{ marginBottom: 12 }} />}
 
       {loading ? <div style={{ padding: 30, color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>
       : tab === 'properties' ? (

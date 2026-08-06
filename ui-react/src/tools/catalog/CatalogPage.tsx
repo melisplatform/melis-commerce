@@ -17,6 +17,7 @@ import { useCaps } from '../../shared/useCaps'
 import { useIsNarrow } from '../../shared/useIsNarrow'
 import { usePointerDrag } from '../../shared/usePointerDrag'
 import type { Option } from '../../shared/api'
+import { FormErrorBanner, type FormIssue } from '../../shared/melis-form-errors'
 
 /* Brique « Catalogues / Catégories » (MelisCommerce) — arbre full React (drag-and-drop) +
  * formulaire d'édition INLINE sous l'arbre (même page), comme l'outil legacy.
@@ -219,6 +220,7 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
   const [saving, setSaving] = useState(false)
   const [errName, setErrName] = useState(false)
   const [formError, setFormError] = useState(false)
+  const [formIssues, setFormIssues] = useState<FormIssue[]>([])
   // SEO + Produits (chargés à la demande)
   const [seo, setSeo] = useState<CatSeo[]>([])
   const [seoLoaded, setSeoLoaded] = useState(false)
@@ -286,7 +288,10 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
   const parentName = !isCatalog ? (findNode(tree, fatherId)?.name ?? '') : ''
 
   async function submit() {
-    if (!texts.some((x) => x.name.trim())) { setErrName(true); setFormError(true); setTab('properties'); return }
+    const issues: FormIssue[] = []
+    if (!texts.some((x) => x.name.trim())) { setErrName(true); issues.push({ message: t('err_name') }); setTab('properties') } else setErrName(false)
+    if (issues.length) { setFormIssues(issues); setFormError(true); return }
+    setFormIssues([])
     if (validStart && validEnd && validStart > validEnd) { setTab('properties'); notify('ko', t('title'), t('err_dates')); return }
     setFormError(false)
     setSaving(true)
@@ -327,7 +332,7 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
       <div style={{ padding: '16px 20px' }}>
         <Tabs tabs={TABS} active={tab} onChange={setTab} />
 
-        {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, marginBottom: 14 }}>{t('err_required_fields')}</div>}
+        {formError && <FormErrorBanner title={t('err_required_fields')} issues={formIssues} style={{ marginBottom: 14 }} />}
 
         {loading ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 200, color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>

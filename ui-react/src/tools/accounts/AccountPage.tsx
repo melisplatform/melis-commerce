@@ -25,6 +25,7 @@ import { openSubTab, closeSubTab, updateSubLabel } from '../../shared/subtabs'
 import type { Option as AccountOptionT } from '../../shared/api'
 import { Tabs, type TabDef } from '../../shared/Tabs'
 import { TagIcon, UsersIcon, BuildingIcon, MapPinIcon, CartIcon, PaperclipIcon, UserIcon, GlobeIcon, ToggleRightIcon } from '../../shared/icons'
+import { FormErrorBanner, type FormIssue } from '../../shared/melis-form-errors'
 import { CompanyTab, ContactsTab, AddressesTab, OrdersTab, FilesTab, EMPTY_CO } from './AccountTabs'
 
 /* Brique « Comptes clients » (MelisCommerce) — full React, montée à /melis-commerce/clients-list
@@ -38,7 +39,7 @@ const COL_LABEL: Record<string, string> = {
   contact: 'col_contact', company: 'col_company', orders: 'col_orders', lastOrder: 'col_last_order', created: 'col_created',
 }
 // v2 : jeu de colonnes changé (legacy) → on invalide les préférences persistées de v1.
-const cols$ = makeColStore('melis-account-cols-v2', COL_ORDER)
+const cols$ = makeColStore('melis-account-cols-v3', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['name'])
 // Colonnes triables côté serveur — doit matcher le sortMap backend (« orders »/« lastOrder » = agrégats, exclus).
 const SORTABLE = new Set<AccountSortKey>(['id', 'status', 'group', 'name', 'contact', 'company', 'created'])
@@ -405,6 +406,7 @@ function AccountForm({ id, base }: { id: string; base: string }) {
   const [nameError, setNameError] = useState('')
   const [countryError, setCountryError] = useState('')
   const [formError, setFormError] = useState(false)
+  const [formIssues, setFormIssues] = useState<FormIssue[]>([])
   const [tab, setTab] = useState('properties')
   const [visitedTabs, setVisitedTabs] = useState(new Set<string>())
   // Données de l'onglet Société, remontées ici pour être sauvées par le bouton du HAUT (un seul Save).
@@ -482,8 +484,8 @@ function AccountForm({ id, base }: { id: string; base: string }) {
   }, [name])
 
   async function submit() {
-    let firstError = ''
-    const fail = (msg: string) => { firstError ||= msg; return msg }
+    const issues: FormIssue[] = []
+    const fail = (msg: string) => { issues.push({ message: msg }); return msg }
     if (accountNameMode === 'manual_input') {
       if (!name.trim()) setNameError(fail(t('err_name'))); else setNameError('')
     } else {
@@ -492,8 +494,8 @@ function AccountForm({ id, base }: { id: string; base: string }) {
       if (!isEdit && accountNameMode === 'contact_name' && !pendingContacts.length) { fail(t('err_contact_required')); setTab('contacts') }
     }
     if (!countryId) setCountryError(fail(t('err_country'))); else setCountryError('')
-    setFormError(!!firstError)
-    if (firstError) return
+    setFormError(issues.length > 0); setFormIssues(issues)
+    if (issues.length) return
     setSaving(true)
     // The pending contact marked isMain (or the first one) becomes the account's default contact,
     // created ATOMICALLY with it server-side (saveAction() requires + links it in one request when
@@ -535,7 +537,7 @@ function AccountForm({ id, base }: { id: string; base: string }) {
 
       <Tabs tabs={TABS} active={tab} onChange={handleTabChange} />
 
-      {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, marginBottom: 16 }}>{t('err_required_fields')}</div>}
+      {formError && <FormErrorBanner title={t('err_required_fields')} issues={formIssues} style={{ marginBottom: 16 }} />}
 
       {tab === 'company' ? (
         <CompanyTab company={company} onChange={setCompany} loading={!companyLoaded && !!accountId} t={t} nameRequired={accountNameMode === 'company_name'} />

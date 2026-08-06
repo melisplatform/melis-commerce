@@ -7,15 +7,20 @@ export type ColDef = { id: string; visible: boolean }
 export const visibleCols = (c: ColDef[]) => c.filter((x) => x.visible)
 
 /**
- * On narrow viewports, force visibility to exactly `essential` — in BOTH directions — regardless
- * of the user's ColManager preference, so mobile always shows the essentials (even if the desktop
- * preference hid one) with the rest reachable via the per-row "+" expand (see
- * shared/ExpandableRow.tsx). Desktop-only preference (`cols` itself, persisted via ColManager) is
- * left untouched; this is a render-time overlay, never written back to localStorage.
+ * A Hidden column disappears entirely, never reachable anywhere — same rule on desktop AND
+ * mobile, matching melis-core's Users tool: what's Hidden in ColManager simply isn't part of the
+ * table. Desktop then shows every Visible column inline (`!narrow`, unchanged). Mobile keeps the
+ * per-row "+" expand (see shared/ExpandableRow.tsx), but repurposed: since a narrow screen can't
+ * fit many columns inline, only the FIRST Visible column (by the user's dragged order) anchors
+ * inline as the row's identity; every OTHER Visible column surfaces behind "+", in that same
+ * order — never Hidden ones, those are already gone by the filter above. Reordering "Visible" in
+ * ColManager changes both which column anchors inline and what/which order appears behind "+".
+ * `essential` is intentionally unused (kept so the ~12 call sites don't need touching again).
  */
-export function effectiveCols(cols: ColDef[], essential: ReadonlySet<string>, narrow: boolean): ColDef[] {
-  if (!narrow) return cols
-  return cols.map((c) => ({ ...c, visible: essential.has(c.id) }))
+export function effectiveCols(cols: ColDef[], _essential: ReadonlySet<string>, narrow: boolean): ColDef[] {
+  const shown = cols.filter((c) => c.visible)
+  if (!narrow) return shown
+  return shown.map((c, i) => ({ ...c, visible: i === 0 }))
 }
 
 export function makeColStore(storageKey: string, order: readonly string[]) {

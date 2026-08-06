@@ -20,6 +20,7 @@ import { ColManager } from '../../shared/ColManager'
 import { openSubTab, updateSubLabel } from '../../shared/subtabs'
 import { useCaps } from '../../shared/useCaps'
 import { Tabs } from '../../shared/Tabs'
+import { FormErrorBanner, type FormIssue } from '../../shared/melis-form-errors'
 import { AttributeValuesTab } from './AttributeTabs'
 
 const TOOL_MELIS_KEY = 'meliscommerce_attribute_list_page'
@@ -29,7 +30,7 @@ const COL_LABEL: Record<string, string> = {
   id: 'col_id', name: 'col_name', reference: 'col_reference', type: 'col_type',
   status: 'col_status', visible: 'col_visible', searchable: 'col_searchable', values: 'col_values',
 }
-const cols$ = makeColStore('melis-attribute-cols-v1', COL_ORDER)
+const cols$ = makeColStore('melis-attribute-cols-v2', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['name'])
 
 const SORTABLE = new Set<AttributeSortKey>(['id', 'name', 'reference', 'type', 'status', 'visible', 'searchable', 'values'])
@@ -409,6 +410,7 @@ function AttributeForm({ id, base }: { id: string; base: string }) {
   const [errReference, setErrReference] = useState(false)
   const [errType, setErrType] = useState(false)
   const [formError, setFormError] = useState(false)
+  const [formIssues, setFormIssues] = useState<FormIssue[]>([])
 
   useEffect(() => {
     openSubTab(base, { id: subTabPath, label: isEdit ? t('loading') : t('new'), path: subTabPath })
@@ -456,9 +458,11 @@ function AttributeForm({ id, base }: { id: string; base: string }) {
   }, [capsLoaded])
 
   async function submit() {
-    if (!reference.trim()) { setErrReference(true); setFormError(true); return }
-    if (!typeId) { setErrType(true); setFormError(true); return }
-    setFormError(false)
+    const issues: FormIssue[] = []
+    if (!reference.trim()) { setErrReference(true); issues.push({ message: t('err_reference_required') }) } else setErrReference(false)
+    if (!typeId) { setErrType(true); issues.push({ message: t('err_type_required') }) } else setErrType(false)
+    if (issues.length) { setFormIssues(issues); setFormError(true); return }
+    setFormError(false); setFormIssues([])
     setSaving(true)
     try {
       const payload = { reference: reference.trim(), typeId, status, visible, searchable, translations }
@@ -499,7 +503,7 @@ function AttributeForm({ id, base }: { id: string; base: string }) {
       ) : (
         <>
           <Tabs tabs={TABS} active={activeTab} onChange={setActiveTab} />
-          {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, marginBottom: 16 }}>{t('err_required_fields')}</div>}
+          {formError && <FormErrorBanner title={t('err_required_fields')} issues={formIssues} style={{ marginBottom: 16 }} />}
           <div>
             {activeTab === 'main' && (
               <div>

@@ -17,6 +17,7 @@ import { useIsNarrow } from '../../shared/useIsNarrow'
 import { ExportModal } from '../../shared/ExportModal'
 import { ColManager } from '../../shared/ColManager'
 import { useCaps } from '../../shared/useCaps'
+import { FormErrorBanner, type FormIssue } from '../../shared/melis-form-errors'
 
 const TOOL_MELIS_KEY = 'meliscommerce_currency_conf'
 
@@ -26,7 +27,7 @@ const COL_ORDER = ['id', 'default', 'status', 'symbol', 'code', 'name'] as const
 const COL_LABEL: Record<string, string> = {
   id: 'col_id', default: 'col_default', status: 'col_status', symbol: 'col_symbol', code: 'col_code', name: 'col_name',
 }
-const cols$ = makeColStore('melis-currency-cols-v1', COL_ORDER)
+const cols$ = makeColStore('melis-currency-cols-v2', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['code'])
 
 const SORTABLE = new Set<CurrencySortKey>(['id', 'default', 'status', 'symbol', 'code', 'name'])
@@ -343,6 +344,7 @@ function CurrencyFormModal({ id, onClose, onSaved, t }: {
   const [errCode, setErrCode] = useState(false)
   const [errSymbol, setErrSymbol] = useState(false)
   const [formError, setFormError] = useState(false)
+  const [formIssues, setFormIssues] = useState<FormIssue[]>([])
 
   useEffect(() => {
     if (!isEdit || id === null) return
@@ -354,10 +356,12 @@ function CurrencyFormModal({ id, onClose, onSaved, t }: {
   }, [id])
 
   async function submit() {
-    if (!name.trim())   { setErrName(true);   setFormError(true); return }
-    if (!code.trim())   { setErrCode(true);   setFormError(true); return }
-    if (!symbol.trim()) { setErrSymbol(true); setFormError(true); return }
-    setFormError(false)
+    const issues: FormIssue[] = []
+    if (!name.trim())   { setErrName(true);   issues.push({ message: t('err_name_required') }) }   else setErrName(false)
+    if (!code.trim())   { setErrCode(true);   issues.push({ message: t('err_code_required') }) }   else setErrCode(false)
+    if (!symbol.trim()) { setErrSymbol(true); issues.push({ message: t('err_symbol_required') }) } else setErrSymbol(false)
+    if (issues.length) { setFormIssues(issues); setFormError(true); return }
+    setFormError(false); setFormIssues([])
     setSaving(true)
     try {
       await saveCurrency({ id: id ?? undefined, name: name.trim(), code: code.trim().toUpperCase(), symbol: symbol.trim(), status })
@@ -380,7 +384,7 @@ function CurrencyFormModal({ id, onClose, onSaved, t }: {
           <div style={{ padding: 40, textAlign: 'center', color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>
         ) : (
           <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14 }}>{t('err_required_fields')}</div>}
+            {formError && <FormErrorBanner title={t('err_required_fields')} issues={formIssues} />}
             <div>
               <label style={label}>{t('field_name')} *</label>
               <input style={inputCss} value={name}

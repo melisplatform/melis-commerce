@@ -5,6 +5,7 @@ import { ConfirmModal } from './ConfirmModal'
 import { type Address, type AddressOptions, newAddress } from './address'
 import { useIsNarrow } from './useIsNarrow'
 import type { T } from './i18n'
+import { FormErrorBanner } from './melis-form-errors'
 
 /** Formulaire d'adresse (réutilisé : modale d'ajout + panneau d'édition de droite + wizard commande). */
 export function AddressForm({ value, onChange, opts, t }: { value: Address; onChange: (a: Address) => void; opts: AddressOptions; t: T }) {
@@ -102,7 +103,7 @@ export function AddressEditor({ addresses, onChange, options, t }: {
               <button style={{ ...iconBtn, width: 24, height: 24 }} onClick={() => setModal(null)}>✕</button>
             </div>
             <div style={{ padding: 20 }}>
-              {modalErr && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, marginBottom: 14 }}>{modalErr}</div>}
+              {modalErr && <FormErrorBanner title={modalErr} style={{ marginBottom: 14 }} />}
               <AddressForm value={modal} onChange={(a) => { setModal(a); setModalErr(null) }} opts={options} t={t} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '12px 20px', borderTop: '1px solid var(--color-border)' }}>

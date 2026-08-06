@@ -24,6 +24,7 @@ import { openSubTab, closeSubTab, updateSubLabel } from '../../shared/subtabs'
 import type { Option } from '../../shared/api'
 import { Tabs, type TabDef } from '../../shared/Tabs'
 import { TagIcon, MapPinIcon, LinkIcon, UserIcon } from '../../shared/icons'
+import { FormErrorBanner, type FormIssue } from '../../shared/melis-form-errors'
 import { AddressTab, AssociationTab } from './ContactTabs'
 
 /* Brique « Contacts » (MelisCommerce) — full React, montée à /melis-commerce/contact-list
@@ -34,7 +35,7 @@ const COL_LABEL: Record<string, string> = {
   id: 'col_id', status: 'col_status', firstname: 'col_firstname', name: 'col_name', account: 'col_account',
   email: 'col_email', type: 'col_type', tags: 'col_tags', created: 'col_created',
 }
-const cols$ = makeColStore('melis-contact-cols-v1', COL_ORDER)
+const cols$ = makeColStore('melis-contact-cols-v2', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['name'])
 // Colonnes triables côté serveur — doit matcher le sortMap backend (toutes sauf « civility »).
 const SORTABLE = new Set<ContactSortKey>(['id', 'status', 'firstname', 'name', 'account', 'email', 'type', 'tags', 'created'])
@@ -325,6 +326,7 @@ function ContactForm({ id, base }: { id: string; base: string }) {
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [formError, setFormError] = useState(false)
+  const [formIssues, setFormIssues] = useState<FormIssue[]>([])
   const [tab, setTab] = useState('information')
   const [visitedTabs, setVisitedTabs] = useState(new Set<string>())
   const [addresses, setAddresses] = useState<ContactAddress[]>([])
@@ -394,8 +396,8 @@ function ContactForm({ id, base }: { id: string; base: string }) {
   const isCompany = type === 'company'
 
   async function submit() {
-    let firstError = ''
-    const fail = (msg: string) => { firstError ||= msg; return msg }
+    const issues: FormIssue[] = []
+    const fail = (msg: string) => { issues.push({ message: msg }); return msg }
     if (!firstname.trim()) setFirstnameError(fail(t('err_firstname'))); else setFirstnameError('')
     if (!isCompany && !name.trim()) setNameError(fail(t('err_name'))); else setNameError('')
     if (!langId) setLangError(fail(t('err_language'))); else setLangError('')
@@ -403,8 +405,8 @@ function ContactForm({ id, base }: { id: string; base: string }) {
     if (!isEdit && !password.trim()) setPasswordError(fail(t('err_password_required')))
     else if (password && password !== confirmPassword) setPasswordError(fail(t('err_password')))
     else setPasswordError('')
-    setFormError(!!firstError)
-    if (firstError) return
+    setFormError(issues.length > 0); setFormIssues(issues)
+    if (issues.length) return
     setSaving(true)
     try {
       const r = await saveContact({
@@ -439,7 +441,7 @@ function ContactForm({ id, base }: { id: string; base: string }) {
 
       <Tabs tabs={TABS} active={tab} onChange={handleTabChange} />
 
-      {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, marginBottom: 16 }}>{t('err_required_fields')}</div>}
+      {formError && <FormErrorBanner title={t('err_required_fields')} issues={formIssues} style={{ marginBottom: 16 }} />}
 
       {tab === 'address' ? <AddressTab addresses={addresses} onChange={setAddresses} t={t} /> :
        tab === 'association' && contactId ? <AssociationTab contactId={contactId} t={t} can={can} /> :

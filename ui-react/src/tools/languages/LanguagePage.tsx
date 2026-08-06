@@ -17,6 +17,7 @@ import { useIsNarrow } from '../../shared/useIsNarrow'
 import { ExportModal } from '../../shared/ExportModal'
 import { ColManager } from '../../shared/ColManager'
 import { useCaps } from '../../shared/useCaps'
+import { FormErrorBanner, type FormIssue } from '../../shared/melis-form-errors'
 
 const TOOL_MELIS_KEY = 'meliscommerce_language_list_container'
 
@@ -24,7 +25,7 @@ const COL_ORDER = ['id', 'flag', 'status', 'locale', 'name'] as const
 const COL_LABEL: Record<string, string> = {
   id: 'col_id', flag: 'col_flag', status: 'col_status', locale: 'col_locale', name: 'col_name',
 }
-const cols$ = makeColStore('melis-language-cols-v1', COL_ORDER)
+const cols$ = makeColStore('melis-language-cols-v2', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['name'])
 
 const SORTABLE = new Set<LanguageSortKey>(['id', 'status', 'locale', 'name'])
@@ -318,6 +319,7 @@ function LanguageEditor({ language, t, onClose, onSaved }: {
   const [errName, setErrName] = useState(false)
   const [errLocale, setErrLocale] = useState(false)
   const [formError, setFormError] = useState(false)
+  const [formIssues, setFormIssues] = useState<FormIssue[]>([])
 
   async function onPickFlag(file: File | null) {
     if (!file) return
@@ -326,9 +328,11 @@ function LanguageEditor({ language, t, onClose, onSaved }: {
   }
 
   async function submit() {
-    if (!name.trim()) { setErrName(true); setFormError(true); return }
-    if (!locale.trim()) { setErrLocale(true); setFormError(true); return }
-    setFormError(false)
+    const issues: FormIssue[] = []
+    if (!name.trim()) { setErrName(true); issues.push({ message: t('err_name_required') }) } else setErrName(false)
+    if (!locale.trim()) { setErrLocale(true); issues.push({ message: t('err_locale_required') }) } else setErrLocale(false)
+    if (issues.length) { setFormIssues(issues); setFormError(true); return }
+    setFormError(false); setFormIssues([])
     setSaving(true)
     try {
       const payload = { name: name.trim(), locale: locale.trim(), status, flag: newFlag }
@@ -351,7 +355,7 @@ function LanguageEditor({ language, t, onClose, onSaved }: {
       <div style={{ ...card, padding: 24, width: '100%', maxWidth: 440, maxHeight: '85vh', overflow: 'auto' }}>
         <h3 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 16px' }}>{isEdit ? t('edit') : t('new')}</h3>
         <div style={fieldGap}>
-          {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14 }}>{t('err_required_fields')}</div>}
+          {formError && <FormErrorBanner title={t('err_required_fields')} issues={formIssues} />}
           <div>
             <label style={label}>{t('field_name')} *</label>
             <input style={inputCss} maxLength={45} value={name} onChange={(e) => { setName(e.target.value); setErrName(false) }} />

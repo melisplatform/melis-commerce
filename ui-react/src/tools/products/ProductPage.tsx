@@ -29,6 +29,7 @@ import { openSubTab, closeSubTab, updateSubLabel } from '../../shared/subtabs'
 import type { Option } from '../../shared/api'
 import type { LangOption } from '../catalog/api'
 import { Tabs, type TabDef } from '../../shared/Tabs'
+import { FormErrorBanner, type FormIssue } from '../../shared/melis-form-errors'
 
 /* Brique « Produits » (MelisCommerce) — full React, montée à /melis-commerce/product-list
  * (et /:id pour le formulaire en sous-onglet). Toggle New/Old → iframe legacy.
@@ -37,7 +38,7 @@ import { Tabs, type TabDef } from '../../shared/Tabs'
 const TOOL_MELIS_KEY = 'meliscommerce_product_list_container'
 const COL_ORDER = ['id', 'status', 'image', 'reference', 'name', 'categories', 'created'] as const
 const COL_LABEL: Record<string, string> = { id: 'col_id', status: 'col_status', image: 'col_image', reference: 'col_reference', name: 'col_name', categories: 'col_categories', created: 'col_created' }
-const cols$ = makeColStore('melis-products-cols-v1', COL_ORDER)
+const cols$ = makeColStore('melis-products-cols-v2', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['name'])
 // Colonnes triables côté serveur — doit matcher le sortMap backend (« image »/« categories » exclus).
 const SORTABLE = new Set<ProductSortKey>(['id', 'status', 'reference', 'name', 'created'])
@@ -394,6 +395,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
   const [saving, setSaving] = useState(false)
   const [errRef, setErrRef] = useState(false)
   const [formError, setFormError] = useState(false)
+  const [formIssues, setFormIssues] = useState<FormIssue[]>([])
   const [tab, setTab] = useState('main')
   const { can, loaded: capsLoaded } = useCaps(TOOL_MELIS_KEY)
 
@@ -479,8 +481,10 @@ function ProductForm({ id, base }: { id: string; base: string }) {
   function toggleCategory(cid: number) { setCategoryIds((p) => p.includes(cid) ? p.filter((x) => x !== cid) : [...p, cid]) }
 
   async function submit() {
-    if (!reference.trim()) { setErrRef(true); setFormError(true); setTab('main'); return }
-    setFormError(false)
+    const issues: FormIssue[] = []
+    if (!reference.trim()) { setErrRef(true); issues.push({ message: t('err_reference') }); setTab('main') } else setErrRef(false)
+    if (issues.length) { setFormIssues(issues); setFormError(true); return }
+    setFormError(false); setFormIssues([])
     setSaving(true)
     try {
       const result = await saveProduct({
@@ -563,7 +567,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
 
       <Tabs tabs={TABS} active={tab} onChange={setTab} />
 
-      {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, marginBottom: 16 }}>{t('err_required_fields')}</div>}
+      {formError && <FormErrorBanner title={t('err_required_fields')} issues={formIssues} style={{ marginBottom: 16 }} />}
 
       {loading ? (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '40vh', color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>

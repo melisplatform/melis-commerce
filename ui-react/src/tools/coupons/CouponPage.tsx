@@ -23,6 +23,7 @@ import { ColManager } from '../../shared/ColManager'
 import { openSubTab, updateSubLabel } from '../../shared/subtabs'
 import { useCaps } from '../../shared/useCaps'
 import { Tabs } from '../../shared/Tabs'
+import { FormErrorBanner, type FormIssue } from '../../shared/melis-form-errors'
 import { CouponClientsTab, CouponProductsTab, CouponOrdersTab } from './CouponTabs'
 
 const TOOL_MELIS_KEY = 'meliscommerce_coupon_list_page'
@@ -31,7 +32,7 @@ const COL_ORDER = ['id', 'code', 'status', 'discount', 'uses', 'valid'] as const
 const COL_LABEL: Record<string, string> = {
   id: 'col_id', code: 'col_code', status: 'col_status', discount: 'col_discount', uses: 'col_uses', valid: 'col_valid',
 }
-const cols$ = makeColStore('melis-coupon-cols-v1', COL_ORDER)
+const cols$ = makeColStore('melis-coupon-cols-v2', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['code'])
 // Colonnes triables côté serveur — doit matcher le sortMap backend.
 const SORTABLE = new Set<CouponSortKey>(['id', 'code', 'status', 'discount', 'uses', 'valid'])
@@ -388,6 +389,7 @@ function CouponForm({ id, base }: { id: string; base: string }) {
   const [errCode, setErrCode] = useState(false)
   const [errDiscount, setErrDiscount] = useState(false)
   const [formError, setFormError] = useState(false)
+  const [formIssues, setFormIssues] = useState<FormIssue[]>([])
 
   // Assign clients/products — brouillon local uniquement ; rien n'est persisté tant
   // que le bouton Save principal n'a pas été cliqué (voir submit() → reconcile*).
@@ -473,9 +475,11 @@ function CouponForm({ id, base }: { id: string; base: string }) {
   }, [capsLoaded, assignClients, assignProducts])
 
   async function submit() {
-    if (!code.trim()) { setErrCode(true); setFormError(true); return }
-    if (percentage.trim() === '' && discountValue.trim() === '') { setErrDiscount(true); setFormError(true); return }
-    setFormError(false)
+    const issues: FormIssue[] = []
+    if (!code.trim()) { setErrCode(true); issues.push({ message: t('err_code_required') }) } else setErrCode(false)
+    if (percentage.trim() === '' && discountValue.trim() === '') { setErrDiscount(true); issues.push({ message: t('err_discount_required') }) } else setErrDiscount(false)
+    if (issues.length) { setFormIssues(issues); setFormError(true); return }
+    setFormError(false); setFormIssues([])
     setSaving(true)
     try {
       const payload = {
@@ -519,7 +523,7 @@ function CouponForm({ id, base }: { id: string; base: string }) {
       ) : (
         <>
           <Tabs tabs={TABS} active={activeTab} onChange={setActiveTab} />
-          {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, marginBottom: 16 }}>{t('err_required_fields')}</div>}
+          {formError && <FormErrorBanner title={t('err_required_fields')} issues={formIssues} style={{ marginBottom: 16 }} />}
           <div>
             {activeTab === 'information' && (
               <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: 16, alignItems: 'start' }}>

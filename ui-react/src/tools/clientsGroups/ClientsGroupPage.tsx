@@ -17,6 +17,7 @@ import { useIsNarrow } from '../../shared/useIsNarrow'
 import { ExportModal } from '../../shared/ExportModal'
 import { ColManager } from '../../shared/ColManager'
 import { useCaps } from '../../shared/useCaps'
+import { FormErrorBanner, type FormIssue } from '../../shared/melis-form-errors'
 
 const TOOL_MELIS_KEY = 'meliscommerce_clients_group_tool_container'
 
@@ -26,7 +27,7 @@ const GENERAL_GROUP_ID = 1
 
 const COL_ORDER = ['id', 'name', 'status'] as const
 const COL_LABEL: Record<string, string> = { id: 'col_id', name: 'col_name', status: 'col_status' }
-const cols$ = makeColStore('melis-clients-group-cols-v1', COL_ORDER)
+const cols$ = makeColStore('melis-clients-group-cols-v2', COL_ORDER)
 const ESSENTIAL_COLS = new Set(['name'])
 
 const SORTABLE = new Set<ClientsGroupSortKey>(['id', 'name', 'status'])
@@ -330,10 +331,13 @@ function ClientsGroupFormModal({ t, initial, onClose, onSaved }: {
   const [saving, setSaving] = useState(false)
   const [errName, setErrName] = useState(false)
   const [formError, setFormError] = useState(false)
+  const [formIssues, setFormIssues] = useState<FormIssue[]>([])
 
   async function submit() {
-    if (!name.trim()) { setErrName(true); setFormError(true); return }
-    setFormError(false)
+    const issues: FormIssue[] = []
+    if (!name.trim()) { setErrName(true); issues.push({ message: t('err_name_required') }) } else setErrName(false)
+    if (issues.length) { setFormIssues(issues); setFormError(true); return }
+    setFormError(false); setFormIssues([])
     setSaving(true)
     try {
       await saveClientsGroup({ id: initial?.id, name: name.trim(), status })
@@ -354,7 +358,7 @@ function ClientsGroupFormModal({ t, initial, onClose, onSaved }: {
           {isEdit ? t('modal_edit_title') : t('modal_new_title')}
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14 }}>{t('err_required_fields')}</div>}
+          {formError && <FormErrorBanner title={t('err_required_fields')} issues={formIssues} />}
           <div>
             <label style={label}>{t('field_name')} *</label>
             <input style={inputCss} value={name} autoFocus
