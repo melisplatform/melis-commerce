@@ -23,7 +23,7 @@
 		"laravel/serializable-closure": "^1.3.5",
 		"illuminate/database": "^11.7.0",
 		"laminas/laminas-cache": "^3.12",
-		"melisplatform/melis-core": "^5.2"
+		"melisplatform/melis-core": "^6.0"
 	},
 	"autoload": {
 		"psr-4": {
