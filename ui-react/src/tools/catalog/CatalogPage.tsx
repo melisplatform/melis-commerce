@@ -9,7 +9,7 @@ import CatalogTree from './CatalogTree'
 import { makeT } from '../../shared/i18n'
 import { DatePicker } from '../../shared/DatePicker'
 import { card, inputCss, btnPrimary, btnGhost, label, hint } from '../../shared/styles'
-import { PlusIcon, PencilIcon, TrashIcon, LayoutIcon, TagIcon, FileTextIcon, MapPinIcon, CartIcon, GripIcon, SettingsIcon, GlobeIcon } from '../../shared/icons'
+import { PlusIcon, PencilIcon, TrashIcon, LayoutIcon, TagIcon, FileTextIcon, MapPinIcon, CartIcon, GripIcon, SettingsIcon, GlobeIcon, PercentIcon } from '../../shared/icons'
 import { ViewModeToggle, LegacyFrame, StatusBadge, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { Tabs, type TabDef } from '../../shared/Tabs'
@@ -17,6 +17,7 @@ import { useCaps } from '../../shared/useCaps'
 import { useIsNarrow } from '../../shared/useIsNarrow'
 import { usePointerDrag } from '../../shared/usePointerDrag'
 import type { Option } from '../../shared/api'
+import { useExternalBrickComponent } from '../../shared/externalBricks'
 import { FormErrorBanner, type FormIssue } from '../../shared/melis-form-errors'
 
 /* Brique « Catalogues / Catégories » (MelisCommerce) — arbre full React (drag-and-drop) +
@@ -201,6 +202,11 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
   t: (k: string, v?: Record<string, string | number>) => string
 }) {
   const { can, loaded: capsLoaded } = useCaps(TOOL_MELIS_KEY)
+  // Onglet apporté par une brique optionnelle : n'existe que si MelisCommerceGroupDiscount-
+  // PerCategory est actif (voir shared/externalBricks.ts) — melis-commerce ignore tout des
+  // réductions par groupe de clients. Équivalent React de l'onglet legacy
+  // `meliscommerce_categories_category_tab_price_discount` injecté par ce module.
+  const DiscountTabComp = useExternalBrickComponent<{ categoryId: number }>('MelisCommerceGroupDiscountPerCategoryBrick', 'CategoryDiscountTab')
   const narrow = useIsNarrow()
   const isEdit = sel.mode === 'edit'
   const isCatalog = sel.mode === 'new-catalog' || (sel.mode === 'edit' && sel.type === 'catalog')
@@ -257,6 +263,8 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
     { key: 'properties', label: t('tab_properties'), icon: <FileTextIcon /> },
     { key: 'seo',        label: t('tab_seo'),        icon: <TagIcon /> },
     { key: 'products',   label: t('tab_products'),   icon: <CartIcon />, disabled: !isEdit },
+    // Les réductions se rattachent à une catégorie existante → indisponible en création.
+    ...(DiscountTabComp ? [{ key: 'price_discount', label: t('tab_price_discount'), icon: <PercentIcon />, disabled: !isEdit }] : []),
   ].filter((tb) => can(tb.key))
 
   // Si l'onglet actif vient d'être retiré par les droits, basculer sur le premier autorisé.
@@ -290,7 +298,21 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
   async function submit() {
     const issues: FormIssue[] = []
     if (!texts.some((x) => x.name.trim())) { setErrName(true); issues.push({ message: t('err_name') }); setTab('properties') } else setErrName(false)
-    if (issues.length) { setFormIssues(issues); setFormError(true); return }
+    // Un onglet apporté par une brique (cf. externalBricks) valide SES données ici et BLOQUE
+    // l'enregistrement de la catégorie — pas de save partiel où la catégorie passe et pas l'onglet.
+    // Il lève `blocked` (ses champs affichent leurs propres messages, le bandeau reste général)
+    // et/ou pousse des `issues` à lister ; `tab` demande l'activation de son onglet.
+    // Générique : melis-commerce ne connaît ni l'onglet ni la règle violée.
+    const vEv = new CustomEvent<{ id: number | null; issues: FormIssue[]; blocked?: boolean; tab?: string }>(
+      'melis:commerce-category-validate', { detail: { id: catId, issues: [] } },
+    )
+    window.dispatchEvent(vEv)
+    const brickBlocked = vEv.detail.blocked === true || vEv.detail.issues.length > 0
+    if (brickBlocked) {
+      issues.push(...vEv.detail.issues)
+      if (vEv.detail.tab && TABS.some((tb) => tb.key === vEv.detail.tab)) setTab(vEv.detail.tab)
+    }
+    if (issues.length || brickBlocked) { setFormIssues(issues); setFormError(true); return }
     setFormIssues([])
     if (validStart && validEnd && validStart > validEnd) { setTab('properties'); notify('ko', t('title'), t('err_dates')); return }
     setFormError(false)
@@ -305,6 +327,16 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
       // SEO (si déjà chargé / modifié) — sauvé après que la catégorie ait un id.
       if (seoLoaded || seo.some((s) => s.pageId || s.url || s.urlRedirect || s.url301 || s.metaTitle || s.metaDescription)) {
         try { await saveCategorySeo(r.id, seo.map((s) => ({ langId: s.langId, pageId: s.pageId, url: s.url, urlRedirect: s.urlRedirect, url301: s.url301, metaTitle: s.metaTitle, metaDescription: s.metaDescription }))) } catch { /* */ }
+      }
+      // Un onglet apporté par une brique (cf. externalBricks) tient ses propres données et ne
+      // passe pas par saveCategory() : on l'avertit pour qu'il enregistre les siennes avec le
+      // formulaire, comme le legacy où tout partait avec la catégorie. Générique — melis-commerce
+      // ignore qui écoute : un auditeur pousse sa promesse dans `pending`, qu'on attend AVANT
+      // onSaved() pour que le rechargement qui suit relise des données à jour.
+      const ev = new CustomEvent<{ id: number; pending: Promise<unknown>[] }>('melis:commerce-category-saved', { detail: { id: r.id, pending: [] } })
+      window.dispatchEvent(ev)
+      if (ev.detail.pending.length) {
+        try { await Promise.all(ev.detail.pending) } catch { /* la brique signale sa propre erreur */ }
       }
       notify('ok', t('title'), t('saved'))
       onSaved(r.id, isCatalog ? 'catalog' : 'category')
@@ -425,6 +457,10 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
               ))}
             </div>
           )
+        ) : tab === 'price_discount' ? (
+          // Le contenu de cet onglet est monté EN PERMANENCE plus bas (il ne peut pas être
+          // démonté quand on regarde un autre onglet, cf. le bloc ci-dessous).
+          !isEdit || !catId ? <p style={{ ...hint }}>{t('save_first_tab')}</p> : null
         ) : (
           !isEdit ? <p style={{ ...hint }}>{t('save_first_tab')}</p> : (
             <div>
@@ -492,6 +528,16 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
             </div>
           )
         )}
+
+        {/* Onglet d'une brique : monté DÈS l'ouverture de la fiche et JAMAIS démonté tant qu'on
+            reste dessus — seulement masqué quand un autre onglet est actif. Un démontage lui
+            ferait perdre ses saisies ET ses écouteurs, donc « Enregistrer la catégorie » ne
+            validerait/enregistrerait plus ses données dès qu'on aurait quitté son onglet. */}
+        {DiscountTabComp && isEdit && catId ? (
+          <div style={{ display: tab === 'price_discount' ? 'block' : 'none' }}>
+            <DiscountTabComp categoryId={catId} />
+          </div>
+        ) : null}
       </div>
     </div>
   )

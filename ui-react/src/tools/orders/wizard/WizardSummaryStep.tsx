@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { makeT } from '../../../shared/i18n'
 import { DICT } from '../dict'
-import { fetchCheckoutSummary, checkoutApplyCoupon, checkoutRemoveCoupon, checkoutBasketSetQty, type CheckoutSummary } from '../api'
+import { fetchCheckoutSummary, checkoutApplyCoupon, checkoutRemoveCoupon, checkoutBasketSetQty, type CheckoutSummary, type CheckoutBasketLine } from '../api'
 import { fetchAccountAddresses, fetchAddressOptions } from '../../accounts/api'
 import type { Address, AddressOptions } from '../../../shared/address'
 import { card, inputCss, btnPrimary, btnGhost } from '../../../shared/styles'
@@ -70,17 +70,19 @@ export function WizardSummaryStep({ clientId, billingId, deliveryId, onBack, onN
       .finally(() => setLoading(false))
   }
 
-  function commitQtyDraft(variantId: number, raw: string) {
-    setQtyDraft((d) => { const c = { ...d }; delete c[variantId]; return c })
+  function commitQtyDraft(line: CheckoutBasketLine, raw: string) {
+    setQtyDraft((d) => { const c = { ...d }; delete c[line.lineId]; return c })
     const n = parseInt(raw, 10)
-    if (!isNaN(n)) setQty(variantId, n)
+    if (!isNaN(n)) setQty(line, n)
   }
 
-  function setQty(variantId: number, qty: number) {
+  // Keyed on the basket ROW, not the variant — see WizardProductsStep.setQty (a module may keep
+  // several lines for the same variant, distinguished by their opaque `extra`).
+  function setQty(line: CheckoutBasketLine, qty: number) {
     // Server clamps to available stock too (source of truth) — capping here just avoids a
     // round-trip flicker when the typed value is already known to be over the limit.
-    const stock = summary?.items.find((l) => l.variantId === variantId)?.stock ?? null
-    const capped = stock != null ? Math.min(qty, stock) : qty
+    const key = line.lineId
+    const capped = line.stock != null ? Math.min(qty, line.stock) : qty
     if (capped < qty) notify('ko', t('checkout_step_summary'), t('checkout_qty_capped', { n: capped }))
     // Optimistic preview: the qty/line total update instantly instead of waiting on 2 sequential
     // round-trips (set + refetch) — subtotal/discounts/total are left stale until the authoritative
@@ -88,7 +90,7 @@ export function WizardSummaryStep({ clientId, billingId, deliveryId, onBack, onN
     if (capped > 0 && summary) {
       setSummary({
         ...summary,
-        items: summary.items.map((l) => l.variantId === variantId
+        items: summary.items.map((l) => l.lineId === key
           ? { ...l, quantity: capped, lineTotal: l.price != null ? l.price * capped : l.lineTotal }
           : l),
       })
@@ -96,15 +98,15 @@ export function WizardSummaryStep({ clientId, billingId, deliveryId, onBack, onN
     // Debounce the actual request and only apply whichever response corresponds to the LAST
     // request issued for this line — rapid +/- clicks each used to fire their own request, and
     // out-of-order responses could clobber a newer quantity with a stale one.
-    if (qtyTimer.current[variantId]) clearTimeout(qtyTimer.current[variantId])
-    const seq = (qtySeq.current[variantId] = (qtySeq.current[variantId] ?? 0) + 1)
-    qtyTimer.current[variantId] = setTimeout(async () => {
+    if (qtyTimer.current[key]) clearTimeout(qtyTimer.current[key])
+    const seq = (qtySeq.current[key] = (qtySeq.current[key] ?? 0) + 1)
+    qtyTimer.current[key] = setTimeout(async () => {
       try {
-        await checkoutBasketSetQty(variantId, capped)
+        await checkoutBasketSetQty(line.variantId, capped, line.extra)
         const s = await fetchCheckoutSummary()
-        if (qtySeq.current[variantId] === seq) setSummary(s)
+        if (qtySeq.current[key] === seq) setSummary(s)
       } catch (e) {
-        if (qtySeq.current[variantId] === seq) {
+        if (qtySeq.current[key] === seq) {
           notify('ko', t('checkout_step_summary'), e instanceof Error ? e.message : 'Error')
           fetchCheckoutSummary().then(setSummary).catch(() => null)
         }
@@ -163,21 +165,24 @@ export function WizardSummaryStep({ clientId, billingId, deliveryId, onBack, onN
               {summary.items.length === 0 ? (
                 <span style={{ fontSize: 13, color: 'var(--color-muted-foreground)' }}>{t('checkout_basket_empty')}</span>
               ) : summary.items.map((l) => (
-                <div key={l.variantId} style={{ paddingBottom: 10, borderBottom: '1px solid var(--color-border)' }}>
+                <div key={l.lineId} style={{ paddingBottom: 10, borderBottom: '1px solid var(--color-border)' }}>
                   <div style={{ fontWeight: 600, fontSize: 14 }}>{l.productName || l.sku}</div>
                   <div style={{ fontSize: 12, color: 'var(--color-muted-foreground)', marginBottom: 6 }}>{l.sku} — {l.price != null ? l.price.toFixed(2) : '—'}</div>
+                  {l.extraLabel && (
+                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-primary)', marginBottom: 6 }}>{l.extraLabel}</div>
+                  )}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <button style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, border: '1px solid #dc2626', background: 'transparent', color: '#dc2626', cursor: 'pointer', padding: 0 }}
-                      onClick={() => setQty(l.variantId, l.quantity - 1)}>−</button>
+                      onClick={() => setQty(l, l.quantity - 1)}>−</button>
                     <input type="text" inputMode="numeric" pattern="[0-9]*"
                       style={{ ...inputCss, height: 28, width: 56, textAlign: 'center', padding: '0 4px' }}
-                      value={qtyDraft[l.variantId] ?? String(l.quantity)}
-                      onChange={(e) => setQtyDraft((d) => ({ ...d, [l.variantId]: e.target.value.replace(/\D/g, '') }))}
-                      onBlur={(e) => commitQtyDraft(l.variantId, e.target.value)}
+                      value={qtyDraft[l.lineId] ?? String(l.quantity)}
+                      onChange={(e) => setQtyDraft((d) => ({ ...d, [l.lineId]: e.target.value.replace(/\D/g, '') }))}
+                      onBlur={(e) => commitQtyDraft(l, e.target.value)}
                       onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }} />
                     <button style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, border: '1px solid #dc2626', background: 'transparent', color: '#dc2626', cursor: l.stock != null && l.quantity >= l.stock ? 'not-allowed' : 'pointer', padding: 0, opacity: l.stock != null && l.quantity >= l.stock ? 0.4 : 1 }}
                       disabled={l.stock != null && l.quantity >= l.stock}
-                      onClick={() => setQty(l.variantId, l.quantity + 1)}>+</button>
+                      onClick={() => setQty(l, l.quantity + 1)}>+</button>
                     <span style={{ marginLeft: 'auto', fontWeight: 700, color: '#dc2626' }}>{l.lineTotal != null ? l.lineTotal.toFixed(2) : '—'}</span>
                   </div>
                 </div>

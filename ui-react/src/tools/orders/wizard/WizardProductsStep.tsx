@@ -76,34 +76,37 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
   async function add(v: CheckoutVariant) {
     if (adding) return
     setAdding(v.id)
-    try { const r = await checkoutBasketAdd(v.id, 1); setBasket(r.items); notify('ok', t('checkout_step_products'), t('checkout_added_to_basket', { sku: v.sku })) }
+    // `extra` (when a module added this row) rides along so the write lands on ITS line.
+    try { const r = await checkoutBasketAdd(v.id, 1, v.extra); setBasket(r.items); notify('ok', t('checkout_step_products'), t('checkout_added_to_basket', { sku: v.sku })) }
     catch (e) { notify('ko', t('checkout_step_products'), e instanceof Error ? e.message : 'Error') }
     finally { setAdding(null) }
   }
 
-  function setQty(variantId: number, qty: number) {
+  // Keyed on the basket ROW, not the variant: a module may keep several lines for the same
+  // variant (different `extra`), which shared drafts/timers would otherwise mix up.
+  function setQty(line: CheckoutBasketLine, qty: number) {
     // Server clamps to available stock too (source of truth) — capping here just avoids a
     // round-trip flicker when the typed value is already known to be over the limit.
-    const stock = basket.find((b) => b.variantId === variantId)?.stock ?? null
-    const capped = stock != null ? Math.min(qty, stock) : qty
+    const key = line.lineId
+    const capped = line.stock != null ? Math.min(qty, line.stock) : qty
     if (capped < qty) notify('ko', t('checkout_step_products'), t('checkout_qty_capped', { n: capped }))
     // Optimistic preview: the qty/line total update instantly instead of waiting on the round-trip.
     if (capped > 0) {
-      setBasket((p) => p.map((b) => b.variantId === variantId
+      setBasket((p) => p.map((b) => b.lineId === key
         ? { ...b, quantity: capped, lineTotal: b.price != null ? b.price * capped : b.lineTotal }
         : b))
     }
     // Debounce the actual request and only apply whichever response corresponds to the LAST
     // request issued for this line — rapid +/- clicks each used to fire their own request, and
     // out-of-order responses could clobber a newer quantity with a stale one.
-    if (qtyTimer.current[variantId]) clearTimeout(qtyTimer.current[variantId])
-    const seq = (qtySeq.current[variantId] = (qtySeq.current[variantId] ?? 0) + 1)
-    qtyTimer.current[variantId] = setTimeout(async () => {
+    if (qtyTimer.current[key]) clearTimeout(qtyTimer.current[key])
+    const seq = (qtySeq.current[key] = (qtySeq.current[key] ?? 0) + 1)
+    qtyTimer.current[key] = setTimeout(async () => {
       try {
-        const r = capped <= 0 ? await checkoutBasketRemove(variantId) : await checkoutBasketSetQty(variantId, capped)
-        if (qtySeq.current[variantId] === seq) setBasket(r.items)
+        const r = capped <= 0 ? await checkoutBasketRemove(line.variantId, line.extra) : await checkoutBasketSetQty(line.variantId, capped, line.extra)
+        if (qtySeq.current[key] === seq) setBasket(r.items)
       } catch (e) {
-        if (qtySeq.current[variantId] === seq) {
+        if (qtySeq.current[key] === seq) {
           notify('ko', t('checkout_step_products'), e instanceof Error ? e.message : 'Error')
           refreshBasket()
         }
@@ -111,10 +114,10 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
     }, 300)
   }
 
-  function commitQtyDraft(variantId: number, raw: string) {
-    setQtyDraft((d) => { const c = { ...d }; delete c[variantId]; return c })
+  function commitQtyDraft(line: CheckoutBasketLine, raw: string) {
+    setQtyDraft((d) => { const c = { ...d }; delete c[line.lineId]; return c })
     const n = parseInt(raw, 10)
-    if (!isNaN(n)) setQty(variantId, n)
+    if (!isNaN(n)) setQty(line, n)
   }
 
   function next() {
@@ -176,9 +179,14 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
                             ) : (
                               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                                 {variants.map((v) => (
-                                  <div key={v.id} style={{ display: 'flex', flexWrap: narrow ? 'wrap' : 'nowrap', alignItems: 'center', gap: 10, padding: '6px 0' }}>
+                                  <div key={`${v.id}-${v.extra ?? ''}`} style={{ display: 'flex', flexWrap: narrow ? 'wrap' : 'nowrap', alignItems: 'center', gap: 10, padding: '6px 0' }}>
                                     <code style={{ fontSize: 12, minWidth: narrow ? undefined : 90 }}>{v.sku}</code>
-                                    <span style={{ fontSize: 12, color: 'var(--color-muted-foreground)', flex: 1 }}>{v.attributes || '—'}</span>
+                                    {/* Colonne attributs : vide plutôt qu'un « — » (une variante sans
+                                        attribut est la norme ; le tiret n'apportait que du bruit). */}
+                                    <span style={{ fontSize: 12, color: 'var(--color-muted-foreground)', flex: 1 }}>{v.attributes}</span>
+                                    {v.extraLabel && (
+                                      <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 999, background: 'var(--color-muted,rgba(0,0,0,.06))', color: 'var(--color-primary)', whiteSpace: 'nowrap' }}>{v.extraLabel}</span>
+                                    )}
                                     <span style={{ fontSize: 12, color: v.stock && v.stock > 0 ? '#16a34a' : '#dc2626' }}>{v.stock ?? '—'} {t('checkout_in_stock')}</span>
                                     <span style={{ fontSize: 13, fontWeight: 600, minWidth: 60, textAlign: 'right' }}>{v.price != null ? v.price.toFixed(2) : '—'}</span>
                                     <button style={{ ...btnPrimary, height: 28, padding: '0 10px' }} disabled={adding === v.id || !v.stock} onClick={(e) => { e.stopPropagation(); add(v) }}>
@@ -213,23 +221,26 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {basket.map((l) => (
-                    <div key={l.variantId} style={{ display: 'flex', flexDirection: 'column', gap: 4, paddingBottom: 8, borderBottom: '1px solid var(--color-border)' }}>
+                    <div key={l.lineId} style={{ display: 'flex', flexDirection: 'column', gap: 4, paddingBottom: 8, borderBottom: '1px solid var(--color-border)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 6 }}>
                         <span style={{ fontSize: 13, fontWeight: 500 }}>{l.productName || l.sku}</span>
-                        <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} onClick={() => setQty(l.variantId, 0)}><TrashIcon /></button>
+                        <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} onClick={() => setQty(l, 0)}><TrashIcon /></button>
                       </div>
                       <code style={{ fontSize: 11, color: 'var(--color-muted-foreground)' }}>{l.sku}</code>
+                      {l.extraLabel && (
+                        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-primary)' }}>{l.extraLabel}</span>
+                      )}
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <button style={qtyBtn} onClick={() => setQty(l.variantId, l.quantity - 1)}>−</button>
+                        <button style={qtyBtn} onClick={() => setQty(l, l.quantity - 1)}>−</button>
                         <input type="text" inputMode="numeric" pattern="[0-9]*"
                           style={{ ...inputCss, height: 24, width: 56, textAlign: 'center', padding: '0 4px' }}
-                          value={qtyDraft[l.variantId] ?? String(l.quantity)}
-                          onChange={(e) => setQtyDraft((d) => ({ ...d, [l.variantId]: e.target.value.replace(/\D/g, '') }))}
-                          onBlur={(e) => commitQtyDraft(l.variantId, e.target.value)}
+                          value={qtyDraft[l.lineId] ?? String(l.quantity)}
+                          onChange={(e) => setQtyDraft((d) => ({ ...d, [l.lineId]: e.target.value.replace(/\D/g, '') }))}
+                          onBlur={(e) => commitQtyDraft(l, e.target.value)}
                           onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }} />
                         <button style={{ ...qtyBtn, opacity: l.stock != null && l.quantity >= l.stock ? 0.4 : 1 }}
                           disabled={l.stock != null && l.quantity >= l.stock}
-                          onClick={() => setQty(l.variantId, l.quantity + 1)}>+</button>
+                          onClick={() => setQty(l, l.quantity + 1)}>+</button>
                         <span style={{ marginLeft: 'auto', fontSize: 13, fontWeight: 600 }}>{l.lineTotal != null ? l.lineTotal.toFixed(2) : '—'}</span>
                       </div>
                     </div>

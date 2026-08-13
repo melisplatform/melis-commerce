@@ -181,15 +181,20 @@ export const fetchCheckoutProducts = (params: { page?: number; search?: string }
   return apiFetch<ListResult<CheckoutProduct>>(`${CHECKOUT_BASE}/products?${qs}`)
 }
 
-export interface CheckoutVariant { id: number; sku: string; image: string; attributes: string; price: number | null; stock: number | null }
+// `extra`/`extraLabel` are OPAQUE here: an active module can add alternate variant rows and
+// annotate basket lines through the server-side checkout seams (see checkoutExtend() in
+// MelisComReactApiOrderController) — e.g. MelisCommerceGroupDiscountPerCategory's per-category
+// discounted prices. The wizard only displays `extraLabel` and echoes `extra` back on every
+// basket write so the module addresses the right line; it never interprets either.
+export interface CheckoutVariant { id: number; sku: string; image: string; attributes: string; price: number | null; stock: number | null; extra?: string | null; extraLabel?: string | null }
 export const fetchCheckoutVariants = (productId: number) =>
   apiFetch<{ items: CheckoutVariant[] }>(`${CHECKOUT_BASE}/products/${productId}/variants`)
 
-export interface CheckoutBasketLine { variantId: number; sku: string; productName: string; quantity: number; stock: number | null; price: number | null; lineTotal: number | null }
+export interface CheckoutBasketLine { lineId: number; variantId: number; sku: string; productName: string; quantity: number; stock: number | null; price: number | null; lineTotal: number | null; extra?: string | null; extraLabel?: string | null }
 export const fetchCheckoutBasket = () => apiFetch<{ items: CheckoutBasketLine[] }>(`${CHECKOUT_BASE}/basket`)
-export const checkoutBasketAdd = (variantId: number, quantity: number) => postJson<{ items: CheckoutBasketLine[] }>(`${CHECKOUT_BASE}/basket/add`, { variantId, quantity })
-export const checkoutBasketSetQty = (variantId: number, quantity: number) => postJson<{ items: CheckoutBasketLine[] }>(`${CHECKOUT_BASE}/basket/qty`, { variantId, quantity })
-export const checkoutBasketRemove = (variantId: number) => postJson<{ items: CheckoutBasketLine[] }>(`${CHECKOUT_BASE}/basket/remove`, { variantId })
+export const checkoutBasketAdd = (variantId: number, quantity: number, extra?: string | null) => postJson<{ items: CheckoutBasketLine[] }>(`${CHECKOUT_BASE}/basket/add`, { variantId, quantity, extra })
+export const checkoutBasketSetQty = (variantId: number, quantity: number, extra?: string | null) => postJson<{ items: CheckoutBasketLine[] }>(`${CHECKOUT_BASE}/basket/qty`, { variantId, quantity, extra })
+export const checkoutBasketRemove = (variantId: number, extra?: string | null) => postJson<{ items: CheckoutBasketLine[] }>(`${CHECKOUT_BASE}/basket/remove`, { variantId, extra })
 
 export const checkoutValidateAddresses = (billingId: number, deliveryId: number) =>
   postJson<{ success: boolean }>(`${CHECKOUT_BASE}/addresses`, { billingId, deliveryId })
