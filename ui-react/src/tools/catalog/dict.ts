@@ -14,6 +14,10 @@ export const DICT = mergeDict({
     status_label: 'Statut', online: 'Actif', offline: 'Inactif',
     save_catalog: 'Enregistrer le catalogue', save_category: 'Enregistrer la catégorie',
     tab_properties: 'Propriétés', tab_seo: 'SEO', tab_products: 'Produits',
+    // Onglet apporté par MelisCommerceGroupDiscountPerCategory s'il est actif (cf. externalBricks).
+    tab_price_discount: 'Réduction par prix',
+    // Titre de la bannière d'erreurs de formulaire (la clé manquait : elle s'affichait brute).
+    err_required_fields: 'Veuillez vérifier les champs obligatoires.',
     sec_texts: 'Textes', sec_dates: 'Validité', sec_countries: 'Pays', f_parent: 'Parent',
     seo_page_id: 'ID de page', seo_url: 'URL', seo_url_redirect: 'Redirection d’URL', seo_url_301: 'URL 301', seo_meta_title: 'Titre meta', seo_meta_desc: 'Description meta',
     seo_page_id_ph: 'ID de la page associée', seo_url_ph: 'url-de-la-categorie', seo_url_redirect_ph: '/nompage/id/1 ou http://…', seo_url_301_ph: '/nompage/id/1 ou http://…',
@@ -52,6 +56,9 @@ export const DICT = mergeDict({
     status_label: 'Status', online: 'Active', offline: 'Inactive',
     save_catalog: 'Save catalog', save_category: 'Save category',
     tab_properties: 'Properties', tab_seo: 'SEO', tab_products: 'Products',
+    // Tab brought by MelisCommerceGroupDiscountPerCategory when active (see externalBricks).
+    tab_price_discount: 'Price Discount',
+    err_required_fields: 'Please check the required fields.',
     sec_texts: 'Texts', sec_dates: 'Validity', sec_countries: 'Countries', f_parent: 'Parent',
     seo_page_id: 'Page ID', seo_url: 'URL', seo_url_redirect: 'URL redirection', seo_url_301: 'URL 301', seo_meta_title: 'Meta title', seo_meta_desc: 'Meta description',
     seo_page_id_ph: 'ID of the linked page', seo_url_ph: 'category-url', seo_url_redirect_ph: '/mypagename/id/1 or http://…', seo_url_301_ph: '/mypagename/id/1 or http://…',

@@ -21,6 +21,12 @@ class MelisComClientListController extends MelisAbstractActionController
 {
     const PLUGIN_INDEX = 'meliscommerce';
 
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
+    }
+
     /**
      * Render Client List Page
      * 
@@ -411,6 +417,9 @@ class MelisComClientListController extends MelisAbstractActionController
      */
     public function getClientListAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $dataCount = 0;
         $totalFiltered = 0;
         $draw = 0;
@@ -564,7 +573,9 @@ class MelisComClientListController extends MelisAbstractActionController
 
     public function sendExportToCsvAction()
     {
-
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['success'=>0]);
+        }
         $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
 
         $csvConfig = $melisCoreConfig->getItem('meliscommerce/datas/default/export/csv');
@@ -584,6 +595,9 @@ class MelisComClientListController extends MelisAbstractActionController
     
     public function clientsExportValidateAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $errors = array();
         $dateErrors = array();
         $permErrors = array();
@@ -705,7 +719,9 @@ class MelisComClientListController extends MelisAbstractActionController
     
     public function clientsExportToCsvAction()
     {
-        
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['success'=>0]);
+        }
         $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $tool = $this->getServiceManager()->get('MelisCoreTool');
 
@@ -738,6 +754,9 @@ class MelisComClientListController extends MelisAbstractActionController
      */
     public function exportAccountsAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['success'=>0]);
+        }
         ini_set('max_execution_time', -1);
         // set memory limit to infinte
         ini_set('memory_limit', '-1');

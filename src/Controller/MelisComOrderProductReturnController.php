@@ -155,6 +155,9 @@ class MelisComOrderProductReturnController extends MelisAbstractActionController
      */
     public function getOrderProductReturnListAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $productReturn = $this->getServiceManager()->get('MelisComOrderProductReturnService');
         $docService = $this->getServiceManager()->get('MelisComDocumentService');
         $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
@@ -220,6 +223,12 @@ class MelisComOrderProductReturnController extends MelisAbstractActionController
             'recordsFiltered' => count($tableData),
             'recordsTotal' => count($tableData),
         ));
+    }
+
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
     }
 
     /**

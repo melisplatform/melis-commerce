@@ -17,6 +17,12 @@ use MelisCommerce\Model\Variant;
 
 class MelisComVariantListController extends MelisAbstractActionController
 {
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
+    }
+
     public function renderVariantListPageAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -127,6 +133,9 @@ class MelisComVariantListController extends MelisAbstractActionController
      */
     public function renderProductsVariantDataAction()
     {
+        if (! $this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $productId = $this->getRequest()->getPost('prodId');
         $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_products');
@@ -229,6 +238,10 @@ class MelisComVariantListController extends MelisAbstractActionController
 
     public function getToolTipAction()
     {
+        /** @INFO: Access check (tool right) — CWE-862 */
+        if (! $this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['content' => []]);
+        }
         $content = array();
         $rows = array();
         $data = array();
@@ -323,6 +336,10 @@ class MelisComVariantListController extends MelisAbstractActionController
      */
     public function updateVariantStatusAction()
     {
+        /** @INFO: Access check (tool right) — CWE-862 */
+        if (! $this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $varTbl = $this->getServiceManager()->get('MelisEcomVariantTable');
         $variantId = (int) $this->getRequest()->getPost('id');
         $status = (int) $this->getRequest()->getPost('var_status');

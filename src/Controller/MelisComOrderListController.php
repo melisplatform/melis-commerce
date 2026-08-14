@@ -356,6 +356,9 @@ class MelisComOrderListController extends MelisAbstractActionController
     
     public function getOrderListDataAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $success = 0;
         $melisComOrderService = $this->getServiceManager()->get('MelisComOrderService');
         $clientCompanyTable = $this->getServiceManager()->get('MelisEcomClientCompanyTable');
@@ -534,13 +537,19 @@ class MelisComOrderListController extends MelisAbstractActionController
             'data' => $tableData,
         ));
     }
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
+    }
+
     /**
      * Returns the translation text
      * @param String $key
      * @param array $args
      * @return string
      */
-    private function getTranslation($key, $args = []) 
+    private function getTranslation($key, $args = [])
     {
         $translator = $this->getServiceManager()->get('translator');
         $text = vsprintf($translator->translate($key), $args);
@@ -582,6 +591,9 @@ class MelisComOrderListController extends MelisAbstractActionController
      */      
     public function getOrderBasketToolTipAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['content' => []]);
+        }
         $content = array();
         if($this->getRequest()->isPost()) {
             $orderId = (int) $this->getRequest()->getPost('orderId');
@@ -637,6 +649,9 @@ class MelisComOrderListController extends MelisAbstractActionController
 
     public function sendOrdersExportToCsvAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['success' => 0]);
+        }
         $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $csvConfig = $melisCoreConfig->getItem('meliscommerce/datas/default/export/csv');
         $csvFileName = $csvConfig['orderFileName'];
@@ -655,6 +670,9 @@ class MelisComOrderListController extends MelisAbstractActionController
 
     public function saveOrderStatusAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $response = array();
         $success = false;
         $errors  = array();
@@ -725,7 +743,10 @@ class MelisComOrderListController extends MelisAbstractActionController
     }
     
     public function ordersExportValidateAction()
-    {   
+    {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $errors = array();
         $dateErrors = array();
         $permErrors = array();
@@ -848,11 +869,14 @@ class MelisComOrderListController extends MelisAbstractActionController
     
     public function ordersExportToCsvAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['success' => 0]);
+        }
         $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $csvConfig = $melisCoreConfig->getItem('meliscommerce/datas/default/export/csv');
         $csvFileName = $csvConfig['orderFileName'];
         $dir = $csvConfig['dir'];
-        
+
         $csvData = file_get_contents($dir.$csvFileName);
         
         $response = new Response();

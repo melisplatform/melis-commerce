@@ -879,7 +879,10 @@ class MelisComOrderController extends MelisAbstractActionController
         * @return \Laminas\View\Model\JsonModel
         */
     public function getBasketDataAction()
-    {   
+    {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $getValues = $this->getRequest()->getQuery()->toArray();
         $orderId = $this->getRequest()->getPost('orderId');
         $translator = $this->getServiceManager()->get('translator');
@@ -979,6 +982,9 @@ class MelisComOrderController extends MelisAbstractActionController
     
     public function saveOrderAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $response = array();
         $success = 0;
         $errors  = array();
@@ -1034,6 +1040,9 @@ class MelisComOrderController extends MelisAbstractActionController
     
     public function saveOrderDataAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
         $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
         $variantStockTbl = $this->getServiceManager()->get('MelisEcomVariantStockTable');
@@ -1111,6 +1120,9 @@ class MelisComOrderController extends MelisAbstractActionController
     */
     public function validateOrderFormAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $data['order'] = array();
         $errors = array();
         $success = true;
@@ -1151,6 +1163,9 @@ class MelisComOrderController extends MelisAbstractActionController
         */
     public function validateAddressFormAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $errors = array();
         $success = true;
         $address['delivery'] = array();
@@ -1205,6 +1220,9 @@ class MelisComOrderController extends MelisAbstractActionController
         */
     public function validateShippingFormAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $data['shipping'] = array();
         $errors = array();
         $success = true;
@@ -1239,6 +1257,9 @@ class MelisComOrderController extends MelisAbstractActionController
     
     public function saveOrderMessageAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $response = array();
         $success = 0;
         $errors  = array();
@@ -1367,6 +1388,12 @@ class MelisComOrderController extends MelisAbstractActionController
         ), $layoutVar));
     }
     
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
+    }
+
     /**
         * Returns the Tool Service Class
         * @return MelisCoreTool
@@ -1375,7 +1402,7 @@ class MelisComOrderController extends MelisAbstractActionController
     {
         $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_order_basket_list');
-    
+
         return $melisTool;
     }
 

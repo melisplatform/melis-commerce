@@ -73,6 +73,7 @@ return [
                 ['key' => 'properties', 'label' => 'tr_meliscommerce_categories_common_label_main'],    // Properties
                 ['key' => 'seo',        'label' => 'tr_meliscommerce_categories_common_label_seo'],      // SEO
                 ['key' => 'products',   'label' => 'tr_meliscommerce_categories_common_label_producs'],  // Products (lecture seule)
+                ['key' => 'price_discount', 'label' => 'tr_meliscommerce_price_discount_label'],         // Price Discount — onglet apporté par MelisCommerceGroupDiscountPerCategory si actif
             ],
         ],
 

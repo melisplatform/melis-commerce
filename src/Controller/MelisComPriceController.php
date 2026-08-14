@@ -17,6 +17,12 @@ use MelisCore\Controller\MelisAbstractActionController;
 
 class MelisComPriceController extends MelisAbstractActionController
 {
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
+    }
+
     private function getPrefix()
     {
         $productId = (int) $this->params()->fromQuery('productId', '');
@@ -377,6 +383,10 @@ class MelisComPriceController extends MelisAbstractActionController
     
     public function validatePriceFormAction()
     {
+        /** @INFO: Access check (tool right) — CWE-862 */
+        if (! $this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $data = array(
             'prices' => array()
         );
@@ -457,11 +467,15 @@ class MelisComPriceController extends MelisAbstractActionController
     */
     public function priceCountryDeletedAction()
     {
+        /** @INFO: Access check (tool right) — CWE-862 */
+        if (! $this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $success = 0;
         $errors = array();
         $data = array();
         $countryId = -1;
-   
+
         $priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
         $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
         
@@ -516,6 +530,10 @@ class MelisComPriceController extends MelisAbstractActionController
 
     public function testAction()
     {
+        /** @INFO: Access check (tool right) — CWE-862 */
+        if (! $this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
 //         $amount = 9.5;
 //         $sessionLocale = '';
 //         $container = new Container('meliscore');

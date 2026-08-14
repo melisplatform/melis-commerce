@@ -21,6 +21,12 @@ class MelisComContactController extends MelisAbstractActionController
 {
     const PLUGIN_INDEX = 'meliscommerce';
 
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
+    }
+
     /**
      * @return ViewModel
      */
@@ -250,6 +256,9 @@ class MelisComContactController extends MelisAbstractActionController
      */
     public function getContactListAction()
     {
+        if (!$this->hasAccess('meliscommerce_contact_list_page')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $dataCount = 0;
         $draw = 0;
         $tableData = array();
@@ -341,6 +350,9 @@ class MelisComContactController extends MelisAbstractActionController
      */
     public function saveContactAction()
     {
+        if (!$this->hasAccess('meliscommerce_contact_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
 
         $personId = null;
@@ -612,6 +624,9 @@ class MelisComContactController extends MelisAbstractActionController
      */
     public function getContactNameAction()
     {
+        if (!$this->hasAccess('meliscommerce_contact_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
 
         $success = 0;
@@ -894,6 +909,9 @@ class MelisComContactController extends MelisAbstractActionController
      */
     public function addContactAddressAction()
     {
+        if (!$this->hasAccess('meliscommerce_contact_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
 
         $success = 0;
@@ -1007,6 +1025,9 @@ class MelisComContactController extends MelisAbstractActionController
      */
     public function deleteContactAddressAction()
     {
+        if (!$this->hasAccess('meliscommerce_contact_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
 
         $success = 0;
@@ -1052,6 +1073,9 @@ class MelisComContactController extends MelisAbstractActionController
      */
     public function deleteContactAction()
     {
+        if (!$this->hasAccess('meliscommerce_contact_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
 
         $success = 0;
@@ -1235,6 +1259,9 @@ class MelisComContactController extends MelisAbstractActionController
      */
     public function getContactAssociatedAccountListAction()
     {
+        if (!$this->hasAccess('meliscommerce_contact_list_page')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $dataCount = 0;
         $draw = 0;
         $tableData = array();
@@ -1346,6 +1373,9 @@ class MelisComContactController extends MelisAbstractActionController
      */
     public function fetchAllContactAction()
     {
+        if (!$this->hasAccess('meliscommerce_contact_list_page')) {
+            return new JsonModel([]);
+        }
         $searchPhrase = $this->params()->fromQuery('phrase', '');
         $accountId = $this->params()->fromQuery('accountId', '');
 
@@ -1412,6 +1442,9 @@ class MelisComContactController extends MelisAbstractActionController
      */
     public function fetchAllAccountAction()
     {
+        if (!$this->hasAccess('meliscommerce_contact_list_page')) {
+            return new JsonModel([]);
+        }
         $searchPhrase = $this->params()->fromQuery('phrase', '');
         $contactId = $this->params()->fromQuery('contactId', '');
 
@@ -1497,6 +1530,9 @@ class MelisComContactController extends MelisAbstractActionController
      */
     public function linkContactAccountAction()
     {
+        if (!$this->hasAccess('meliscommerce_contact_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $accountId = $this->getRequest()->getPost('accountId', '');
         $contactId = $this->getRequest()->getPost('contactId', '');
 
@@ -1540,6 +1576,9 @@ class MelisComContactController extends MelisAbstractActionController
      */
     public function updateDefaultAccountAction()
     {
+        if (!$this->hasAccess('meliscommerce_contact_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $cpr_default_client = $this->getRequest()->getPost('cpr_default_client', 0);
         $cprId = $this->getRequest()->getPost('cprId', '');
         $contactId = $this->getRequest()->getPost('contactId', '');
@@ -1585,6 +1624,9 @@ class MelisComContactController extends MelisAbstractActionController
      */
     public function unlinkAccountContactAction()
     {
+        if (!$this->hasAccess('meliscommerce_contact_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $accountId = $this->getRequest()->getPost('accountId', '');
         $contactId = $this->getRequest()->getPost('contactId', '');
 
@@ -1687,6 +1729,9 @@ class MelisComContactController extends MelisAbstractActionController
      */
     public function exportContactsAction()
     {
+        if (!$this->hasAccess('meliscommerce_contact_list_page')) {
+            return new JsonModel(['success'=>0]);
+        }
         ini_set('max_execution_time', -1);
         // set memory limit to infinte
         ini_set('memory_limit', '-1');
@@ -2007,6 +2052,9 @@ class MelisComContactController extends MelisAbstractActionController
 
     public function importContactsAction()
     {
+        if (!$this->hasAccess('meliscommerce_contact_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $success = 0;
         $message = 'tr_meliscommerce_contact_import_failed';
         $title = 'tr_meliscommerce_contact_import_title';
@@ -2076,6 +2124,9 @@ class MelisComContactController extends MelisAbstractActionController
      */
     public function testImportContactsAction()
     {
+        if (!$this->hasAccess('meliscommerce_contact_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $success = 0;
         $message = 'tr_meliscommerce_contact_import_failed';
         $title = 'tr_meliscommerce_contact_import_title';
@@ -2182,6 +2233,9 @@ class MelisComContactController extends MelisAbstractActionController
      */
     public function validateContactImportsFormAction()
     {
+        if (!$this->hasAccess('meliscommerce_contact_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $success = 0;
         $errors = [];
         $message = '';

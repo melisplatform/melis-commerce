@@ -172,6 +172,9 @@ class MelisComCouponListController extends MelisAbstractActionController
      */
     public function getCouponListDataAction()
     {
+        if (!$this->hasAccess('meliscommerce_coupon_list_page')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $success = 0;
         $colId = array();
         $dataCount = 0;
@@ -256,6 +259,9 @@ class MelisComCouponListController extends MelisAbstractActionController
      */
     public function deleteCouponAction()
     {
+        if (!$this->hasAccess('meliscommerce_coupon_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $response = array();
         $success = 0;
         $errors  = array();
@@ -303,6 +309,9 @@ class MelisComCouponListController extends MelisAbstractActionController
     }
     public function testAction()
     {
+        if (!$this->hasAccess('meliscommerce_coupon_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $couponSvc = $this->getServiceManager()->get('MelisComCouponService');
         $result = $couponSvc->getCouponList();
         echo '<pre>';
@@ -310,5 +319,9 @@ class MelisComCouponListController extends MelisAbstractActionController
         echo '</pre>';die();
     }
 
-
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
+    }
 }

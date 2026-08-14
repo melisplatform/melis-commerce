@@ -16,6 +16,12 @@ use MelisCore\Controller\MelisAbstractActionController;
 
 class MelisComAttributeController extends MelisAbstractActionController
 {
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
+    }
+
     /**
      * renders the page container
      * @return \Laminas\View\Model\ViewModel
@@ -504,6 +510,9 @@ class MelisComAttributeController extends MelisAbstractActionController
      */
     public function getAttributeValueDataAction()
     {
+        if (!$this->hasAccess('meliscommerce_attribute_list_page')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $success = 0;
         $colId = array();
         $dataCount = 0;
@@ -627,6 +636,9 @@ class MelisComAttributeController extends MelisAbstractActionController
      */
     public function renderAttributeModalValueFormAction()
     {
+        if (!$this->hasAccess('meliscommerce_attribute_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
         $attributeSvc = $this->getServiceManager()->get('MelisComAttributeService');
         $attributeTypeTable = $this->getServiceManager()->get('MelisEcomAttributeTypeTable');
@@ -714,6 +726,9 @@ class MelisComAttributeController extends MelisAbstractActionController
      */
     public function saveAttributeValuesAction()
     {
+        if (!$this->hasAccess('meliscommerce_attribute_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $response = array();
         $success = 0;
         $errors  = array();
@@ -860,6 +875,9 @@ class MelisComAttributeController extends MelisAbstractActionController
      */
     public function deleteAttributeValueAction()
     {
+        if (!$this->hasAccess('meliscommerce_attribute_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $response = array();
         $success = false;
         $errors  = array();
@@ -896,13 +914,16 @@ class MelisComAttributeController extends MelisAbstractActionController
     
     public function saveAttributeAction()
     {
+        if (!$this->hasAccess('meliscommerce_attribute_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $response = array();
         $success = 0;
         $errors  = array();
         $data = array();
         $attributeId = null;
         $logTypeCode = '';
-        
+
         $textMessage = 'tr_meliscommerce_attribute_save_failed';
         $textTitle = 'tr_meliscommerce_attribute_page';
         
@@ -979,6 +1000,9 @@ class MelisComAttributeController extends MelisAbstractActionController
      */
     public function validateAttributeFormAction()
     {
+        if (!$this->hasAccess('meliscommerce_attribute_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $data['attribute'] = array();
         $errors = array();
         $success = 1;
@@ -1019,6 +1043,9 @@ class MelisComAttributeController extends MelisAbstractActionController
     
     public function validateAttributeTransFormAction()
     {
+        if (!$this->hasAccess('meliscommerce_attribute_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $data['attributeTrans'] = array();
         $errors = array();
         $success = 1;
@@ -1061,6 +1088,9 @@ class MelisComAttributeController extends MelisAbstractActionController
     
     public function saveAttributeDataAction()
     {
+        if (!$this->hasAccess('meliscommerce_attribute_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $success = 0;
         $errors = array();
         $data = array();

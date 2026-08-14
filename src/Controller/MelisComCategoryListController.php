@@ -18,6 +18,12 @@ use MelisCommerce\Model\Language;
 
 class MelisComCategoryListController extends MelisAbstractActionController
 {
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
+    }
+
     /**
      * Render Categories page
      *
@@ -318,6 +324,9 @@ class MelisComCategoryListController extends MelisAbstractActionController
      */
     public function saveCategoryTreeViewAction()
     {
+        if (!$this->hasAccess('meliscommerce_categories_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $status = 1;
         $textMessage = '';
         $textTitle = '';

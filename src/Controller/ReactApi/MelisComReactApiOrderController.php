@@ -1208,6 +1208,20 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                     'stock'      => isset($stock->stock_quantity) ? (int) $stock->stock_quantity : null,
                 ];
             }
+
+            // Extension seam (see basketItems()): a module may append ALTERNATE rows for the same
+            // variants — e.g. MelisCommerceGroupDiscountPerCategory adds one row per category
+            // discount that applies to the product, priced accordingly, each carrying an opaque
+            // `extra` the client echoes back on add. Same role as the legacy checkout's
+            // `meliscommerce_order_checkout_product_variant_list` zone override.
+            $items = $this->checkoutExtend('meliscommerce_react_checkout_variants', [
+                'productId'     => $productId,
+                'countryId'     => $countryId,
+                'clientId'      => $clientId,
+                'clientGroupId' => $groupId,
+                'items'         => $items,
+            ]);
+
             return $this->ok(['items' => $items]);
         } catch (\Throwable $e) { return $this->err($e); }
     }
@@ -1219,6 +1233,47 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
         try {
             return $this->ok(['items' => $this->basketItems()]);
         } catch (\Throwable $e) { return $this->err($e); }
+    }
+
+    /**
+     * Generic extension seam for the checkout wizard.
+     *
+     * Triggers `$name` with `$params` and returns the (possibly rewritten) `items`. A module can
+     * append/annotate rows without melis-commerce knowing anything about what it adds — the React
+     * counterpart of the legacy checkout zones a module overrides in `app.interface.php`. Rows may
+     * carry two optional generic fields: `extra` (an opaque string the client echoes back on every
+     * basket write, addressing a specific line) and `extraLabel` (free text rendered next to the
+     * row). A module that wants to OWN the write itself listens to
+     * `meliscommerce_react_checkout_basket_write` (see checkoutBasketWrite()).
+     */
+    private function checkoutExtend(string $name, array $params): array
+    {
+        $event = new \Laminas\EventManager\Event($name, $this, $params);
+        $this->getEventManager()->triggerEvent($event);
+        $items = $event->getParam('items');
+        return is_array($items) ? $items : (array) ($params['items'] ?? []);
+    }
+
+    /**
+     * Lets a module perform a basket write itself (add / set quantity / remove) — needed when a
+     * line is identified by more than its variant (MelisCommerceGroupDiscountPerCategory keeps one
+     * line per variant AND category, exactly like the legacy BO checkout did through its own
+     * basket service). The listener sets `handled` to true; we then skip the default call.
+     * Returns true when a listener took over.
+     */
+    private function checkoutBasketWrite(string $action, int $variantId, int $quantity, int $clientId, ?string $extra): bool
+    {
+        $event = new \Laminas\EventManager\Event('meliscommerce_react_checkout_basket_write', $this, [
+            'action'    => $action,          // 'add' | 'setQty' | 'remove'
+            'variantId' => $variantId,
+            'quantity'  => $quantity,
+            'clientId'  => $clientId,
+            'clientKey' => null,             // BO wizard always works on a persistent basket
+            'extra'     => $extra,
+            'handled'   => false,
+        ]);
+        $this->getEventManager()->triggerEvent($event);
+        return (bool) $event->getParam('handled');
     }
 
     /** Shared by checkoutBasketAction/Add/SetQty/Remove — reads the CURRENT basket state after
@@ -1254,11 +1309,19 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                 if (!$rows) continue;
                 $r = (array) $rows[0];
 
-                $price = $priceSvc->getItemPrice($variantId, $countryId, $groupId, 'variant', ['skipLogsTranslation' => true]);
+                // Price the line IN ITS OWN CONTEXT: passing the basket entity lets any price
+                // listener read what that specific line carries (MelisComBasketService's
+                // `..._basket_get_end` lets modules attach data to a line via setExtra) instead of
+                // pricing a bare variant. This is what the front-office checkout does, and what
+                // makes a per-line discount show the same price here as at confirmation.
+                $price = $priceSvc->getItemPrice($variantId, $countryId, $groupId, 'variant', ['skipLogsTranslation' => true, 'basket' => $line]);
                 $unitPrice = $price['price'] !== null ? (float) $price['price'] : null;
                 $stock = $variantSvc->getVariantFinalStocks($variantId, $countryId);
 
                 $items[] = [
+                    // Basket ROW id: a line is not always uniquely identified by its variant (a
+                    // module may keep several lines for the same variant — see checkoutExtend()).
+                    'lineId'      => (int) $line->getId(),
                     'variantId'   => $variantId,
                     'sku'         => $r['var_sku'] ?? '',
                     'productName' => ($r['name_cur'] ?: null) ?? ($r['name_any'] ?: null) ?? '',
@@ -1269,7 +1332,14 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                 ];
             }
         }
-        return $items;
+
+        return $this->checkoutExtend('meliscommerce_react_checkout_basket_items', [
+            'countryId'     => $countryId,
+            'clientId'      => $clientId,
+            'clientGroupId' => $groupId,
+            'basket'        => $basket,
+            'items'         => $items,
+        ]);
     }
 
     // Without this, the basket happily stores any quantity typed in the React wizard (Mantis
@@ -1301,7 +1371,10 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             if (!$variantId) return $this->jsonResponse(['success' => false, 'error' => 'Missing variantId'], 400);
 
             $quantity = $this->clampToStock($variantId, (int) ($state['countryId'] ?? -1), $quantity);
-            $this->getServiceManager()->get('MelisComBasketService')->addVariantToBasket($variantId, $quantity, $clientId);
+            $extra    = isset($b['extra']) && $b['extra'] !== '' ? (string) $b['extra'] : null;
+            if (!$this->checkoutBasketWrite('add', $variantId, $quantity, $clientId, $extra)) {
+                $this->getServiceManager()->get('MelisComBasketService')->addVariantToBasket($variantId, $quantity, $clientId);
+            }
             return $this->ok(['items' => $this->basketItems()]);
         } catch (\Throwable $e) { return $this->err($e); }
     }
@@ -1322,7 +1395,10 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             if (!$variantId) return $this->jsonResponse(['success' => false, 'error' => 'Missing variantId'], 400);
 
             $quantity = $this->clampToStock($variantId, (int) ($state['countryId'] ?? -1), $quantity);
-            $this->getServiceManager()->get('MelisComBasketService')->removeVariantFromBasket($variantId, $quantity, $clientId);
+            $extra    = isset($b['extra']) && $b['extra'] !== '' ? (string) $b['extra'] : null;
+            if (!$this->checkoutBasketWrite('setQty', $variantId, $quantity, $clientId, $extra)) {
+                $this->getServiceManager()->get('MelisComBasketService')->removeVariantFromBasket($variantId, $quantity, $clientId);
+            }
             return $this->ok(['items' => $this->basketItems()]);
         } catch (\Throwable $e) { return $this->err($e); }
     }
@@ -1340,7 +1416,10 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             $variantId = (int) ($b['variantId'] ?? 0);
             if (!$variantId) return $this->jsonResponse(['success' => false, 'error' => 'Missing variantId'], 400);
 
-            $this->getServiceManager()->get('MelisComBasketService')->removeVariantFromBasket($variantId, 0, $clientId);
+            $extra = isset($b['extra']) && $b['extra'] !== '' ? (string) $b['extra'] : null;
+            if (!$this->checkoutBasketWrite('remove', $variantId, 0, $clientId, $extra)) {
+                $this->getServiceManager()->get('MelisComBasketService')->removeVariantFromBasket($variantId, 0, $clientId);
+            }
             return $this->ok(['items' => $this->basketItems()]);
         } catch (\Throwable $e) { return $this->err($e); }
     }

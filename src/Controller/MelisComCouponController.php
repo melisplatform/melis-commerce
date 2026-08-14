@@ -589,13 +589,16 @@ class MelisComCouponController extends MelisAbstractActionController
     
     public function getCouponClientDataAction()
     {
+        if (!$this->hasAccess('meliscommerce_coupon_list_page')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $success = 0;
         $colId = array();
         $dataCount = 0;
         $draw = 0;
         $tableData = array();
         $couponId = null;
-        
+
         $langId = $this->getTool()->getCurrentLocaleID();
         $clientTable = $this->getServiceManager()->get('MelisEcomClientTable');
         $clientSvc = $this->getServiceManager()->get('MelisComClientService');
@@ -675,6 +678,9 @@ class MelisComCouponController extends MelisAbstractActionController
 
     public function getAssignedCouponClientDataAction()
     {
+        if (!$this->hasAccess('meliscommerce_coupon_list_page')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $success = 0;
         $colId = array();
         $dataCount = 0;
@@ -682,7 +688,7 @@ class MelisComCouponController extends MelisAbstractActionController
         $tableData = array();
         $couponId = null;
         $dataFiltered = 0;
-    
+
         $langId = $this->getTool()->getCurrentLocaleID();
         $clientTable = $this->getServiceManager()->get('MelisEcomClientTable');
         $clientSvc = $this->getServiceManager()->get('MelisComClientService');
@@ -756,6 +762,9 @@ class MelisComCouponController extends MelisAbstractActionController
     
     public function getCouponProductDataAction()
     {
+        if (!$this->hasAccess('meliscommerce_coupon_list_page')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $success = 0;
         $colId = array();
         $dataCount = 0;
@@ -763,8 +772,8 @@ class MelisComCouponController extends MelisAbstractActionController
         $tableData = array();
         $couponId = null;
         $dataFiltered = 0;
-        
-        if($this->getRequest()->isPost()) 
+
+        if($this->getRequest()->isPost())
         {
             $success = 0;
             $prodTable = $this->getServiceManager()->get('MelisEcomProductTable');
@@ -913,12 +922,15 @@ class MelisComCouponController extends MelisAbstractActionController
      */
     public function couponClientManagementAction()
     {
+        if (!$this->hasAccess('meliscommerce_coupon_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $response = array();
         $success = false;
         $errors  = array();
         $data = array();
         $couponId = null;
-        
+
         $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_coupon_save_fail');
         $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_coupon_page');
         $this->getEventManager()->trigger('meliscommerce_coupon_client_management_start', $this, array());
@@ -966,12 +978,15 @@ class MelisComCouponController extends MelisAbstractActionController
      */
     public function couponProductManagementAction()
     {
+        if (!$this->hasAccess('meliscommerce_coupon_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $response = array();
         $success = false;
         $errors  = array();
         $data = array();
         $couponId = null;
-        
+
         $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_coupon_save_fail');
         $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_coupon_page');
         $this->getEventManager()->trigger('meliscommerce_coupon_client_management_start', $this, array());
@@ -1024,7 +1039,9 @@ class MelisComCouponController extends MelisAbstractActionController
      */
     public function saveCouponDataAction()
     {
-
+        if (!$this->hasAccess('meliscommerce_coupon_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $response = array();
         $success = 0;
         $errors  = array();
@@ -1185,7 +1202,10 @@ class MelisComCouponController extends MelisAbstractActionController
     }
     
     public function deleteAssignedCouponAction()
-    {   
+    {
+        if (!$this->hasAccess('meliscommerce_coupon_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $response = array();
         $success = 0;
         $errors  = array();
@@ -1339,12 +1359,18 @@ class MelisComCouponController extends MelisAbstractActionController
     private function str_without_accents($str, $charset='utf-8')
     {
         $str = htmlentities($str, ENT_NOQUOTES, $charset);
-    
+
         $str = preg_replace('#&([A-za-z])(?:acute|cedil|caron|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);
         $str = preg_replace('#&([A-za-z]{2})(?:lig);#', '\1', $str); // pour les ligatures e.g. '&oelig;'
         $str = preg_replace('#&[^;]+;#', '', $str); // supprime les autres caractères
-    
+
         return $str;   // or add this : mb_strtoupper($str); for uppercase :)
+    }
+
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
     }
     
 

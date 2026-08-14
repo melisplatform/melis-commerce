@@ -17,6 +17,12 @@ use MelisCore\Controller\MelisAbstractActionController;
 
 class MelisComAssociateVariantController extends MelisAbstractActionController
 {
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
+    }
+
     private function getPrefix()
     {
         $variantId = (int) $this->params()->fromQuery('variantId', '');
@@ -158,6 +164,9 @@ class MelisComAssociateVariantController extends MelisAbstractActionController
     
     public function getProductListAction()
     {
+        if (! $this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $draw = 0;
         $dataCount = 0;
         $tableData = array();
@@ -288,6 +297,9 @@ class MelisComAssociateVariantController extends MelisAbstractActionController
 
     public function getVariantsListAction()
     {
+        if (! $this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $variantsTable = $this->getServiceManager()->get('MelisEcomVariantTable');
 
         $colId = array();
@@ -384,6 +396,9 @@ class MelisComAssociateVariantController extends MelisAbstractActionController
 
     public function getAssocVariantListAction()
     {
+        if (! $this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $variantsTable = $this->getServiceManager()->get('MelisEcomAssocVariantTable');
 
         $colId = array();
@@ -469,6 +484,10 @@ class MelisComAssociateVariantController extends MelisAbstractActionController
 
     public function assignVariantAction()
     {
+        /** @INFO: Access check (tool right) — CWE-862 */
+        if (! $this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $variantAssId = null;
         $success = 0;
         $textTitle = 'tr_meliscommerce_assoc_var_assoc_title';
@@ -520,6 +539,10 @@ class MelisComAssociateVariantController extends MelisAbstractActionController
 
     public function removeAssociationAction()
     {
+        /** @INFO: Access check (tool right) — CWE-862 */
+        if (! $this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $variantAssId = null;
         $success = 0;
         $textTitle = 'tr_meliscommerce_assoc_var_remove_title';

@@ -149,6 +149,9 @@ class MelisComLanguageController extends MelisAbstractActionController
     
     public function getComLangDataAction()
     {
+        if (!$this->hasAccess('meliscommerce_language_list_container')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
 
         $colId = array();
@@ -225,6 +228,9 @@ class MelisComLanguageController extends MelisAbstractActionController
     }
     public function getAllComLangDataAction()
     {
+        if (!$this->hasAccess('meliscommerce_language_list_container')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
 
         $colId = array();
@@ -283,6 +289,9 @@ class MelisComLanguageController extends MelisAbstractActionController
     
     public function saveAction()
     {
+        if (!$this->hasAccess('meliscommerce_language_list_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $success = 0;
         $errors  = array();
         $langId = null;
@@ -414,6 +423,9 @@ class MelisComLanguageController extends MelisAbstractActionController
     
     public function deleteAction()
     {
+        if (!$this->hasAccess('meliscommerce_language_list_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $response = array();
         $this->getEventManager()->trigger('meliscommerce_language_delete_start', $this, $response);
         $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
@@ -450,17 +462,9 @@ class MelisComLanguageController extends MelisAbstractActionController
         return new JsonModel($response);
     }
     
-//     private function hasAccess($key = 'meliscommerce_currency_lists')
-//     {
-//         $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
-//         $melisCoreRights = $this->getServiceManager()->get('MelisCoreRights');
-//         $xmlRights = $melisCoreAuth->getAuthRights();
-        
-//         $isAccessible = $melisCoreRights->isAccessible($xmlRights, MelisCoreRightsService::MELISCORE_PREFIX_TOOLS, $key);
-        
-//         return $isAccessible;
-//     }
-
-
-    
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
+    }
 }
