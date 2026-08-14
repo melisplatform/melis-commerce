@@ -260,6 +260,9 @@ class MelisComDocumentController extends MelisAbstractActionController
 
     public function saveDocumentAction()
     {
+        if (!$this->hasAccess($this->docRelationKey())) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $documentId = null;
         $success = 0;
         $responseData = array();
@@ -518,6 +521,9 @@ class MelisComDocumentController extends MelisAbstractActionController
 
     public function getDocFilesAction()
     {
+        if (!$this->hasAccess($this->docRelationKey())) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $success = 0;
         $files = array();
 
@@ -546,6 +552,9 @@ class MelisComDocumentController extends MelisAbstractActionController
 
     public function getDocImagesAction()
     {
+        if (!$this->hasAccess($this->docRelationKey())) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $success = 0;
         $files = array();
         $id = null;
@@ -613,6 +622,9 @@ class MelisComDocumentController extends MelisAbstractActionController
 
     public function deleteAction()
     {
+        if (!$this->hasAccess($this->docRelationKey())) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $id = null;
         $success = 0;
         $textTitle = 'tr_meliscommerce_documents_Documents';
@@ -675,6 +687,9 @@ class MelisComDocumentController extends MelisAbstractActionController
 
     public function addImageTypeAction()
     {
+        if (!$this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $docTypeId = null;
         $success = 0;
         $errors = array();
@@ -752,6 +767,9 @@ class MelisComDocumentController extends MelisAbstractActionController
 
     public function addFileTypeAction()
     {
+        if (!$this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $docTypeId = null;
         $success = 0;
         $errors = array();
@@ -1017,6 +1035,9 @@ class MelisComDocumentController extends MelisAbstractActionController
 
     public function testAction()
     {
+        if (!$this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $test = 'Pants_icon_57ea5d3489096.png';
         echo $this->renameIfDuplicateName('real deal');
         die;
@@ -1024,6 +1045,9 @@ class MelisComDocumentController extends MelisAbstractActionController
 
     public function sessionsAction()
     {
+        if (!$this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $container = new Container('meliscommerce');
         //unset($container->platforms);
         print '<pre>';
@@ -1036,6 +1060,9 @@ class MelisComDocumentController extends MelisAbstractActionController
 
     public function clearSessionAction()
     {
+        if (!$this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $container = new Container('meliscommerce');
         $container->getManager()->destroy();
 
@@ -1055,8 +1082,25 @@ class MelisComDocumentController extends MelisAbstractActionController
         ));
     }
 
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
+    }
 
-
+    /** @INFO: map a document relation type to its tool rights key (CWE-862). */
+    private function docRelationKey()
+    {
+        $t = (string) $this->getRequest()->getPost('docRelationType', $this->getRequest()->getQuery('docRelationType', ''));
+        $map = [
+            'product' => 'meliscommerce_product_list_container',
+            'variant' => 'meliscommerce_product_list_container',
+            'category'=> 'meliscommerce_categories_page',
+            'order'   => 'meliscommerce_order_list_page',
+            'client'  => 'meliscommerce_clients_list_page',
+        ];
+        return $map[$t] ?? 'meliscommerce_product_list_container';
+    }
 
 
 }

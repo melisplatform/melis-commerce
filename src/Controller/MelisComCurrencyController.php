@@ -140,6 +140,9 @@ class MelisComCurrencyController extends MelisAbstractActionController
     
     public function getComCurrencyDataAction()
     {
+        if (!$this->hasAccess('meliscommerce_currency_conf')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $currencyTable = $this->getServiceManager()->get('MelisEcomCurrencyTable');
         
         $colId = array();
@@ -218,6 +221,9 @@ class MelisComCurrencyController extends MelisAbstractActionController
     
     public function saveAction()
     {
+        if (!$this->hasAccess('meliscommerce_currency_conf')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $success = 0;
         $errors  = array();
         $curId = null;
@@ -325,6 +331,9 @@ class MelisComCurrencyController extends MelisAbstractActionController
     
     public function deleteAction()
     {
+        if (!$this->hasAccess('meliscommerce_currency_conf')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $this->getEventManager()->trigger('meliscommerce_currency_delete_start', $this, array());
         $currencyTable = $this->getServiceManager()->get('MelisEcomCurrencyTable');
         $textMessage = 'tr_meliscommerce_currency_delete_failed';
@@ -361,6 +370,9 @@ class MelisComCurrencyController extends MelisAbstractActionController
     
     public function setDefaultCurrencyAction()
     {
+        if (!$this->hasAccess('meliscommerce_currency_conf')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $this->getEventManager()->trigger('meliscommerce_currency_set_default_start', $this, array());
         $currencyTable = $this->getServiceManager()->get('MelisEcomCurrencyTable');
         $textMessage = 'tr_meliscommerce_currency_set_default_failed';
@@ -433,6 +445,9 @@ class MelisComCurrencyController extends MelisAbstractActionController
      */
     public function getCountriesUsingCurrencyAction()
     {
+        if (!$this->hasAccess('meliscommerce_currency_conf')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $currencyId = $this->params()->fromPost('currencyId', null);
 
         $currencyTable = $this->getServiceManager()->get('MelisComCurrencyService');
@@ -443,5 +458,11 @@ class MelisComCurrencyController extends MelisAbstractActionController
         );
 
         return new JsonModel($response);
+    }
+
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
     }
 }

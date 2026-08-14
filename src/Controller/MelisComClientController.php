@@ -19,7 +19,13 @@ use MelisCore\Controller\MelisAbstractActionController;
 class MelisComClientController extends MelisAbstractActionController
 {
     const PLUGIN_INDEX = 'meliscommerce';
-    
+
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
+    }
+
     /**
      * Render Client Page
      * 
@@ -47,6 +53,9 @@ class MelisComClientController extends MelisAbstractActionController
      */
     public function getAccountNameAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
         
         $success = 0;
@@ -864,8 +873,11 @@ class MelisComClientController extends MelisAbstractActionController
         */
     public function addClientAddressAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
-        
+
         $success = 0;
         $textTitle = $translator->translate('tr_meliscommerce_clients_add_contact_address');
         $textMessage = '';
@@ -1089,6 +1101,9 @@ class MelisComClientController extends MelisAbstractActionController
         */
     public function saveClientAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $success = 0;
         $textTitle = 'tr_meliscommerce_clients_common_label_client';
         $textMessage = '';
@@ -1211,11 +1226,14 @@ class MelisComClientController extends MelisAbstractActionController
         */
     public function validateClientAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $success = 0;
         $errors = array();
-        
+
         $request = $this->getRequest();
-        
+
         $clientData = array();
         
         if($request->isPost())
@@ -1300,8 +1318,11 @@ class MelisComClientController extends MelisAbstractActionController
         */
     public function validateClientContactsAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
-        
+
         $success = 0;
         $errors = array();
 
@@ -1357,6 +1378,9 @@ class MelisComClientController extends MelisAbstractActionController
         */
     public function validateClientCompanyAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
 
         $success = 0;
@@ -1530,13 +1554,16 @@ class MelisComClientController extends MelisAbstractActionController
         */
     public function validateClientAddressesAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
-        
+
         $success = 0;
         $errors = array();
-        
+
         $request = $this->getRequest();
-        
+
         $clientAddressesData = array();
         
         if($request->isPost())
@@ -1617,8 +1644,11 @@ class MelisComClientController extends MelisAbstractActionController
         */
     public function deleteClientAddressesAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
-        
+
         $success = 0;
         $errors = array();
         $clientAddressesIds = null;
@@ -1693,6 +1723,9 @@ class MelisComClientController extends MelisAbstractActionController
 
     public function deleteClientPersonEmailAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
         $success = 0;
         $errors = [];
@@ -1777,6 +1810,9 @@ class MelisComClientController extends MelisAbstractActionController
      */
     public function deleteAccountAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $accountId = $this->getRequest()->getPost('accountId', '');
         $success = 0;
         $error = [];
@@ -1811,6 +1847,9 @@ class MelisComClientController extends MelisAbstractActionController
      */
     public function linkAccountContactAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $accountId = $this->getRequest()->getPost('accountId', '');
         $contactId = $this->getRequest()->getPost('contactId', '');
 
@@ -1879,6 +1918,9 @@ class MelisComClientController extends MelisAbstractActionController
      */
     public function unlinkAccountContactAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $accountId = $this->getRequest()->getPost('accountId', '');
         $contactId = $this->getRequest()->getPost('contactId', '');
 
@@ -1936,6 +1978,9 @@ class MelisComClientController extends MelisAbstractActionController
      */
     public function getAccountContactListAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $dataCount = 0;
         $draw = 1;
         $tableData = array();
@@ -2031,6 +2076,9 @@ class MelisComClientController extends MelisAbstractActionController
      */
     public function updateDefaultContactAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $car_default_client = $this->getRequest()->getPost('car_default_person', 0);
         $carId = $this->getRequest()->getPost('carId', '');
         $accountId = $this->getRequest()->getPost('accountId', '');
@@ -2077,6 +2125,9 @@ class MelisComClientController extends MelisAbstractActionController
      */
     public function validateAccountsImportsFormAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $success = 0;
         $errors = [];
         $message = '';
@@ -2129,6 +2180,9 @@ class MelisComClientController extends MelisAbstractActionController
 
     public function importAccountsAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $success = 0;
         $message = 'tr_meliscommerce_accounts_import';
         $title = 'tr_meliscommerce_contact_import_title';
@@ -2196,6 +2250,9 @@ class MelisComClientController extends MelisAbstractActionController
 
     public function testImportAccountsAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $success = 0;
         $message = 'tr_meliscommerce_accounts_import';
         $title = 'tr_meliscommerce_contact_import_title';

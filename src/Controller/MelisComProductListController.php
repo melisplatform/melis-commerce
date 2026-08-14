@@ -17,6 +17,12 @@ use MelisCommerce\Model\Product;
 
 class MelisComProductListController extends MelisAbstractActionController
 {
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
+    }
+
     /**
      * Product List Page Container
      */
@@ -160,6 +166,9 @@ class MelisComProductListController extends MelisAbstractActionController
      */
     public function getProductsListAction()
     {
+        if (! $this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $success = 0;
         $prodSvc = $this->getServiceManager()->get('MelisComProductService');
         $categorySvc = $this->getServiceManager()->get('MelisComCategoryService');
@@ -300,6 +309,10 @@ class MelisComProductListController extends MelisAbstractActionController
 
     public function getToolTipAction()
     {
+        /** @INFO: Access check (tool right) — CWE-862 */
+        if (! $this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['content' => []]);
+        }
         $content = array();
 
         if ($this->getRequest()->isPost()) {

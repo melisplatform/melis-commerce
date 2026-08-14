@@ -106,6 +106,9 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
      */
     public function orderCheckoutSetCountryAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
 
         $request = $this->getRequest();
@@ -282,6 +285,9 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
      */
     public function getProductListAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $draw = $this->getRequest()->getPost('draw');
         $dataCount = array();
         $tableData = array();
@@ -450,6 +456,9 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
      */
     public function addBasketAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
 
         $translator = $this->getServiceManager()->get('translator');
 
@@ -775,6 +784,9 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
      */
     public function getContactListAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $draw = 0;
         $tableData = array();
         $dataCount = 0;
@@ -934,6 +946,9 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
      */
     public function getContactAccountListAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $dataCount = 0;
         $draw = 0;
         $tableData = array();
@@ -1077,6 +1092,9 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         */
     public function selectContactAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
 
         $request = $this->getRequest();
@@ -1135,6 +1153,9 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
      */
     public function selectContactAccountAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
 
         $request = $this->getRequest();
@@ -1449,6 +1470,9 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         */
     public function selectAddressesAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $container = new Container('meliscommerce');
         $translator = $this->getServiceManager()->get('translator');
         $request = $this->getRequest();
@@ -1931,6 +1955,9 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         */
     public function confirmOrderCheckoutSummaryAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
 
         $request = $this->getRequest();
@@ -2151,6 +2178,9 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
     public function removeContactAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
 
         $request = $this->getRequest();
@@ -2354,6 +2384,12 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         $view->result = $result;
         $view->activateTab = $activateTab;
         return $view;
+    }
+
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
     }
 
     private function getTool()

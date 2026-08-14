@@ -283,6 +283,9 @@ class MelisComOrderStatusController extends MelisAbstractActionController
 
     public function getOrderStatusDataAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_status_tool_page')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $success = 0;
         $dataCount = 0;
         $dataFilter = 0;
@@ -368,6 +371,9 @@ class MelisComOrderStatusController extends MelisAbstractActionController
     
     public function saveOrderStatusAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_status_tool_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $response = array();
         $success = 0;
         $errors  = array();
@@ -550,6 +556,9 @@ class MelisComOrderStatusController extends MelisAbstractActionController
      */
     public function deleteOrderStatusAction()
     {
+        if (!$this->hasAccess('meliscommerce_order_status_tool_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $response = array();
         $success = 0;
         $errors  = array();
@@ -583,6 +592,12 @@ class MelisComOrderStatusController extends MelisAbstractActionController
         return new JsonModel($response);
     }
     
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
+    }
+
     /**
      * Returns the Tool Service Class
      * @return MelisCoreTool

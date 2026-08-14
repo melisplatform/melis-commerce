@@ -16,6 +16,12 @@ use MelisCore\Controller\MelisAbstractActionController;
 
 class MelisComAttributeListController extends MelisAbstractActionController
 {
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
+    }
+
     /**
      * renders the attribute list page container
      * @return \Laminas\View\Model\ViewModel
@@ -189,6 +195,9 @@ class MelisComAttributeListController extends MelisAbstractActionController
      */
     public function getAttributeListDataAction()
     {
+        if (!$this->hasAccess('meliscommerce_attribute_list_page')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $success = 0;
         $colId = array();
         $dataCount = 0;
@@ -279,6 +288,9 @@ class MelisComAttributeListController extends MelisAbstractActionController
     
     public function deleteAttributeAction()
     {
+        if (!$this->hasAccess('meliscommerce_attribute_list_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $response = array();
         $success = false;
         $errors  = array();

@@ -10,6 +10,12 @@ use MelisCore\Controller\MelisAbstractActionController;
 
 class MelisComClientsGroupController extends MelisAbstractActionController
 {
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
+    }
+
     /**
      * @return ViewModel
      */
@@ -164,6 +170,9 @@ class MelisComClientsGroupController extends MelisAbstractActionController
      */
     public function getClientsGroupListAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_group_tool_container')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $clientGroupService = $this->getServiceManager()->get('MelisComClientGroupsService');
 
         $colId = [];
@@ -229,6 +238,9 @@ class MelisComClientsGroupController extends MelisAbstractActionController
      */
     public function saveClientsGroupAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_group_tool_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $success = 0;
         $message = 'tr_meliscommerce_clients_group_save_ko';
         $textTitle = 'tr_meliscommerce_clients_group';
@@ -280,6 +292,9 @@ class MelisComClientsGroupController extends MelisAbstractActionController
      */
     public function deleteClientsGroupAction()
     {
+        if (!$this->hasAccess('meliscommerce_clients_group_tool_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $success = 0;
         $message = 'tr_meliscommerce_clients_group_delete_ko';
         $textTitle = 'tr_meliscommerce_clients_group';

@@ -292,6 +292,9 @@ class MelisComSettingsController extends MelisAbstractActionController
      */
     public function saveSettingsAction()
     {
+        if (!$this->hasAccess('meliscommerce_settings_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $response = array();
         $success = 0;
         $errors  = array();
@@ -561,5 +564,11 @@ class MelisComSettingsController extends MelisAbstractActionController
         $view->melisKey = $melisKey;
         $view->accountForm = $accountForm;
         return $view;
+    }
+
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
     }
 }

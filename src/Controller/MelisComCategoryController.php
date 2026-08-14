@@ -19,6 +19,12 @@ class MelisComCategoryController extends MelisAbstractActionController
     const PLUGIN_INDEX = 'meliscommerce';
     const TOOL_KEY = 'meliscommerce_categories';
 
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
+    }
+
 
     /**
      * Render Category Page Zone
@@ -437,6 +443,9 @@ class MelisComCategoryController extends MelisAbstractActionController
      * @return \Laminas\View\Model\JsonModel
      */
     public function saveCategoryAction(){
+        if (!$this->hasAccess('meliscommerce_categories_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
 
         $translator = $this->getServiceManager()->get('translator');
 
@@ -536,6 +545,9 @@ class MelisComCategoryController extends MelisAbstractActionController
      * @return \Laminas\View\Model\JsonModel
      */
     public function getCategoryAction(){
+        if (!$this->hasAccess('meliscommerce_categories_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
 
         $translator = $this->getServiceManager()->get('translator');
 
@@ -723,6 +735,9 @@ class MelisComCategoryController extends MelisAbstractActionController
      * @return \Laminas\View\Model\JsonModel
      */
     public function getCategoryCountriesAction(){
+        if (!$this->hasAccess('meliscommerce_categories_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
 
         $success = 0;
@@ -768,6 +783,9 @@ class MelisComCategoryController extends MelisAbstractActionController
      * @return \Laminas\View\Model\JsonModel
      */
     public function validateCategoryTranslationsAction(){
+        if (!$this->hasAccess('meliscommerce_categories_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
 
         $translator = $this->getServiceManager()->get('translator');
 
@@ -882,6 +900,9 @@ class MelisComCategoryController extends MelisAbstractActionController
      * @return \Laminas\View\Model\JsonModel
      */
     public function validateCategorySeoAction(){
+        if (!$this->hasAccess('meliscommerce_categories_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
 
         $request = $this->getRequest();
         $postValues = $this->getRequest()->getPost()->toArray();
@@ -899,6 +920,9 @@ class MelisComCategoryController extends MelisAbstractActionController
      * @return \Laminas\View\Model\JsonModel
      */
     public function deleteCategoryAction(){
+        if (!$this->hasAccess('meliscommerce_categories_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
 
         $translator = $this->getServiceManager()->get('translator');
 
@@ -973,6 +997,9 @@ class MelisComCategoryController extends MelisAbstractActionController
      * @return \Laminas\View\Model\JsonModel
      */
     public function reOrderCategoryProductsAction(){
+        if (!$this->hasAccess('meliscommerce_categories_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
 
         $request = $this->getRequest();
@@ -1020,6 +1047,9 @@ class MelisComCategoryController extends MelisAbstractActionController
      * @return \Laminas\View\Model\JsonModel
      */
     public function removeCategoryProductAction(){
+        if (!$this->hasAccess('meliscommerce_categories_page')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
 
         $request = $this->getRequest();
@@ -1133,6 +1163,9 @@ class MelisComCategoryController extends MelisAbstractActionController
      * @return \Laminas\View\Model\JsonModel
      */
     public function getCategoryProductListAction(){
+        if (!$this->hasAccess('meliscommerce_categories_page')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
 
         $colId = array();
         $dataCount = 0;
@@ -1250,6 +1283,9 @@ class MelisComCategoryController extends MelisAbstractActionController
 
     public function productsExportToCsvAction()
     {
+        if (!$this->hasAccess('meliscommerce_categories_page')) {
+            return new JsonModel(['success' => 0]);
+        }
         $catId = $this->params()->fromQuery('catId');
 
         // Getting Current Langauge ID

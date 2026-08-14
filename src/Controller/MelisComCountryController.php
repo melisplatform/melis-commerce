@@ -150,6 +150,9 @@ class MelisComCountryController extends MelisAbstractActionController
     
     public function getComCountryDataAction()
     {
+        if (!$this->hasAccess('meliscommerce_country_list_container')) {
+            return new JsonModel(['draw' => (int) $this->getRequest()->getPost('draw', 0), 'recordsTotal' => 0, 'recordsFiltered' => 0, 'data' => []]);
+        }
         $ctryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
         $currencyTable = $this->getServiceManager()->get('MelisEcomCurrencyTable');
 
@@ -243,7 +246,9 @@ class MelisComCountryController extends MelisAbstractActionController
     
     public function testAction()
     {
-        
+        if (!$this->hasAccess('meliscommerce_country_list_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         echo $this->getCountryCurrency(6);
         die;
     }
@@ -260,6 +265,9 @@ class MelisComCountryController extends MelisAbstractActionController
     }
     public function saveAction()
     {
+        if (!$this->hasAccess('meliscommerce_country_list_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $success = 0;
         $errors  = array();
         $ctryId = null;
@@ -378,6 +386,9 @@ class MelisComCountryController extends MelisAbstractActionController
     
     public function deleteAction()
     {
+        if (!$this->hasAccess('meliscommerce_country_list_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $response = array();
         $this->getEventManager()->trigger('meliscommerce_country_delete_start', $this, $response);
         $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
@@ -413,17 +424,9 @@ class MelisComCountryController extends MelisAbstractActionController
         return new JsonModel($response);
     }
     
-//     private function hasAccess($key = 'meliscommerce_currency_lists')
-//     {
-//         $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
-//         $melisCoreRights = $this->getServiceManager()->get('MelisCoreRights');
-//         $xmlRights = $melisCoreAuth->getAuthRights();
-        
-//         $isAccessible = $melisCoreRights->isAccessible($xmlRights, MelisCoreRightsService::MELISCORE_PREFIX_TOOLS, $key);
-        
-//         return $isAccessible;
-//     }
-
-
-    
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
+    }
 }

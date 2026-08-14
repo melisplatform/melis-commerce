@@ -19,6 +19,12 @@ use MelisCore\Controller\MelisAbstractActionController;
  */
 class MelisComPrdVarDuplicationController extends MelisAbstractActionController
 {
+    /** @INFO: Tool access check (CWE-862). */
+    private function hasAccess($key)
+    {
+        return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
+    }
+
     /**
      * Render Duplicate button on Product list
      * @return \Laminas\View\Model\ViewModel
@@ -136,8 +142,12 @@ class MelisComPrdVarDuplicationController extends MelisAbstractActionController
      */
     public function duplicateVariantAction()
     {
+        /** @INFO: Access check (tool right) — CWE-862 */
+        if (! $this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
-        
+
         $varId = null;
         $success = 0;
         $textTitle = 'tr_meliscommerce_duplication_Duplicate_variant';
@@ -238,8 +248,12 @@ class MelisComPrdVarDuplicationController extends MelisAbstractActionController
      */
     public function duplicateProductAction()
     {
+        /** @INFO: Access check (tool right) — CWE-862 */
+        if (! $this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $translator = $this->getServiceManager()->get('translator');
-        
+
         $prdId = null;
         $success = 0;
         $textTitle = 'tr_meliscommerce_duplication_Duplicate_product';
@@ -341,6 +355,10 @@ class MelisComPrdVarDuplicationController extends MelisAbstractActionController
      */
     public function validateVariantDataAction()
     {
+        /** @INFO: Access check (tool right) — CWE-862 */
+        if (! $this->hasAccess('meliscommerce_product_list_container')) {
+            return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
+        }
         $request = $this->getRequest();
         $data = $this->getRequest()->getPost()->toArray();
         $data = $this->getTool()->sanitizeRecursive($data);
