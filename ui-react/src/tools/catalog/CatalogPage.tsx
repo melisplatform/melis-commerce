@@ -6,7 +6,7 @@ import {
 } from './api'
 import { DICT } from './dict'
 import CatalogTree from './CatalogTree'
-import { makeT } from '../../shared/i18n'
+import { makeT, currentLang } from '../../shared/i18n'
 import { DatePicker } from '../../shared/DatePicker'
 import { card, inputCss, btnPrimary, btnGhost, label, hint } from '../../shared/styles'
 import { PlusIcon, PencilIcon, TrashIcon, LayoutIcon, TagIcon, FileTextIcon, MapPinIcon, CartIcon, GripIcon, SettingsIcon, GlobeIcon, PercentIcon } from '../../shared/icons'
@@ -17,7 +17,7 @@ import { useCaps } from '../../shared/useCaps'
 import { useIsNarrow } from '../../shared/useIsNarrow'
 import { usePointerDrag } from '../../shared/usePointerDrag'
 import type { Option } from '../../shared/api'
-import { useExternalBrickComponent } from '../../shared/externalBricks'
+import { useExternalBrickComponent, useExternalBrickValue } from '../../shared/externalBricks'
 import { FormErrorBanner, type FormIssue } from '../../shared/melis-form-errors'
 
 /* Brique « Catalogues / Catégories » (MelisCommerce) — arbre full React (drag-and-drop) +
@@ -204,9 +204,11 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
   const { can, loaded: capsLoaded } = useCaps(TOOL_MELIS_KEY)
   // Onglet apporté par une brique optionnelle : n'existe que si MelisCommerceGroupDiscount-
   // PerCategory est actif (voir shared/externalBricks.ts) — melis-commerce ignore tout des
-  // réductions par groupe de clients. Équivalent React de l'onglet legacy
-  // `meliscommerce_categories_category_tab_price_discount` injecté par ce module.
+  // réductions par groupe de clients, y compris son LIBELLÉ (lu dynamiquement sur la brique,
+  // pas dupliqué dans ce dictionnaire) : ce module ship son texte à 100% de son côté. Équivalent
+  // React de l'onglet legacy `meliscommerce_categories_category_tab_price_discount` injecté par ce module.
   const DiscountTabComp = useExternalBrickComponent<{ categoryId: number }>('MelisCommerceGroupDiscountPerCategoryBrick', 'CategoryDiscountTab')
+  const DiscountTabLabel = useExternalBrickValue<{ fr: string; en: string }>('MelisCommerceGroupDiscountPerCategoryBrick', 'tabLabel')
   const narrow = useIsNarrow()
   const isEdit = sel.mode === 'edit'
   const isCatalog = sel.mode === 'new-catalog' || (sel.mode === 'edit' && sel.type === 'catalog')
@@ -264,7 +266,7 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
     { key: 'seo',        label: t('tab_seo'),        icon: <TagIcon /> },
     { key: 'products',   label: t('tab_products'),   icon: <CartIcon />, disabled: !isEdit },
     // Les réductions se rattachent à une catégorie existante → indisponible en création.
-    ...(DiscountTabComp ? [{ key: 'price_discount', label: t('tab_price_discount'), icon: <PercentIcon />, disabled: !isEdit }] : []),
+    ...(DiscountTabComp && DiscountTabLabel ? [{ key: 'price_discount', label: DiscountTabLabel[currentLang()], icon: <PercentIcon />, disabled: !isEdit }] : []),
   ].filter((tb) => can(tb.key))
 
   // Si l'onglet actif vient d'être retiré par les droits, basculer sur le premier autorisé.
