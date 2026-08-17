@@ -1,6 +1,6 @@
 import { useState, type CSSProperties, type ReactNode } from 'react'
 import { card, vmBtn, btnGhost } from './styles'
-import { MelisMIcon, LayoutIcon } from './icons'
+import { CodeIcon, LayoutIcon } from './icons'
 import { currentLang } from './i18n'
 import type { T } from './i18n'
 import { useIsNarrow } from './useIsNarrow'
@@ -47,7 +47,7 @@ export function ViewModeToggle({ mode, onReact, onOld }: { mode: 'react' | 'old'
   const narrow = useIsNarrow(480)
   return (
     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, borderRadius: 10, border: '1px solid var(--color-border)', background: 'var(--color-muted,rgba(0,0,0,.04))', padding: 4, flexShrink: 0 }}>
-      <button style={vmBtn(mode === 'react')} onClick={onReact} title={isFr ? 'Nouveau' : 'New'}><MelisMIcon />{!narrow && (isFr ? 'Nouveau' : 'New')}</button>
+      <button style={vmBtn(mode === 'react')} onClick={onReact} title={isFr ? 'Nouveau' : 'New'}><CodeIcon />{!narrow && (isFr ? 'Nouveau' : 'New')}</button>
       <button style={vmBtn(mode === 'old')} onClick={onOld} title={isFr ? 'Ancien' : 'Old'}><LayoutIcon />{!narrow && (isFr ? 'Ancien' : 'Old')}</button>
     </div>
   )
