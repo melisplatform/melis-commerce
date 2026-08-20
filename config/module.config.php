@@ -61,6 +61,29 @@ return [
                 ],
             ],
             'melis-front' => [
+                // Modularity: MelisCommerce must not depend on MelisFront being active. This
+                // module previously only contributed 'child_routes' here, assuming MelisFront's
+                // own module.config.php (see vendor/melisplatform/melis-front/config/module.config.php)
+                // had already defined 'type' for this same top-level route key. If MelisFront is
+                // inactive, Laminas's TreeRouteStack throws "Missing 'type' option" while building
+                // the Router service -- before Melis's own error handling exists -- turning EVERY
+                // route (login included) into a silent empty response. Duplicating MelisFront's own
+                // 'type'/'options'/'may_terminate' here makes this module self-sufficient on its
+                // own; when MelisFront IS also active, both sides merge with identical values for
+                // these keys, so nothing is corrupted (Mantis #0010921).
+                'type'    => 'Regex',
+                'options' => [
+                    'regex' => '.*/id/(?<idpage>[0-9]+)',
+                    'defaults' => [
+                        'controller' => 'MelisFront\Controller\Index',
+                        'action' => 'index',
+                        'renderType' => 'melis_zf2_mvc',
+                        'renderMode' => 'front',
+                        'preview' => false,
+                    ],
+                    'spec' => '%idpage'
+                ],
+                'may_terminate' => true,
                 'child_routes' => [
                     'melis_front_commerce_category' => [
                         'type'    => 'regex',

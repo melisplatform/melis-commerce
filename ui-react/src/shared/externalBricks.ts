@@ -9,18 +9,27 @@ import type { ComponentType } from 'react'
  * référence qu'un nom de global + une clé.
  */
 export function useExternalBrickComponent<P extends object>(globalName: string, key: string): ComponentType<P> | null {
-  const read = () => ((window as unknown as Record<string, Record<string, unknown>>)[globalName]?.[key] as ComponentType<P>) ?? null
-  const [component, setComponent] = useState<ComponentType<P> | null>(read)
+  return useExternalBrickValue<ComponentType<P>>(globalName, key)
+}
+
+/**
+ * Générique : lit N'IMPORTE QUELLE valeur (pas seulement un composant) exposée par une autre
+ * brique sur `window[globalName][key]` — ex. le libellé de l'onglet qu'elle apporte, pour que
+ * le module hôte n'ait pas à dupliquer ce texte dans son propre dictionnaire (cf. CategoryDiscountTab).
+ */
+export function useExternalBrickValue<T>(globalName: string, key: string): T | null {
+  const read = () => ((window as unknown as Record<string, Record<string, unknown>>)[globalName]?.[key] as T) ?? null
+  const [value, setValue] = useState<T | null>(read)
 
   useEffect(() => {
-    if (component) return
+    if (value) return
     const id = window.setInterval(() => {
       const found = read()
-      if (found) { setComponent(() => found); window.clearInterval(id) }
+      if (found) { setValue(() => found); window.clearInterval(id) }
     }, 300)
     return () => window.clearInterval(id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [component])
+  }, [value])
 
-  return component
+  return value
 }
