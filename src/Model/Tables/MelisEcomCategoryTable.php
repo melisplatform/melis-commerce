@@ -183,7 +183,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         $select = $this->getTableGateway()->getSql()->select();
 
         if (!is_null($langId)) {
-            $join = new Expression('melis_ecom_category_trans.catt_category_id = melis_ecom_category.' . $this->idField . ' AND catt_lang_id=' . $langId);
+            $join = new Expression('melis_ecom_category_trans.catt_category_id = melis_ecom_category.' . $this->idField . ' AND catt_lang_id=' . (int) $langId);
             $select->join('melis_ecom_category_trans', $join, array('*'), $select::JOIN_LEFT);
         }
 
@@ -418,7 +418,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
                 ->or->literal('cat_date_valid_end IS NULL');
         }
 
-        $select->order($column . ' ' . $order);
+        \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $column, $order);
 
         $select->group($this->idField);
 

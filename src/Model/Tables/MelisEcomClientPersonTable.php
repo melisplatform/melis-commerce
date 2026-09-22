@@ -95,7 +95,7 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
         }
 
         if (!empty($orderColumn))
-            $select->order($orderColumn . ' ' . $order);
+            \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $orderColumn, $order);
 
         $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
@@ -145,7 +145,7 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
             $select->limit((int) $limit);
         }
 
-        $select->order($orderColumn . ' ' . $order);
+        \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $orderColumn, $order);
 
         $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
@@ -333,14 +333,9 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
         $columns = $options['columns'];
 
         // check if there's an extra variable that should be included in the query
-        $dateFilter = $options['date_filter'];
-        $dateFilterSql = '';
-
-        if (count($dateFilter)) {
-            if (!empty($dateFilter['startDate']) && !empty($dateFilter['endDate'])) {
-                $dateFilterSql = '`' . $dateFilter['key'] . '` BETWEEN \'' . $dateFilter['startDate'] . '\' AND \'' . $dateFilter['endDate'] . '\'';
-            }
-        }
+        $dateFilter = $options['date_filter'] ?? [];
+        // Bound BETWEEN predicate (column whitelisted, dates bound by the driver) instead of raw SQL.
+        $dateFilterPredicate = \MelisCore\Model\Tables\MelisGenericTable::dateFilterPredicate($dateFilter);
 
         $select->join(
             'melis_ecom_client',
@@ -366,8 +361,8 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
                 $likes[] = new Like($colKeys, '%' . $whereValue . '%');
             }
 
-            if (!empty($dateFilterSql)) {
-                $filters = array(new PredicateSet($likes, PredicateSet::COMBINED_BY_OR), new \Laminas\Db\Sql\Predicate\Expression($dateFilterSql));
+            if ($dateFilterPredicate !== null) {
+                $filters = array(new PredicateSet($likes, PredicateSet::COMBINED_BY_OR), $dateFilterPredicate);
             } else {
                 $filters = array(new PredicateSet($likes, PredicateSet::COMBINED_BY_OR));
             }
@@ -391,7 +386,7 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
 
         // used when column ordering is clicked
         if (!empty($order))
-            $select->order($order . ' ' . $orderDir);
+            \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $order, $orderDir);
 
 
         $getCount = $this->getTableGateway()->selectWith($select);

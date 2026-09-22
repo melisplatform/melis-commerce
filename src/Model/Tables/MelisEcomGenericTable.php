@@ -111,14 +111,9 @@ class MelisEcomGenericTable extends  MelisGenericTable
 		$columns = $options['columns'];
 
 		// check if there's an extra variable that should be included in the query
-		$dateFilter = $options['date_filter'];
-		$dateFilterSql = '';
-
-		if (count($dateFilter)) {
-			if (!empty($dateFilter['startDate']) && !empty($dateFilter['endDate'])) {
-				$dateFilterSql = '`' . $dateFilter['key'] . '` BETWEEN \'' . $dateFilter['startDate'] . '\' AND \'' . $dateFilter['endDate'] . '\'';
-			}
-		}
+		$dateFilter = $options['date_filter'] ?? [];
+		// Bound BETWEEN predicate (column whitelisted, dates bound by the driver) instead of raw SQL.
+		$dateFilterPredicate = \MelisCore\Model\Tables\MelisGenericTable::dateFilterPredicate($dateFilter);
 
 		// this is used when searching
 		if (!empty($where)) {
@@ -130,8 +125,8 @@ class MelisEcomGenericTable extends  MelisGenericTable
 				$likes[] = new Like($colKeys, '%' . $whereValue . '%');
 			}
 
-			if (!empty($dateFilterSql)) {
-				$filters = array(new PredicateSet($likes, PredicateSet::COMBINED_BY_OR), new \Laminas\Db\Sql\Predicate\Expression($dateFilterSql));
+			if ($dateFilterPredicate !== null) {
+				$filters = array(new PredicateSet($likes, PredicateSet::COMBINED_BY_OR), $dateFilterPredicate);
 			} else {
 				$filters = array(new PredicateSet($likes, PredicateSet::COMBINED_BY_OR));
 			}
@@ -149,7 +144,7 @@ class MelisEcomGenericTable extends  MelisGenericTable
 
 		// used when column ordering is clicked
 		if (!empty($order))
-			$select->order($order . ' ' . $orderDir);
+			\MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $order, $orderDir);
 
 
 		$getCount = $this->getTableGateway()->selectWith($select);
