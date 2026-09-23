@@ -71,7 +71,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
             $select->where->in('melis_ecom_product_category.pcat_cat_id', $categoriId);
         }
 
-        $select->order($column . ' ' . $order);
+        \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $column, $order);
 
         $select->group($this->idField);
 
@@ -123,7 +123,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
             $select->limit((int) $limit);
         }
 
-        $select->order($orderColumn . ' ' . $order);
+        \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $orderColumn, $order);
         $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
@@ -492,7 +492,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         }
 
         if (!is_null($order)) {
-            $select->order($order);
+            \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $order);
         }
 
         if (!is_null($limit)) {
@@ -543,7 +543,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
             ->join('melis_ecom_currency', 'melis_ecom_currency.cur_id = melis_ecom_price.price_currency', array('*'), $select::JOIN_LEFT);
 
         $select->where->equalTo('prd_id', (int)$productId);
-        $select->order($priceColumn . " $order");
+        \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $priceColumn, $order);
 
         $resultSet = $this->getTableGateway()->selectWith($select);
 
@@ -699,7 +699,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         }
 
         if (!is_null($order)) {
-            $select->order($order);
+            \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $order);
         }
 
         $resultData = $this->getTableGateway()->selectWith($select);
@@ -711,7 +711,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         $select = $this->getTableGateway()->getSql()->select();
 
         if (!is_null($langId))
-            $join = new Expression('melis_ecom_product_text.ptxt_prd_id = melis_ecom_product.' . $this->idField . ' AND ptxt_lang_id =' . $langId . ' AND ptxt_field_short != ""');
+            $join = new Expression('melis_ecom_product_text.ptxt_prd_id = melis_ecom_product.' . $this->idField . ' AND ptxt_lang_id =' . (int) $langId . ' AND ptxt_field_short != ""');
         else
             $join = new Expression('melis_ecom_product_text.ptxt_prd_id = melis_ecom_product.' . $this->idField . ' AND ptxt_field_short IS NOT NULL AND ptxt_field_short != ""');
 
@@ -725,7 +725,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         $select->group($this->idField);
 
         if (!empty($order)) {
-            $select->order($order);
+            \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $order);
         }
 
         $resultSet = $this->getTableGateway()->selectWith($select);
