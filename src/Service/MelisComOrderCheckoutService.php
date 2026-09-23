@@ -1312,15 +1312,6 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         $couponTable = $this->getServiceManager()->get('MelisEcomCouponTable');
         $couponProdTable = $this->getServiceManager()->get('MelisEcomCouponProductTable');
         
-        // Too many wrong codes from this client: refused before touching the database
-        if ($this->couponRateLimitCheck() > 0) {
-            $results['error'] = 'MELIS_COMMERCE_COUPON_TOO_MANY_ATTEMPTS';
-            $arrayParameters['results'] = $results;
-            $arrayParameters = $this->sendEvent('meliscommerce_service_checkout_coupon_validation_end', $arrayParameters);
-
-            return $arrayParameters['results'];
-        }
-
         if(!empty($arrayParameters['couponCode'])){
             
             $coupon = $couponTable->getEntryByField('coup_code', $arrayParameters['couponCode'])->current();
@@ -1447,10 +1438,6 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             $results['error'] = 'MELIS_COMMERCE_COUPON_NOT_FOUND';
         }
         
-        if (empty($results['success'])) {
-            $this->couponRateLimitHit();
-        }
-
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $results;
         // Sending service end event
@@ -1458,29 +1445,4 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         
         return $arrayParameters['results'];
     }
-
-    /**
-     * Rate limit of the coupon validation (security audit item 17.0): a client that keeps
-     * typing wrong codes is slowed down, per IP. Returns the seconds to wait, 0 when allowed.
-     */
-    private function couponRateLimitCheck()
-    {
-        try {
-            $limiter = $this->getServiceManager()->get('MelisCoreRateLimit');
-
-            return (int) $limiter->check('coupon', ['ip:' . $limiter->clientIp()]);
-        } catch (\Throwable $ignored) {
-            return 0;
-        }
-    }
-
-    private function couponRateLimitHit()
-    {
-        try {
-            $limiter = $this->getServiceManager()->get('MelisCoreRateLimit');
-            $limiter->hit('coupon', ['ip:' . $limiter->clientIp()]);
-        } catch (\Throwable $ignored) {
-        }
-    }
-
 }

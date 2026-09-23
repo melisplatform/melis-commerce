@@ -22,7 +22,6 @@
         'tr_MELIS_COMMERCE_COUPON_CLIENT_ALREADY_USED' => 'The coupon has already been used by the selected client',
         'tr_MELIS_COMMERCE_COUPON_REACHED_LIMIT' => 'The coupon has already reached the limit number of use',
         'tr_MELIS_COMMERCE_COUPON_DATE_VALIDITY_INVALID' => 'The coupon is not available',
-        'tr_MELIS_COMMERCE_COUPON_TOO_MANY_ATTEMPTS' => 'Too many attempts, please retry in a few minutes',
         'tr_MELIS_COMMERCE_COUPON_NOT_ACTIVE' => 'The coupon is inactive',
         'tr_MELIS_COMMERCE_COUPON_NOT_FOUND' => 'The coupon code is invalid',
         'tr_MELIS_COMMERCE_COUPON_CLIENT_NOT_ASSIGN' => 'The coupon is not assigned to the selected client',
