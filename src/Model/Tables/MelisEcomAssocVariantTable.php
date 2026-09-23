@@ -50,7 +50,7 @@ class MelisEcomAssocVariantTable extends MelisEcomGenericTable
         $select->where->equalTo('melis_ecom_assoc_variant.avar_one', $variantId);
 
         if (!is_null($column)) {
-            $select->order($column . ' ' . $order);
+            \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $column, $order);
         }
 
         if ($searchValue) {

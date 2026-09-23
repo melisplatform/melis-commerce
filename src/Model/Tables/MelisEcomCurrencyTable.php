@@ -52,7 +52,7 @@ class MelisEcomCurrencyTable extends MelisEcomGenericTable
         }
 
         if (!is_null($order)) {
-            $select->order($order);
+            \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $order);
         }
 
         $resultSet = $this->getTableGateway()->selectWith($select);

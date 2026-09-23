@@ -140,7 +140,7 @@ class MelisEcomPriceTable extends MelisEcomGenericTable
             $select->where->in('product_category.pcat_cat_id', $categoryId)->OR->in('variant_product_category.pcat_cat_id', $categoryId);
         }
 
-        $select->order($column . ' ' . $order);
+        \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $column, $order);
         $resultSet = $this->getTableGateway()->selectWith($select);
         return $resultSet;
     }

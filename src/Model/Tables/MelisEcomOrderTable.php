@@ -124,7 +124,7 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
             }
 
             if (!is_null($order)) {
-                $select->order($order);
+                \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $order);
             }
             $select->group('melis_ecom_order.ord_id');
         }
@@ -215,7 +215,7 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
 
         $join = new Expression('melis_ecom_order_status.osta_id = melis_ecom_order.ord_status');
         $select->join('melis_ecom_order_status', $join, array('*'), $select::JOIN_LEFT);
-        $join = new Expression('melis_ecom_order_status_trans.ostt_status_id = melis_ecom_order.ord_status AND (ostt_lang_id = ' . $langId . ' OR ostt_lang_id IS NOT NULL)');
+        $join = new Expression('melis_ecom_order_status_trans.ostt_status_id = melis_ecom_order.ord_status AND (ostt_lang_id = ' . (int) $langId . ' OR ostt_lang_id IS NOT NULL)');
         $select->join('melis_ecom_order_status_trans', $join, array('*'), $select::JOIN_LEFT);
 
         $join = new Expression('melis_ecom_order_payment.opay_order_id = melis_ecom_order.ord_id');
@@ -267,7 +267,7 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
     public function getOrdersDataByDate($order = 'ASC')
     {
         $select = $this->getTableGateway()->getSql()->select();
-        $select->order(array('ord_date_creation' => $order));
+        \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, 'ord_date_creation', $order);
 
         $resultSet = $this->getTableGateway()->selectWith($select);
 

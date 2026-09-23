@@ -65,7 +65,7 @@ class MelisEcomClientGroupsTable extends MelisEcomGenericTable
         }
 
         if (!empty($orderKey))
-            $select->order($orderKey . ' ' . $order);
+            \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $orderKey, $order);
 
         $resultSet = $this->getTableGateway()->selectWith($select);
 
