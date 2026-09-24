@@ -17,6 +17,17 @@ use MelisCommerce\Model\Product;
 
 class MelisComProductListController extends MelisAbstractActionController
 {
+    /**
+     * Outil auquel ce contrôleur appartient (audit DEKRA 7.0) : MelisCoreAuthorizationListener
+     * vérifie canAccess() sur cette clé AVANT le dispatch.
+     */
+    const MELIS_KEY = 'meliscommerce_product_list_container';
+
+    /** Actions partagées avec d'autres outils : une des clés suffit, '@login' = connexion seule. */
+    const TOOL_KEY_MAP = [
+        'getToolTip' => ['meliscommerce_product_list_container', 'meliscommerce_categories_page'], // infobulles des outils Catégories, Produits et Variantes
+    ];
+
     /** @INFO: Tool access check (CWE-862). */
     private function hasAccess($key)
     {

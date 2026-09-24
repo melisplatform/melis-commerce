@@ -19,6 +19,12 @@ use MelisCore\Controller\MelisAbstractActionController;
 
 class MelisComClientListController extends MelisAbstractActionController
 {
+    /**
+     * Outil auquel ce contrôleur appartient (audit DEKRA 7.0) : MelisCoreAuthorizationListener
+     * vérifie canAccess() sur cette clé AVANT le dispatch.
+     */
+    const MELIS_KEY = 'meliscommerce_clients_list_page';
+
     const PLUGIN_INDEX = 'meliscommerce';
 
     /** @INFO: Tool access check (CWE-862). */
