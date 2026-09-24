@@ -32,7 +32,7 @@ class MelisEcomLangTable extends MelisEcomGenericTable
         $select = $this->getTableGateway()->getSql()->select();
         $select->where->equalTo('elang_status', 1);
         $order = 'elang_name ASC';
-        $select->order($order);
+        \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $order);
 
         $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;

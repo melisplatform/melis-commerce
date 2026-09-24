@@ -15,6 +15,12 @@ use MelisCore\Controller\MelisAbstractActionController;
 
 class MelisComCountryController extends MelisAbstractActionController
 {
+    /**
+     * Outil auquel ce contrôleur appartient (audit DEKRA 7.0) : MelisCoreAuthorizationListener
+     * vérifie canAccess() sur cette clé AVANT le dispatch.
+     */
+    const MELIS_KEY = 'meliscommerce_country_list_container';
+
 
 
     public function renderCountryListPageAction()

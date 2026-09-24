@@ -145,7 +145,7 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
             $select->limit($limit);
         }
 
-        $select->order($order);
+        \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $order);
         if (!empty($start)) {
             $select->offset((int)$start);
         }
@@ -176,7 +176,7 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
         }
 
         if (!is_null($column)) {
-            $select->order($column . ' ' . $order);
+            \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $column, $order);
         }
 
         $getCount = $this->getTableGateway()->selectWith($select);
@@ -232,7 +232,7 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
         }
 
         if (!is_null($column)) {
-            $select->order($column . ' ' . $order);
+            \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $column, $order);
         }
 
         $getCount = $this->getTableGateway()->selectWith($select);
@@ -356,7 +356,7 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
         }
 
         if (!empty($sortOrder)) {
-            $select->order($sortOrder);
+            \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $sortOrder);
         }
 
         $select->group($groupBy);

@@ -81,7 +81,7 @@ class MelisEcomOrderStatusTable extends MelisEcomGenericTable
         }
 
         if (!is_null($colOrder)) {
-            $select->order($colOrder);
+            \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $colOrder);
         }
 
         $select->group('osta_id');

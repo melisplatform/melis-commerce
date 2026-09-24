@@ -74,7 +74,7 @@ class MelisEcomAttributeTable extends MelisEcomGenericTable
         }
 
         if (!is_null($order)) {
-            $select->order($order);
+            \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $order);
         }
 
         $resultData = $this->getTableGateway()->selectWith($select);
@@ -128,7 +128,7 @@ class MelisEcomAttributeTable extends MelisEcomGenericTable
         $select = $this->getTableGateway()->getSql()->select();
 
         if (!is_null($langId))
-            $join = new Expression('melis_ecom_attribute_trans.atrans_attribute_id = melis_ecom_attribute.' . $this->idField . ' AND atrans_lang_id =' . $langId . ' AND atrans_name != ""');
+            $join = new Expression('melis_ecom_attribute_trans.atrans_attribute_id = melis_ecom_attribute.' . $this->idField . ' AND atrans_lang_id =' . (int) $langId . ' AND atrans_name != ""');
         else
             $join = new Expression('melis_ecom_attribute_trans.atrans_attribute_id = melis_ecom_attribute.' . $this->idField . ' AND atrans_name IS NOT NULL AND atrans_name != ""');
 

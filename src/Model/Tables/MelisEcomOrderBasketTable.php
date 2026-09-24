@@ -47,7 +47,7 @@ class MelisEcomOrderBasketTable extends MelisEcomGenericTable
             $select->limit((int)$limit);
         }
 
-        $select->order($order);
+        \MelisCore\Model\Tables\MelisGenericTable::addSafeOrder($select, $order);
         if (!empty($start)) {
             $select->offset((int)$start);
         }
