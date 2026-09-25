@@ -1078,16 +1078,18 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         $data      = (string) ($body['data'] ?? '');
         if (($p = strpos($data, ',')) !== false && strpos($data, ';base64') !== false) { $data = substr($data, $p + 1); }
         $bytes = base64_decode($data, true);
-        if ($bytes === false || $bytes === '') { throw new \RuntimeException('Fichier invalide.'); }
+        if ($bytes === false || $bytes === '') { throw new \InvalidArgumentException('Fichier invalide.'); }
 
         // Sécurité : le dossier /media/commerce est servi par le serveur web. Sans allow-list
         // d'extension, un fichier .php (ou .phtml…) y serait exécutable → RCE. On refuse toute
         // extension hors liste (images + documents), comme le font déjà Account/Order.
         $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
         $allowedExt = $kind === 'image'
-            ? ['jpg','jpeg','png','gif','webp','svg','bmp','ico']
-            : ['jpg','jpeg','png','gif','webp','svg','bmp','ico','pdf','doc','docx','xls','xlsx','ppt','pptx','odt','ods','odp','txt','csv','rtf','zip'];
-        if (!in_array($ext, $allowedExt, true)) { throw new \RuntimeException('Extension de fichier non autorisée.'); }
+            ? ['jpg','jpeg','jfif','png','gif','webp','avif','svg','bmp','ico']
+            : ['jpg','jpeg','jfif','png','gif','webp','avif','svg','bmp','ico','pdf','doc','docx','xls','xlsx','ppt','pptx','odt','ods','odp','txt','csv','rtf','zip'];
+        if (!in_array($ext, $allowedExt, true)) {
+            throw new \InvalidArgumentException('Extension de fichier non autorisée (.' . $ext . '). Extensions acceptées : ' . implode(', ', $allowedExt) . '.');
+        }
 
         $docroot = (string) ($_SERVER['DOCUMENT_ROOT'] ?? '');
         if ($docroot === '' || !is_dir($docroot)) { $docroot = getcwd() ?: '/var/www/melis/public'; }
@@ -1194,6 +1196,8 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             $docId = $this->storeUpload($db, $prdId, $body, 'rdoc_product_id', $prdId);
             $this->triggerDocumentSaveEvent($body, 'ECOM_PRODUCT', $docId);
             return $this->jsonResponse(['success' => true, 'data' => null], 201);
+        } catch (\InvalidArgumentException $e) {
+            return $this->jsonResponse(['success' => false, 'error' => $e->getMessage()], 400);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
     // ─── DELETE /products/:id/media/:docId ────────────────────────────────────
@@ -1230,6 +1234,8 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             $docId = $this->storeUpload($db, $prdId ?: $varId, $body, 'rdoc_variant_id', $varId);
             $this->triggerDocumentSaveEvent($body, 'ECOM_VARIANT', $docId);
             return $this->jsonResponse(['success' => true, 'data' => null], 201);
+        } catch (\InvalidArgumentException $e) {
+            return $this->jsonResponse(['success' => false, 'error' => $e->getMessage()], 400);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
     public function variantMediaUpdateAction(): HttpResponse { return $this->mediaUpdateAction(); }

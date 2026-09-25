@@ -18,6 +18,18 @@ use MelisCore\Controller\MelisAbstractActionController;
 class MelisComOrderListController extends MelisAbstractActionController
 {
     /**
+     * Outil auquel ce contrôleur appartient (audit DEKRA 7.0) : MelisCoreAuthorizationListener
+     * vérifie canAccess() sur cette clé AVANT le dispatch.
+     */
+    const MELIS_KEY = 'meliscommerce_order_list_page';
+
+    /** Actions partagées avec d'autres outils : une des clés suffit, '@login' = connexion seule. */
+    const TOOL_KEY_MAP = [
+        'getOrderListData'      => ['meliscommerce_order_list_page', 'meliscommerce_clients_list_page', 'meliscommerce_coupon_list_page'], // onglets commandes des Comptes et des Coupons
+        'getOrderBasketToolTip' => ['meliscommerce_order_list_page', 'meliscommerce_clients_list_page'], // onglet commandes des Comptes
+    ];
+
+    /**
      * renders the order list page container
      * @return \Laminas\View\Model\ViewModel
      */
