@@ -16,6 +16,12 @@ use MelisCore\Controller\MelisAbstractActionController;
 class MelisComOrderStatusController extends MelisAbstractActionController
 {
     /**
+     * Outil auquel ce contrôleur appartient (audit DEKRA 7.0) : MelisCoreAuthorizationListener
+     * vérifie canAccess() sur cette clé AVANT le dispatch.
+     */
+    const MELIS_KEY = 'meliscommerce_order_status_tool_page';
+
+    /**
      * renders the order status page container
      * @return \Laminas\View\Model\ViewModel
      */

@@ -17,6 +17,12 @@ use MelisCore\Controller\MelisAbstractActionController;
 class MelisComCouponListController extends MelisAbstractActionController
 {
     /**
+     * Outil auquel ce contrôleur appartient (audit DEKRA 7.0) : MelisCoreAuthorizationListener
+     * vérifie canAccess() sur cette clé AVANT le dispatch.
+     */
+    const MELIS_KEY = 'meliscommerce_coupon_list_page';
+
+    /**
      * renders the coupon list page container
      * @return \Laminas\View\Model\ViewModel
      */
