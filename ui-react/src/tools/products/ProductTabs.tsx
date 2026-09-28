@@ -484,8 +484,9 @@ export function MediaModal({ kind, doc, pendingDoc, countries, t, onClose, onSav
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.45)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
       onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}>
       <div style={{ background: 'var(--color-background,#fff)', borderRadius: 8, width: '100%', maxWidth: 480, boxShadow: '0 8px 32px rgba(0,0,0,.22)', overflow: 'hidden' }}>
-        <div style={{ background: '#35a8e0', color: '#fff', padding: '12px 20px', fontWeight: 600, fontSize: 15 }}>
-          {kind === 'image' ? t('modal_add_image') : t('modal_add_file')}
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', gap: 8, color: 'var(--color-primary)' }}>
+          {kind === 'image' ? <ImageIcon /> : <PaperclipIcon />}
+          <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>{kind === 'image' ? t('modal_add_image') : t('modal_add_file')}</h3>
         </div>
         <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
           <p style={{ margin: 0, fontSize: 13, color: 'var(--color-muted-foreground)' }}>
@@ -595,7 +596,9 @@ export function AddTextTypeModal({ excludeTypeIds, t, onClose, onAdd }: {
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.45)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
       onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}>
       <div style={{ background: 'var(--color-background,#fff)', borderRadius: 8, width: '100%', maxWidth: 480, boxShadow: '0 8px 32px rgba(0,0,0,.22)', overflow: 'hidden' }}>
-        <div style={{ background: '#35a8e0', color: '#fff', padding: '12px 20px', fontWeight: 600, fontSize: 15 }}>{t('texttype_modal_title')}</div>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', gap: 8, color: 'var(--color-primary)' }}>
+          <PlusIcon /><h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>{t('texttype_modal_title')}</h3>
+        </div>
         <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
           <p style={{ margin: 0, fontSize: 13, color: 'var(--color-muted-foreground)' }}>{t('texttype_modal_subtitle')}</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
