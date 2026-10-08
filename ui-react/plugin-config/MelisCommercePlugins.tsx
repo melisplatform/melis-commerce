@@ -6,9 +6,10 @@
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react'
 import {
   registerPluginTab, type PluginTabContext,
-  Field, CheckBox, inputStyle, TemplateField, TextField, RemoteSelectField, SwitchField, readTag, fetchFieldOptions,
+  Field, CheckBox, inputStyle, TemplateField, TextField, RemoteSelectField, SwitchField, readTag, fetchFieldOptions, usePrefill,
 } from '../../../melis-cms/ui-react/src/PluginFormKit'
 import { peLang } from '../../../melis-cms/ui-react/src/page-editor-i18n'
+import { fetchTreeNodes, type MelisTreeNode } from '../../../melis-cms/ui-react/src/cms-tree-api'
 
 const L = ({
   fr: {
@@ -88,6 +89,8 @@ const L = ({
     loading: 'Chargement…',
     loadError: 'Impossible de charger la liste.',
     nothing: 'Aucun élément.',
+    choosePage: 'Choisir une page',
+    pageLinkError: 'Impossible de récupérer le lien de la page.',
   },
   en: {
     tabProperties: 'Properties',
@@ -166,6 +169,8 @@ const L = ({
     loading: 'Loading…',
     loadError: 'The list could not be loaded.',
     nothing: 'Nothing to select.',
+    choosePage: 'Choose a page',
+    pageLinkError: 'The page link could not be retrieved.',
   },
 } as const)[peLang()]
 
@@ -181,6 +186,12 @@ async function apiGet<T>(url: string): Promise<T> {
   const res = await r.json().catch(() => ({}))
   if (!r.ok || !res?.success) throw new Error(res?.error || `HTTP ${r.status}`)
   return res.data as T
+}
+/** GET a back-office JSON endpoint that answers its payload directly (no success/data envelope). */
+async function apiGetRaw<T>(url: string): Promise<T> {
+  const r = await fetch(url, { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+  if (!r.ok) throw new Error(`HTTP ${r.status}`)
+  return (await r.json()) as T
 }
 const once = <T,>(load: () => Promise<T>) => { let p: Promise<T> | null = null; return () => (p ??= load().catch((e) => { p = null; throw e })) }
 
@@ -354,10 +365,79 @@ function CheckListField({ ctx, name, label, hint, load }: { ctx: PluginTabContex
   )
 }
 
+/** One page of the site tree, children loaded when expanded (same endpoint as the shared PagePicker). */
+function PageTreeNode({ node, depth, onPick }: { node: MelisTreeNode; depth: number; onPick: (id: number) => void }) {
+  const [open, setOpen] = useState(false)
+  const [children, setChildren] = useState<MelisTreeNode[] | null>(null)
+  const toggleOpen = async () => {
+    if (!node.lazy) return
+    setOpen(!open)
+    if (!open && children === null) setChildren(await fetchTreeNodes(node.key))
+  }
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, paddingLeft: depth * 16 }}>
+        <button type="button" style={{ ...linkBtn, width: 16, color: 'inherit', visibility: node.lazy ? 'visible' : 'hidden' }} onClick={toggleOpen}>
+          <i className={`fa fa-caret-${open ? 'down' : 'right'}`} />
+        </button>
+        <button type="button" style={{ ...linkBtn, color: 'inherit', fontSize: 13, textAlign: 'left', padding: '2px 0' }} onClick={() => onPick(node.key)}>{node.title}</button>
+      </div>
+      {open ? (children === null ? <div style={{ ...muted, paddingLeft: depth * 16 + 20 }}>{L.loading}</div>
+        : children.map((c) => <PageTreeNode key={c.key} node={c} depth={depth + 1} onPick={onPick} />)) : null}
+    </div>
+  )
+}
+
+/**
+ * Destination link field (legacy: text input + site tree button, `generatePageLink` callback). Stores a URL:
+ * typed (internal or external) or the link of a page picked in the site tree. The tree opens INSIDE the form,
+ * not as a floating dropdown, so the config modal grows with it instead of cutting it.
+ */
+function PageLinkField({ ctx, name, label, hint }: { ctx: PluginTabContext; name: string; label: string; hint?: string }) {
+  usePrefill(ctx, name)
+  const [open, setOpen] = useState(false)
+  const [roots, setRoots] = useState<MelisTreeNode[] | null>(null)
+  const [linkError, setLinkError] = useState(false)
+
+  const toggleTree = async () => {
+    setOpen(!open)
+    if (!open && roots === null) setRoots(await fetchTreeNodes(-1))
+  }
+  const pick = async (pageId: number) => {
+    setLinkError(false)
+    try {
+      const link = (await apiGetRaw<{ link?: string }>(`/melis/MelisCms/Page/getPageLink?idPage=${pageId}`)).link
+      if (!link) throw new Error('no link')
+      ctx.setValue(name, link)
+      setOpen(false)
+    } catch {
+      setLinkError(true)
+    }
+  }
+
+  return (
+    <Field label={label} hint={hint} error={ctx.error(name) ?? (linkError ? L.pageLinkError : undefined)}>
+      <div style={{ display: 'flex', gap: 6 }}>
+        <input style={{ ...inputStyle, flex: 1 }} value={ctx.value(name)} onChange={(e) => ctx.setValue(name, e.target.value)} />
+        <button type="button" title={L.choosePage} style={{ ...inputStyle, width: 'auto', cursor: 'pointer', padding: '0 12px' }} onClick={toggleTree}>
+          <i className="fa fa-sitemap" />
+        </button>
+      </div>
+      {open ? (
+        <div style={{ ...boxStyle, marginTop: 6 }}>
+          {roots === null ? <div style={muted}>{L.loading}</div>
+            : roots.length ? roots.map((n) => <PageTreeNode key={n.key} node={n} depth={0} onPick={pick} />)
+            : <div style={muted}>{L.nothing}</div>}
+        </div>
+      ) : null}
+    </Field>
+  )
+}
+
 /* ── Field building blocks (one per legacy element kind) ─────────────────── */
 type FieldSpec =
   | { kind: 'template' }
-  | { kind: 'select' | 'text' | 'number' | 'switch'; name: string; label: string; hint?: string }
+  | { kind: 'select' | 'text' | 'number' | 'switch' | 'link'; name: string; label: string; hint?: string }
   | { kind: 'categories'; name: string; rootName?: string; label: string; hint?: string }
   | { kind: 'checklist'; name: string; label: string; hint?: string; load: () => Promise<OptionGroup[]> }
 
@@ -377,6 +457,7 @@ function tabOf(fields: FieldSpec[]) {
           case 'template': return <TemplateField key="template_path" ctx={ctx} hint={L.hintTemplate} />
           case 'select': return <RemoteSelectField key={f.name} ctx={ctx} name={f.name} label={f.label} hint={f.hint} />
           case 'switch': return <SwitchField key={f.name} ctx={ctx} name={f.name} label={f.label} hint={f.hint} />
+          case 'link': return <PageLinkField key={f.name} ctx={ctx} name={f.name} label={f.label} hint={f.hint} />
           case 'categories': return <CategoryTreeField key={f.name} ctx={ctx} name={f.name} rootName={f.rootName} label={f.label} hint={f.hint} />
           case 'checklist': return <CheckListField key={f.name} ctx={ctx} name={f.name} label={f.label} hint={f.hint} load={f.load} />
           default: return <TextField key={f.name} ctx={ctx} name={f.name} label={f.label} hint={f.hint} type={f.kind === 'number' ? 'number' : 'text'} />
@@ -389,7 +470,8 @@ function tabOf(fields: FieldSpec[]) {
 /* Shared field groups */
 const site = (name: string) => select(name, L.labelSite, L.hintSite)
 const priceCountry = (name: string) => select(name, L.labelCountry, L.hintPriceCountry)
-const destinationPage = (name: string) => text(name, L.labelDestinationPage, L.hintDestinationPage)
+const pageLink = (name: string, label: string, hint?: string): FieldSpec => ({ kind: 'link', name, label, hint })
+const destinationPage = (name: string) => pageLink(name, L.labelDestinationPage, L.hintDestinationPage)
 const order = (name: string) => select(name, L.labelOrder, L.hintOrder)
 const pagination = (perPage: string, beforeAfter: string) => [
   number(perPage, L.labelPerPage, L.hintPerPage),
@@ -412,7 +494,7 @@ const PLUGINS: Record<string, TabDef[]> = {
     destinationPage('m_redirection_link_ok'),
     toggle('m_autologin', L.labelAutologin, L.hintAutologin),
   )],
-  MelisCommerceLostPasswordGetEmailPlugin: [properties(text('lost_password_reset_page_link', L.labelResetPage, L.hintResetPage))],
+  MelisCommerceLostPasswordGetEmailPlugin: [properties(pageLink('lost_password_reset_page_link', L.labelResetPage, L.hintResetPage))],
   MelisCommerceLostPasswordResetPlugin: [properties(
     destinationPage('m_redirection_link_ok'),
     toggle('m_autologin', L.labelAutologin, L.hintAutologin),
