@@ -1,10 +1,12 @@
 <?php
 /**
- * Category tree dependencies for the plugin config tabs (category-product-list-tree-config,
- * category-tree-config, product-list-tree-config).
+ * React page editor only (see MelisCommercePageEditor): category tree support for the plugin config tabs
+ * (category-product-list-tree-config, category-tree-config, product-list-tree-config).
  *
- * The back-office already loads jstree + the commerce tree scripts. The React page editor's config
- * iframe only loads a base set of libraries, so load ours there on demand before initializing the tree.
+ * - The React editor's config iframe only loads a base set of libraries: load jstree and the commerce tree
+ *   scripts on demand before initializing the tree (melisCommerceCategoryTreeReady).
+ * - It posts every input as one scalar per name, so the checked categories are mirrored into the
+ *   <field>_list hidden input read by MelisCommercePluginListParamsTrait (melisCommerceCategoryTreeSync).
  */
 ?>
 <script>
@@ -42,5 +44,17 @@ window.melisCommerceCategoryTreeReady = window.melisCommerceCategoryTreeReady ||
         $.ajax({ url: scripts[i], dataType: "script", cache: true }).always(function() { next(i + 1); });
     };
     next(0);
+};
+
+window.melisCommerceCategoryTreeSync = window.melisCommerceCategoryTreeSync || function(treeId, field) {
+    $("#" + treeId).on("check_node.jstree uncheck_node.jstree", function() {
+        setTimeout(function() {
+            var $form = $("#" + treeId + "_form"), ids = [];
+            $form.find("input[name='" + field + "[]']").each(function() {
+                if (ids.indexOf(this.value) === -1) ids.push(this.value);
+            });
+            $form.find("input[name='" + field + "_list']").val(ids.join(","));
+        }, 0);
+    });
 };
 </script>

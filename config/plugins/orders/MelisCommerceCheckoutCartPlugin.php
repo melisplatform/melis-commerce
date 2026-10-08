@@ -13,7 +13,7 @@ return [
             'plugins' => [
                 'MelisCommerceCheckoutCartPlugin' => [
                     'front' => [
-                        'template_path' => ['MelisCommerce/checkout-cart'],
+                        'template_path' => ['MelisCommerceCheckout/checkout-cart'],
                         'id' => 'checkoutCart',
                         
                         'm_cc_country_id' => null,

@@ -13,7 +13,7 @@ return [
             'plugins' => [
                 'MelisCommerceOrderMessagesPlugin' => [
                     'front' => [
-                        'template_path' => ['MelisCommerce/order-messages'],
+                        'template_path' => ['MelisCommerceOrder/order-messages'],
                         'id' => 'orderMessages',
                         // Order Id
                         'm_om_order_id' => null,

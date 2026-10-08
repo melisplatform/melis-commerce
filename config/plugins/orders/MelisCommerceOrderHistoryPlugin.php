@@ -13,7 +13,7 @@ return [
             'plugins' => [
                 'MelisCommerceOrderHistoryPlugin' => [
                     'front' => [
-                        'template_path' => ['MelisCommerce/order-history'],
+                        'template_path' => ['MelisCommerceOrder/order-history'],
                         'id' => 'orderHistoryPlugin',
                         'm_order_sort' => null,
 

@@ -13,7 +13,7 @@ return [
             'plugins' => [
                 'MelisCommerceCheckoutConfirmPlugin' => [
                     'front' => [
-                        'template_path' => ['MelisCommerce/checkout-confirm'],
+                        'template_path' => ['MelisCommerceCheckout/checkout-confirm'],
                         'id' => 'checkoutConfirmation',
                         
                         // Order id

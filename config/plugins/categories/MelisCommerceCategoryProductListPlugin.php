@@ -13,7 +13,7 @@ return [
             'plugins' => [
                 'MelisCommerceCategoryProductListPlugin' => [
                     'front' => [
-                        'template_path' => ['MelisCommerce/category-product-list'],
+                        'template_path' => ['MelisCommerceCategory/category-product-list'],
                         'id' => 'categoryProductList',
                         // Category option
                         'm_category_option' => [

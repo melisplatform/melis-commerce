@@ -13,7 +13,7 @@ return [
             'plugins' => [
                 'MelisCommerceCategoryTreePlugin' => [
                     'front' => [
-                        'template_path' => ['MelisCommerce/category-tree'],
+                        'template_path' => ['MelisCommerceCategory/category-tree'],
                         'id' =>'categoryTree',
                         // Category option
                         'm_category_tree_option' => [

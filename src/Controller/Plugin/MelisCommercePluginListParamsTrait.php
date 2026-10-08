@@ -11,14 +11,14 @@ namespace MelisCommerce\Controller\Plugin;
 
 /**
  * Resolves the MULTI-VALUE config fields of a plugin modal (category trees, text types, attribute
- * values…) from whichever editor posted them, so every editor saves the same config:
+ * values…) when the config is saved from the React page editor (the legacy editor is left untouched):
  *
- *  - Legacy page editor (jQuery serializeArray): posts a real array, e.g. `m_category_ids[]=3&…`.
- *  - Page editor "React" config, iframe view: posts every input as ONE scalar per name, so `x[]` arrays
- *    collapse to their last value. It does post hidden scalars, hence the `<field>_list` companion input
- *    (comma-separated ids) that the config views keep in sync with the selection.
- *  - Page editor "React" config, schema form: only knows plain fields, so it posts neither. The field is
- *    then left as it currently is (getFormData()) instead of being wiped by the save.
+ *  - React config tabs: post a real array, used as is.
+ *  - React editor, iframe view: posts every input as ONE scalar per name, so `x[]` arrays collapse to
+ *    their last value. It does post hidden scalars, hence the `<field>_list` companion input
+ *    (comma-separated ids) that the config views add and keep in sync in the React editor.
+ *  - React editor, schema form: only knows plain fields, so it posts neither. The field is then left
+ *    as it currently is (getFormData()) instead of being wiped by the save.
  */
 trait MelisCommercePluginListParamsTrait
 {
@@ -30,6 +30,10 @@ trait MelisCommercePluginListParamsTrait
      */
     protected function resolveListParams(array $params, array $lists, array $scalars = [])
     {
+        if (!MelisCommercePageEditor::isReactRequest()) {
+            return $params;
+        }
+
         $current = null;
 
         foreach ($lists as $field) {

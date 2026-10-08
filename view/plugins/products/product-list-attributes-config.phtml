@@ -1,6 +1,4 @@
-<?php
-    $selectedValues = !empty($this->formData['m_box_product_attribute_values_ids_selected']) ? (array) $this->formData['m_box_product_attribute_values_ids_selected'] : [];
-?>
+<?php $reactEditor = \MelisCommerce\Controller\Plugin\MelisCommercePageEditor::isReactRequest(); ?>
 <div class="form-group">
 	<?php foreach ($this->attrs As $val){?>
     	<div class="row">
@@ -11,27 +9,41 @@
                     </h4>
                 </div>
     		</div>
-    		<?php foreach ($val->attr_values As $vals){?>
-    			<?php $checked = in_array($vals->atval_id, $selectedValues) ? 'check' : ''; ?>
-    			<div class="col-xs-4">
-                	<label class="full-category-product-list-attr-config-checkbox" data-value="<?= $this->escapeHtmlAttr($vals->atval_id) ?>">
-                		<?php $valCol = 'avt_v_'.$vals->atype_column_value;?>
-                		<i class="fa fa-<?php echo ($checked) ? $checked.'-' : '' ?>square-o fa-lg"></i> <?php echo $vals->$valCol?>
-                	</label>
-        		</div>
-    		<?php }?>
+    		<form>
+        		<?php foreach ($val->attr_values As $vals){?>
+        			<?php
+        			    $checked = '';
+        			    if (!empty($this->formData['m_box_product_attribute_values_ids_selected'])){
+        			        if(in_array($vals->atval_id, $this->formData['m_box_product_attribute_values_ids_selected'])){
+        			            $checked = 'check';
+        			        }
+        			    }
+        			?>
+        			<div class="col-xs-4">
+                    	<label class="full-category-product-list-attr-config-checkbox">
+                    		<?php $valCol = 'avt_v_'.$vals->atype_column_value;?>
+                    		<i class="fa fa-<?php echo ($checked) ? $checked.'-' : '' ?>square-o fa-lg"></i> <?php echo $vals->$valCol?>
+                    		<input type="checkbox" <?= $reactEditor ? '' : 'name="m_box_product_attribute_values_ids_selected[]" ' ?>value="<?php echo $vals->atval_id ?>" <?php echo ($checked) ? $checked.'ed' : '' ?> style="display: none">
+                    	</label>
+            		</div>
+        		<?php }?>
+    		</form>
     	</div>
 	<?php }?>
-	<?php // Selected attribute values as one comma-separated field (see MelisCommercePluginListParamsTrait) ?>
-	<form>
-		<input type="hidden" name="m_box_product_attribute_values_ids_selected_list" value="<?= $this->escapeHtmlAttr(implode(',', $selectedValues)) ?>">
-	</form>
+	<?php if ($reactEditor) { ?>
+		<form>
+			<input type="hidden" name="m_box_product_attribute_values_ids_selected_list" value="<?= $this->escapeHtmlAttr(implode(',', (array) $this->formData['m_box_product_attribute_values_ids_selected'])) ?>">
+		</form>
+	<?php }?>
 </div>
 <style>
 .full-category-product-list-attr-config-checkbox {
     cursor: pointer;
     margin-left: 20px;
     font-weight: normal;
+}
+.full-category-product-list-attr-config-checkbox input {
+    display: none;
 }
 .full-category-product-list-attr-config-checkbox .fa-check-square-o {
     color: #72af46;
@@ -40,18 +52,45 @@
 <script type="text/javascript">
 $(function(){
     var checkboxClass = ".full-category-product-list-attr-config-checkbox";
+    //Category Information Form Countries Custom Checkboxes
     $(checkboxClass).on("click", function(evt){
-    	$(this).find('.fa').toggleClass('fa-check-square-o fa-square-o');
-
-    	var ids = $(checkboxClass).filter(function() {
-    		return $(this).find('.fa').hasClass('fa-check-square-o');
-    	}).map(function() {
-    		return $(this).data('value');
-    	}).get();
-    	$("input[name='m_box_product_attribute_values_ids_selected_list']").val(ids.join(","));
-
+    	
+    	if($(this).find('.fa').hasClass('fa-check-square-o')){ // unchecking category Checkbox
+    		if(!$(this).find('.fa').hasClass("check-all")){
+    			$(this).find('.fa').removeClass('fa-check-square-o');
+    			$(this).find('.fa').addClass('fa-square-o');
+    			$(this).find('input[type="checkbox"]').removeAttr('checked');
+    		}
+    	}else{ // Checking Category Checkboxes
+    		if($(this).find('.fa').hasClass("check-all")){ // Unchecking "All" Checkbox
+    			$(checkboxClass).find('.fa').removeClass('fa-check-square-o');
+    			$(checkboxClass).find('.fa').addClass('fa-square-o');
+    			$(checkboxClass).find('input[type="checkbox"]').removeAttr('checked');
+    		}else{ // Checking "All" Checkbox
+    			$(checkboxClass).find('.check-all').removeClass('fa-check-square-o');
+    			$(checkboxClass).find('.check-all').addClass('fa-square-o');
+    			$(checkboxClass).find('.check-all').next('input[type="checkbox"]').removeAttr('checked'); // Unchecking "All" Checkbox
+    		}
+    		
+    		$(this).find('.fa').removeClass('fa-square-o');
+    		$(this).find('.fa').addClass('fa-check-square-o');
+    		$(this).find('input[type="checkbox"]').attr('checked','checked');
+    	}
+    	
     	evt.stopPropagation();
     	evt.preventDefault();
     });
 });
 </script>
+<?php if ($reactEditor) { ?>
+<script type="text/javascript">
+// React page editor: mirror the checked values into m_box_product_attribute_values_ids_selected_list (see MelisCommercePluginListParamsTrait)
+$(function(){
+    var checkboxClass = ".full-category-product-list-attr-config-checkbox";
+    $(checkboxClass).on("click", function(){
+        var ids = $(checkboxClass).find('input[type="checkbox"][checked]').map(function(){ return this.value; }).get();
+        $("input[name='m_box_product_attribute_values_ids_selected_list']").val(ids.join(","));
+    });
+});
+</script>
+<?php }?>

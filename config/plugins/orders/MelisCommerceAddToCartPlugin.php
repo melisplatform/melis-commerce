@@ -13,7 +13,7 @@ return [
             'plugins' => [
                 'MelisCommerceAddToCartPlugin' => [
                     'front' => [
-                        'template_path' => ['MelisCommerce/add-to-cart'],
+                        'template_path' => ['MelisCommerceOrder/add-to-cart'],
                         'id' => 'addToCart',
                         // Id of the variant
                         'm_variant_id' => null,

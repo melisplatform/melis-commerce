@@ -13,7 +13,7 @@ return [
             'plugins' => [
                 'MelisCommerceCheckoutSummaryPlugin' => [
                     'front' => [
-                        'template_path' => ['MelisCommerce/checkout-summary'],
+                        'template_path' => ['MelisCommerceCheckout/checkout-summary'],
                         'id' => 'checkoutSummary',
                         // site id used for checkout session
                         'm_summary_site_id' => 1,
