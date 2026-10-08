@@ -249,12 +249,27 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
                             }
                         }
                         
-                        if (empty($errors)) 
+                        if (empty($errors))
                         {
                             $success = true;
                         }
                     }
-                    
+                    else
+                    {
+                        // Tabs added by other modules (e.g. MelisCacheInternal's "Partial Caching"): validate
+                        // them with their own form instead of always failing the save.
+                        $form->setData($post);
+
+                        if ($form->isValid())
+                        {
+                            $success = true;
+                        }
+                        else
+                        {
+                            $errors = $form->getMessages();
+                        }
+                    }
+
                     if (!empty($errors))
                     {
                         foreach ($errors as $keyError => $valueError)
