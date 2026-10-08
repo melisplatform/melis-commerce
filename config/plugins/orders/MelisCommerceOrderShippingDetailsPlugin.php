@@ -13,7 +13,7 @@ return [
             'plugins' => [
                 'MelisCommerceOrderShippingDetailsPlugin' => [
                     'front' => [
-                        'template_path' => ['MelisCommerceOrder/order-shipping-details'],
+                        'template_path' => ['MelisCommerce/order-shipping-details'],
                         'id' => 'orderShippingDetails',
                         // Order id
                         'm_sd_order_id' => null

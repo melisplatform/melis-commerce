@@ -13,7 +13,7 @@ return [
             'plugins' => [
                 'MelisCommerceCheckoutCouponPlugin' => [
                     'front' => [
-                        'template_path' => ['MelisCommerceCheckout/checkout-coupon'],
+                        'template_path' => ['MelisCommerce/checkout-coupon'],
                         'id' => 'checkoutCoupon',
                         
                         'm_coupon_code' => '',

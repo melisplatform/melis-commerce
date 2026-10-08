@@ -13,7 +13,7 @@ return [
             'plugins' => [
                 'MelisCommerceProductPriceRangePlugin' => [
                     'front' => [
-                        'template_path' => ['MelisCommerceProduct/product-price-range'],
+                        'template_path' => ['MelisCommerce/product-price-range'],
                         'id' => 'productPriceRange',
                         // filtering
                         'm_box_product_price_min' => null,

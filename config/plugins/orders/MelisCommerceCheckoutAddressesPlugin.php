@@ -13,7 +13,7 @@ return [
             'plugins' => [
                 'MelisCommerceCheckoutAddressesPlugin' => [
                     'front' => [
-                        'template_path' => ['MelisCommerceCheckout/checkout-addresses'],
+                        'template_path' => ['MelisCommerce/checkout-addresses'],
                         'id' => 'checkoutAddresses',
                         
                         // site id

@@ -48,6 +48,9 @@ use Laminas\View\Model\ViewModel;
  */
 class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
 {
+    use MelisCommercePluginWidthTrait;
+    use MelisCommercePluginListParamsTrait;
+
     public function __construct($updatesPluginConfig = array())
     {
         $this->configPluginKey = 'meliscommerce';
@@ -293,7 +296,7 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
                     $success = false;
                     $errors = array();
     
-                    $post = $request->getPost()->toArray();
+                    $post = $this->resolveListParams($request->getPost()->toArray(), ['m_box_category_tree_ids_selected'], ['m_box_root_category_tree_id']);
                     $form->setData($post);
 
                     if ($form->isValid())
@@ -393,6 +396,7 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
      */
     public function savePluginConfigToXml($parameters)
     {
+        $parameters = $this->resolveListParams($parameters, ['m_box_category_tree_ids_selected'], ['m_box_root_category_tree_id']);
         $xmlValueFormatted = '';
         // template_path is mendatory for all plugins
 

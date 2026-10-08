@@ -13,7 +13,7 @@ return [
             'plugins' => [
                 'MelisCommerceAttributesShowPlugin' => [
                     'front' => [
-                        'template_path' => ['MelisCommerceProduct/show-attributes'],
+                        'template_path' => ['MelisCommerce/show-attributes'],
                         'id' => 'productAttributes',
                         // Id of the attribute assigned to the product
                         'm_product_id' => null,

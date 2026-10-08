@@ -13,7 +13,7 @@ return [
             'plugins' => [
                 'MelisCommerceRelatedProductsPlugin' => [
                     'front' => [
-                        'template_path' => ['MelisCommerceProduct/related-products'],
+                        'template_path' => ['MelisCommerce/related-products'],
                         'id' => 'productRelatedPlugin',
                         // product id
                         'm_product_id' => NULl,

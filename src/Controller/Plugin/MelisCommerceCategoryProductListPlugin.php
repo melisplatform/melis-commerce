@@ -47,6 +47,9 @@ use Laminas\View\Model\ViewModel;
  */
 class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
 {
+    use MelisCommercePluginWidthTrait;
+    use MelisCommercePluginListParamsTrait;
+
     public function __construct($updatesPluginConfig = array())
     {
         $this->configPluginKey = 'meliscommerce';
@@ -206,7 +209,7 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
                     $success = false;
                     $errors = array();
                     
-                    $post = $request->getPost()->toArray();
+                    $post = $this->resolveListParams($request->getPost()->toArray(), ['m_category_ids']);
                     if (in_array($formKey, array('melis_commerce_plugin_category_product_list_config', 'melis_commerce_plugin_category_product_list_product_config')))
                     {
                         $form->setData($post);
@@ -366,6 +369,7 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
      */
     public function savePluginConfigToXml($parameters)
     {
+        $parameters = $this->resolveListParams($parameters, ['m_category_ids']);
         $xmlValueFormatted = '';
         
         // template_path is mendatory for all plugins

@@ -13,7 +13,7 @@ return [
             'plugins' => [
                 'MelisCommerceOrderReturnProductPlugin' => [
                     'front' => [
-                        'template_path' => ['MelisCommerceOrder/order-return-product'],
+                        'template_path' => ['MelisCommerce/order-return-product'],
                         'id' => 'orderProductReturn',
                         // Order id
                         'm_rp_order_id' => null,

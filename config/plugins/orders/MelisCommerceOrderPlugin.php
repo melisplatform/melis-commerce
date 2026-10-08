@@ -13,7 +13,7 @@ return [
             'plugins' => [
                 'MelisCommerceOrderPlugin' => [
                     'front' => [
-                        'template_path' => ['MelisCommerceOrder/order-details'],
+                        'template_path' => ['MelisCommerce/order-details'],
                         'id' => 'orderDetails',
                         
                         // Order id

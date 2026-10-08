@@ -13,7 +13,7 @@ return [
             'plugins' => [
                 'MelisCommerceCheckoutConfirmSummaryPlugin' => [
                     'front' => [
-                        'template_path' => ['MelisCommerceCheckout/checkout-confirm-summary'],
+                        'template_path' => ['MelisCommerce/checkout-confirm-summary'],
                         'id' => 'checkoutConfirmSummary',
                         
                         // Site id

@@ -1,0 +1,46 @@
+<?php
+/**
+ * Category tree dependencies for the plugin config tabs (category-product-list-tree-config,
+ * category-tree-config, product-list-tree-config).
+ *
+ * The back-office already loads jstree + the commerce tree scripts. The React page editor's config
+ * iframe only loads a base set of libraries, so load ours there on demand before initializing the tree.
+ */
+?>
+<script>
+// Back-office translation used by the tree's node labels (absent from the page editor iframe)
+window.translations = window.translations || {};
+if (!window.translations.tr_meliscommerce_categories_list_tree_view_product_num) {
+    window.translations.tr_meliscommerce_categories_list_tree_view_product_num = <?= json_encode($this->translate('tr_meliscommerce_categories_list_tree_view_product_num')) ?>;
+}
+
+window.melisCommerceCategoryTreeReady = window.melisCommerceCategoryTreeReady || function(callback) {
+    var loaded = function() {
+        return typeof $.fn.jstree === "function"
+            && typeof window.commerceCategoryTree !== "undefined"
+            && typeof window.catTreeConfig !== "undefined";
+    };
+    if (loaded()) {
+        callback();
+        return;
+    }
+
+    if (!$("link[href$='/jstree/dist/themes/default/style.min.css']").length) {
+        $("head").append('<link rel="stylesheet" href="/MelisCommerce/assets/jstree/dist/themes/default/style.min.css">');
+    }
+
+    var scripts = [
+        "/MelisCommerce/assets/jstree/dist/jstree.min.js",
+        "/MelisCommerce/plugins/js/common/category-jstree.js",
+        "/MelisCommerce/plugins/js/MelisCommerceCategoryTreePlugin.js"
+    ];
+    var next = function(i) {
+        if (i >= scripts.length) {
+            callback();
+            return;
+        }
+        $.ajax({ url: scripts[i], dataType: "script", cache: true }).always(function() { next(i + 1); });
+    };
+    next(0);
+};
+</script>
