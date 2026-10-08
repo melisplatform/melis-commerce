@@ -351,7 +351,6 @@ class MelisCommerceCheckoutConfirmPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted = "\t".'<'.$this->pluginXmlDbKey.' id="'.$parameters['melisPluginId'].'">'.$xmlValueFormatted."\t".'</'.$this->pluginXmlDbKey.'>'."\n";
         }
         
-        var_dump($xmlValueFormatted);
         
         return $xmlValueFormatted;
     }
