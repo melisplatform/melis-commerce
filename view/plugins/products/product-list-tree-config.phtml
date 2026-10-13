@@ -1,4 +1,5 @@
 <?php $reactEditor = \MelisCommerce\Controller\Plugin\MelisCommercePageEditor::isReactRequest(); ?>
+<?php if ($reactEditor) { echo $this->partial('MelisCommerce/page-editor-config-style'); ?><div class="melis-commerce-react-config"><?php } ?>
 <div class="row">
 	<div class="col-md-12" id="productCategorySearchZone">
 		<div class="form-group">
@@ -98,3 +99,4 @@
     });
 </script>
 <?php endif;?>
+<?php if ($reactEditor) { ?></div><?php } ?>

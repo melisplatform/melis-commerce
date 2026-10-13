@@ -257,6 +257,15 @@ const muted: CSSProperties = { fontSize: 12, color: 'var(--color-muted-foregroun
 const boxStyle: CSSProperties = { border: '1px solid var(--color-border,#e5e7eb)', borderRadius: 6, padding: 8, maxHeight: 320, overflowY: 'auto' }
 const linkBtn: CSSProperties = { background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 12, color: 'var(--color-primary,#2563eb)' }
 
+/* Inline SVG icons (the React back-office doesn't load FontAwesome), same stroke style as melis-cms's own */
+const svgIcon = (size: number, children: ReactNode, filled = false) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ display: 'block', flexShrink: 0 }}>{children}</svg>
+)
+const ChevronIcon = ({ open }: { open: boolean }) => svgIcon(12, <path d={open ? 'm6 9 6 6 6-6' : 'm9 6 6 6-6 6'} />)
+const StarIcon = ({ filled }: { filled: boolean }) => svgIcon(14, <path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.2L5.8 21 7 14.2 2 9.3l6.9-1z" />, filled)
+const BookIcon = () => svgIcon(13, <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></>)
+const SitemapIcon = () => svgIcon(15, <><rect x="9" y="2" width="6" height="5" rx="1" /><rect x="2" y="17" width="6" height="5" rx="1" /><rect x="16" y="17" width="6" height="5" rx="1" /><path d="M12 7v5M5 17v-5h14v5" /></>)
+
 /**
  * Catalog / category tree with checkboxes (replaces the legacy jstree tab). Writes the checked ids as an
  * ARRAY into ctx[name]; with `rootName`, a star per node sets the tree's root (scalar ctx[rootName]),
@@ -306,14 +315,14 @@ function CategoryTreeField({ ctx, name, rootName, label, hint }: { ctx: PluginTa
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '2px 0', paddingLeft: depth * 18, opacity: n.status ? 1 : 0.6 }}>
           <button type="button" style={{ ...linkBtn, width: 14, color: 'inherit', visibility: n.children.length ? 'visible' : 'hidden' }}
             onClick={() => setOpen((o) => ({ ...o, [n.id]: !isOpen }))}>
-            <i className={`fa fa-caret-${isOpen ? 'down' : 'right'}`} />
+            <ChevronIcon open={isOpen} />
           </button>
           <CheckBox checked={checked.has(String(n.id))} onChange={(v) => toggle(n.id, v)}
-            label={<span>{n.type === 'catalog' ? <i className="fa fa-book" style={{ marginRight: 4 }} /> : null}{n.name}{n.productCount ? <span style={muted}> ({n.productCount})</span> : null}</span>} />
+            label={<span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>{n.type === 'catalog' ? <BookIcon /> : null}{n.name}{n.productCount ? <span style={muted}> ({n.productCount})</span> : null}</span>} />
           {rootName ? (
             <button type="button" title={L.rootTitle} style={{ ...linkBtn, marginLeft: 'auto', color: root === String(n.id) ? '#f59e0b' : 'var(--color-muted-foreground,#9ca3af)' }}
               onClick={() => ctx.setValue(rootName, root === String(n.id) ? '' : String(n.id))}>
-              <i className={`fa fa-star${root === String(n.id) ? '' : '-o'}`} />
+              <StarIcon filled={root === String(n.id)} />
             </button>
           ) : null}
         </div>
@@ -378,7 +387,7 @@ function PageTreeNode({ node, depth, onPick }: { node: MelisTreeNode; depth: num
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 4, paddingLeft: depth * 16 }}>
         <button type="button" style={{ ...linkBtn, width: 16, color: 'inherit', visibility: node.lazy ? 'visible' : 'hidden' }} onClick={toggleOpen}>
-          <i className={`fa fa-caret-${open ? 'down' : 'right'}`} />
+          <ChevronIcon open={open} />
         </button>
         <button type="button" style={{ ...linkBtn, color: 'inherit', fontSize: 13, textAlign: 'left', padding: '2px 0' }} onClick={() => onPick(node.key)}>{node.title}</button>
       </div>
@@ -419,8 +428,11 @@ function PageLinkField({ ctx, name, label, hint }: { ctx: PluginTabContext; name
     <Field label={label} hint={hint} error={ctx.error(name) ?? (linkError ? L.pageLinkError : undefined)}>
       <div style={{ display: 'flex', gap: 6 }}>
         <input style={{ ...inputStyle, flex: 1 }} value={ctx.value(name)} onChange={(e) => ctx.setValue(name, e.target.value)} />
-        <button type="button" title={L.choosePage} style={{ ...inputStyle, width: 'auto', cursor: 'pointer', padding: '0 12px' }} onClick={toggleTree}>
-          <i className="fa fa-sitemap" />
+        <button type="button" title={L.choosePage} aria-label={L.choosePage} aria-expanded={open} onClick={toggleTree}
+          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 38, flexShrink: 0, cursor: 'pointer', borderRadius: 6,
+            border: '1px solid var(--color-border,#e5e7eb)', background: open ? 'var(--color-primary,#2563eb)' : 'transparent',
+            color: open ? '#fff' : 'var(--color-foreground,inherit)' }}>
+          <SitemapIcon />
         </button>
       </div>
       {open ? (
