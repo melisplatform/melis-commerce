@@ -1,7 +1,9 @@
+<?php $reactEditor = \MelisCommerce\Controller\Plugin\MelisCommercePageEditor::isReactRequest(); ?>
+<?php if ($reactEditor) { echo $this->partial('MelisCommerce/page-editor-config-style'); ?><div class="melis-commerce-react-config"><?php } ?>
 <div class="row">
     <div class="col-md-12" id="productCategorySearchZone">
         <div class="form-group">
-            <input type="text" class="form-control" name="catPrdSliderPluginSearch" id="catPrdSliderPluginSearch" placeholder="<?= $this->translate('tr_meliscommerce_categories_list_tree_view_search_input'); ?>">
+            <input type="text" class="form-control" <?= $reactEditor ? '' : 'name="catPrdSliderPluginSearch" ' ?>id="catPrdSliderPluginSearch" placeholder="<?= $this->translate('tr_meliscommerce_categories_list_tree_view_search_input'); ?>">
         </div>
         <div class="row">
             <div class="col-xs-6 col-md-6 col-lg-3">
@@ -83,6 +85,9 @@
                     <?php }?>
                 <?php }?>
                 <input type="hidden" name="m_box_root_category_tree_id" value="<?=$this->formData['m_box_root_category_tree_id'];?> ">
+                <?php if ($reactEditor) { ?>
+                    <input type="hidden" name="m_box_category_tree_ids_selected_list" value="<?= $this->escapeHtmlAttr(implode(',', array_unique((array) $this->formData['m_box_category_tree_ids_selected']))) ?>">
+                <?php }?>
             </form>
         </div>
     </div>
@@ -104,8 +109,21 @@
     $selected_tree_ids = json_encode(array_unique($this->formData['m_box_category_tree_ids_selected']));
     $selected_root_id = $this->formData['m_box_root_category_tree_id'];
 ?>
+<?php if ($reactEditor) { ?>
+<?= $this->partial('MelisCommerce/category-tree-assets') ?>
+<script>
+    melisCommerceCategoryTreeReady(function() {
+        commerceCategoryTree.initCategoryTree("catTreeFilterPluginConfig", function(e, data, categoryTree){
+            catTreeConfig.setCategoryTreeConfig(categoryTree, <?=$selected_tree_ids;?>, <?=$selected_root_id;?>);
+        });
+    });
+    melisCommerceCategoryTreeSync("catTreeFilterPluginConfig", "m_box_category_tree_ids_selected");
+</script>
+<?php } else { ?>
 <script>
     commerceCategoryTree.initCategoryTree("catTreeFilterPluginConfig", function(e, data, categoryTree){
         catTreeConfig.setCategoryTreeConfig(categoryTree, <?=$selected_tree_ids;?>, <?=$selected_root_id;?>);
     });
 </script>
+<?php }?>
+<?php if ($reactEditor) { ?></div><?php } ?>

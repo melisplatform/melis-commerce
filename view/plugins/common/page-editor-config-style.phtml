@@ -1,0 +1,83 @@
+<?php
+/**
+ * React page editor only (see MelisCommercePageEditor): layout of the custom commerce config tabs (category
+ * trees, text types, attributes) inside the editor's config iframe, which doesn't load the back-office
+ * Bootstrap CSS. Scoped to .melis-commerce-react-config, the wrapper those views add in the React editor.
+ */
+?>
+<style>
+.melis-commerce-react-config { --mcrc-border: rgba(127, 127, 127, .35); --mcrc-panel: #ffffff; }
+/* Same field colour as the iframe's own dark theme (data-theme on <html>) */
+html[data-theme="dark"] .melis-commerce-react-config { --mcrc-panel: #1e293b; }
+.melis-commerce-react-config .row { display: flex; flex-wrap: wrap; margin: 0 -6px; }
+.melis-commerce-react-config .row > [class*="col-"] { box-sizing: border-box; padding: 0 6px; flex: 0 0 100%; max-width: 100%; }
+.melis-commerce-react-config .row > .col-xs-4 { flex-basis: 33.333%; max-width: 33.333%; }
+.melis-commerce-react-config .row > .col-xs-6 { flex-basis: 50%; max-width: 50%; }
+@media (min-width: 768px) {
+    .melis-commerce-react-config .row > .col-md-6 { flex-basis: 50%; max-width: 50%; }
+    .melis-commerce-react-config .row > .col-md-3 { flex-basis: 25%; max-width: 25%; }
+}
+@media (min-width: 992px) {
+    .melis-commerce-react-config .row > .col-lg-3 { flex-basis: 25%; max-width: 25%; }
+}
+.melis-commerce-react-config br { display: none; }
+.melis-commerce-react-config .hidden { display: none !important; }
+.melis-commerce-react-config .form-group { margin-bottom: 10px; }
+.melis-commerce-react-config .margin-bottom-10 { margin-bottom: 8px; }
+/* Tree toolbar (Clear / Collapse all / Expand all / Refresh): the 4 buttons on one line, equal widths */
+.melis-commerce-react-config #productCategorySearchZone .row { flex-wrap: nowrap; align-items: center; margin-bottom: 8px; }
+.melis-commerce-react-config #productCategorySearchZone .row > [class*="col-"] { flex: 1 1 0; max-width: none; min-width: 0; margin: 0; }
+.melis-commerce-react-config #productCategorySearchZone .btn { margin: 0; }
+.melis-commerce-react-config .btn {
+    display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; box-sizing: border-box;
+    padding: 6px 10px; border: 1px solid var(--mcrc-border); border-radius: 6px;
+    background: transparent; color: inherit; font: inherit; cursor: pointer; white-space: nowrap; overflow: hidden;
+}
+.melis-commerce-react-config .btn span { overflow: hidden; text-overflow: ellipsis; }
+.melis-commerce-react-config .btn:hover { border-color: var(--accent); }
+.melis-commerce-react-config .alert { padding: 6px 10px; border-radius: 6px; border: 1px solid var(--mcrc-border); }
+/* Language toggle drawn as a field (box + caret), like the back-office one */
+.melis-commerce-react-config .filter-dropdown > a {
+    display: flex; align-items: center; gap: 8px; box-sizing: border-box; width: 260px; max-width: 100%; padding: 7px 10px;
+    border: 1px solid var(--mcrc-border); border-radius: 6px; background: var(--mcrc-panel);
+    color: inherit; text-decoration: none; cursor: pointer;
+}
+.melis-commerce-react-config .prodCatLangDropDownContainer { margin-bottom: 10px; }
+.melis-commerce-react-config .filter-dropdown > a .filter-key { flex: 1 1 auto; }
+.melis-commerce-react-config .filter-dropdown .caret {
+    width: 0; height: 0; border-top: 5px solid currentColor; border-left: 4px solid transparent; border-right: 4px solid transparent; opacity: .6;
+}
+.melis-commerce-react-config .filter-dropdown > a.show .caret { transform: rotate(180deg); }
+.melis-commerce-react-config .filter-dropdown { position: relative; }
+/* Floats over the tree below it (Bootstrap's JS positions it, but its CSS isn't loaded here): give it a
+   solid panel and a stacking order, or the tree shows through the language list */
+.melis-commerce-react-config .dropdown-menu {
+    display: none; position: absolute; top: 100%; left: 0; z-index: 1000; min-width: 180px;
+    list-style: none; margin: 6px 0 0; padding: 4px 0; border: 1px solid var(--mcrc-border); border-radius: 6px;
+    background: var(--mcrc-panel); box-shadow: 0 8px 24px rgba(0, 0, 0, .35);
+}
+.melis-commerce-react-config .dropdown-menu.show { display: block; }
+.melis-commerce-react-config .dropdown-menu a { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 10px; color: inherit; cursor: pointer; }
+.melis-commerce-react-config .dropdown-menu a:hover { background: var(--mcrc-border); }
+.melis-commerce-react-config .imgDisplay { width: 20px; height: auto; }
+.melis-commerce-react-config .pdc-heading h4 { margin: 10px 0 6px; font-size: 13px; }
+/* The tree script paints enabled nodes green (inline style) and never resets it: keep the normal text
+   color, and show green on CHECKED categories only, so the color follows the checkbox */
+.melis-commerce-react-config .jstree-default .jstree-node { color: inherit !important; }
+.melis-commerce-react-config .jstree-default .jstree-anchor { color: inherit; }
+.melis-commerce-react-config .jstree-default .jstree-anchor.jstree-checked { color: #72af46; }
+/* jstree's loading throbber is a GIF with a white matte, which shows as a white blob on the dark theme:
+   draw a spinner in the text color instead */
+.melis-commerce-react-config .jstree-default .jstree-loading > .jstree-ocl { background: none; position: relative; }
+.melis-commerce-react-config .jstree-default .jstree-loading > .jstree-ocl::after {
+    content: ""; position: absolute; top: 50%; left: 50%; width: 12px; height: 12px; margin: -7px 0 0 -7px;
+    border: 2px solid var(--mcrc-border); border-top-color: currentColor; border-radius: 50%;
+    animation: mcrc-spin .8s linear infinite;
+}
+@keyframes mcrc-spin { to { transform: rotate(360deg); } }
+.melis-commerce-react-config .jstree-default .jstree-hovered { background: var(--mcrc-border); box-shadow: none; }
+/* Highlighted (root) category, and categories the tree keeps disabled until a root is highlighted */
+.melis-commerce-react-config .jstree-default .jstree-anchor.jstree-clicked { background: var(--accent); color: #fff; box-shadow: none; border-radius: 3px; }
+.melis-commerce-react-config .jstree-default .jstree-disabled { opacity: .45; cursor: pointer; }
+.melis-commerce-react-config .jstree-default .jstree-disabled > .jstree-checkbox { cursor: not-allowed; }
+</style>

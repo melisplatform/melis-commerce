@@ -49,6 +49,7 @@ use Laminas\Session\Container;
  */
 class MelisCommerceProductShowPlugin extends MelisTemplatingPlugin
 {
+    use MelisCommercePluginWidthTrait;
     public function __construct($updatesPluginConfig = array())
     {
         // the key of the configuration in the app.plugins.php

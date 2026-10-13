@@ -18,6 +18,8 @@ use Laminas\Session\Container;
 use Laminas\ModuleManager\ModuleEvent;
 use Illuminate\Database\Capsule\Manager as Capsule;
 
+use MelisCommerce\Controller\Plugin\MelisCommercePageEditor;
+
 use MelisCommerce\Listener\MelisCommerceCategoryListener;
 use MelisCommerce\Listener\MelisCommerceFlashMessengerListener;
 use MelisCommerce\Listener\MelisCommerceSaveProductListener;
@@ -137,6 +139,35 @@ class Module
         $events = $manager->getEventManager();
         $events->attach(ModuleEvent::EVENT_MERGE_CONFIG, array($this, 'updateRoutesFrontBack'));
         $events->attach(ModuleEvent::EVENT_MERGE_CONFIG, array($this, 'illuminateBootLoader'));
+        $events->attach(ModuleEvent::EVENT_MERGE_CONFIG, array($this, 'reactEditorPluginPalette'));
+    }
+
+    /**
+     * The React page editor's plugin palette (melis-cms) takes the first segment of a plugin's default
+     * template_path as its owning module, and only lists the plugins of the modules loaded on the site.
+     * Many commerce plugins use template namespaces like MelisCommerceCart/ or MelisCommerceOrder/, which
+     * hid them from it. For that request only, expose their default template under MelisCommerce/.
+     */
+    public function reactEditorPluginPalette(ModuleEvent $e)
+    {
+        if (!MelisCommercePageEditor::isReactPaletteRequest()) {
+            return;
+        }
+
+        $configListener = $e->getConfigListener();
+        $config         = $configListener->getMergedConfig(false);
+
+        foreach ($config['plugins']['meliscommerce']['plugins'] ?? [] as $pluginName => $plugin) {
+            $templates = (array) ($plugin['front']['template_path'] ?? []);
+            $first     = (string) reset($templates);
+            $slash     = strpos($first, '/');
+
+            if ($slash !== false && substr($first, 0, $slash) !== 'MelisCommerce') {
+                $config['plugins']['meliscommerce']['plugins'][$pluginName]['front']['template_path'] = ['MelisCommerce' . substr($first, $slash)];
+            }
+        }
+
+        $configListener->setMergedConfig($config);
     }
 
     public function illuminateBootLoader(ModuleEvent $e)

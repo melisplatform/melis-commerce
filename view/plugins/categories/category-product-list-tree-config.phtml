@@ -1,7 +1,9 @@
+<?php $reactEditor = \MelisCommerce\Controller\Plugin\MelisCommercePageEditor::isReactRequest(); ?>
+<?php if ($reactEditor) { echo $this->partial('MelisCommerce/page-editor-config-style'); ?><div class="melis-commerce-react-config"><?php } ?>
 <div class="row">
 	<div class="col-md-12" id="productCategorySearchZone">
 		<div class="form-group">
-        	<input type="text" class="form-control" name="catPrdSliderPluginSearch" id="catPrdSliderPluginSearch" placeholder="<?= $this->translate('tr_meliscommerce_categories_list_tree_view_search_input'); ?>">
+        	<input type="text" class="form-control" <?= $reactEditor ? '' : 'name="catPrdSliderPluginSearch" ' ?>id="catPrdSliderPluginSearch" placeholder="<?= $this->translate('tr_meliscommerce_categories_list_tree_view_search_input'); ?>">
     	</div>
     	<div class="row">
     		<div class="col-xs-6 col-md-6 col-lg-3">
@@ -76,6 +78,9 @@
             			<input type="hidden" name="m_category_ids[]" value="<?php echo $val?>">
             		<?php }?>
         		<?php }?>
+        		<?php if ($reactEditor) { ?>
+        			<input type="hidden" name="m_category_ids_list" value="<?= $this->escapeHtmlAttr(implode(',', array_unique((array) $this->formData['m_category_ids']))) ?>">
+        		<?php }?>
         	</form>
     	</div>
 	</div>
@@ -90,6 +95,17 @@
         ?>
     </div>
 </div>
+<?php if ($reactEditor) { ?>
+<?= $this->partial('MelisCommerce/category-tree-assets') ?>
+<script>
+	melisCommerceCategoryTreeReady(function() {
+		commerceCategoryTree.initCategoryTree("catTreepluginConfig");
+	});
+	melisCommerceCategoryTreeSync("catTreepluginConfig", "m_category_ids");
+</script>
+<?php } else { ?>
 <script>
 	commerceCategoryTree.initCategoryTree("catTreepluginConfig");
 </script>
+<?php }?>
+<?php if ($reactEditor) { ?></div><?php } ?>

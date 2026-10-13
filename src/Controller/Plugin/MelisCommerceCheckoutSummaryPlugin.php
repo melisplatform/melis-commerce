@@ -49,6 +49,7 @@ use Laminas\View\Model\ViewModel;
  */
 class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
 {
+    use MelisCommercePluginWidthTrait;
     public function __construct($updatesPluginConfig = array())
     {
         // the key of the configuration in the app.plugins.php
@@ -361,7 +362,6 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted = "\t".'<'.$this->pluginXmlDbKey.' id="'.$parameters['melisPluginId'].'">'.$xmlValueFormatted."\t".'</'.$this->pluginXmlDbKey.'>'."\n";
         }
         
-        var_dump($xmlValueFormatted);
         
         return $xmlValueFormatted;
     }

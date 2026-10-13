@@ -49,6 +49,12 @@ use Laminas\Stdlib\ArrayUtils;
  */
 class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
 {
+    use MelisCommercePluginWidthTrait;
+    use MelisCommercePluginListParamsTrait;
+
+    /** Multi-value config fields (category tree, text types, attribute values), see the trait */
+    const LIST_PARAMS = ['m_box_category_tree_ids_selected', 'm_box_product_field_type', 'm_box_product_attribute_values_ids_selected'];
+
     public function __construct($updatesPluginConfig = array())
     {
         $this->configPluginKey = 'meliscommerce';
@@ -238,7 +244,7 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
                     $success = false;
                     $errors = array();
                     
-                    $post = $request->getPost()->toArray();
+                    $post = $this->resolveListParams($request->getPost()->toArray(), self::LIST_PARAMS);
                     
                     if (in_array($formKey, array('melis_commerce_plugin_full_category_product_list_config', 'melis_commerce_plugin_full_category_product_list_pagination_config')))
                     {
@@ -409,6 +415,7 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
      */
     public function savePluginConfigToXml($parameters)
     {
+        $parameters = $this->resolveListParams($parameters, self::LIST_PARAMS);
         $xmlValueFormatted = '';
     
         // template_path is mendatory for all plugins

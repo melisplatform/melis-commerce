@@ -52,6 +52,7 @@ use Laminas\View\Model\ViewModel;
  */
 class MelisCommerceCartPlugin extends MelisTemplatingPlugin
 {
+    use MelisCommercePluginWidthTrait;
     public function __construct($updatesPluginConfig = array())
     {
         $this->configPluginKey = 'meliscommerce';

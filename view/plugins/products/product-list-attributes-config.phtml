@@ -1,3 +1,5 @@
+<?php $reactEditor = \MelisCommerce\Controller\Plugin\MelisCommercePageEditor::isReactRequest(); ?>
+<?php if ($reactEditor) { echo $this->partial('MelisCommerce/page-editor-config-style'); ?><div class="melis-commerce-react-config"><?php } ?>
 <div class="form-group">
 	<?php foreach ($this->attrs As $val){?>
     	<div class="row">
@@ -22,12 +24,17 @@
                     	<label class="full-category-product-list-attr-config-checkbox">
                     		<?php $valCol = 'avt_v_'.$vals->atype_column_value;?>
                     		<i class="fa fa-<?php echo ($checked) ? $checked.'-' : '' ?>square-o fa-lg"></i> <?php echo $vals->$valCol?>
-                    		<input type="checkbox" name="m_box_product_attribute_values_ids_selected[]" value="<?php echo $vals->atval_id ?>" <?php echo ($checked) ? $checked.'ed' : '' ?> style="display: none">
+                    		<input type="checkbox" <?= $reactEditor ? '' : 'name="m_box_product_attribute_values_ids_selected[]" ' ?>value="<?php echo $vals->atval_id ?>" <?php echo ($checked) ? $checked.'ed' : '' ?> style="display: none">
                     	</label>
             		</div>
         		<?php }?>
     		</form>
     	</div>
+	<?php }?>
+	<?php if ($reactEditor) { ?>
+		<form>
+			<input type="hidden" name="m_box_product_attribute_values_ids_selected_list" value="<?= $this->escapeHtmlAttr(implode(',', (array) $this->formData['m_box_product_attribute_values_ids_selected'])) ?>">
+		</form>
 	<?php }?>
 </div>
 <style>
@@ -76,3 +83,16 @@ $(function(){
     });
 });
 </script>
+<?php if ($reactEditor) { ?>
+<script type="text/javascript">
+// React page editor: mirror the checked values into m_box_product_attribute_values_ids_selected_list (see MelisCommercePluginListParamsTrait)
+$(function(){
+    var checkboxClass = ".full-category-product-list-attr-config-checkbox";
+    $(checkboxClass).on("click", function(){
+        var ids = $(checkboxClass).find('input[type="checkbox"][checked]').map(function(){ return this.value; }).get();
+        $("input[name='m_box_product_attribute_values_ids_selected_list']").val(ids.join(","));
+    });
+});
+</script>
+<?php }?>
+<?php if ($reactEditor) { ?></div><?php } ?>

@@ -410,6 +410,9 @@ return [
 
             // Plugin common form config layout
             'MelisCommerce/plugin-common-form-config'               => __DIR__ . '/../view/plugins/common/plugin-common-form-config.phtml',
+            'MelisCommerce/category-tree-assets'                    => __DIR__ . '/../view/plugins/common/category-tree-assets.phtml',
+            'MelisCommerce/page-editor-config-style'                => __DIR__ . '/../view/plugins/common/page-editor-config-style.phtml',
+            'MelisCommerce/plugin-width-container'                  => __DIR__ . '/../view/plugins/common/plugin-width-container.phtml',
             'MelisCommerce/plugin-common-pagination'                => __DIR__ . '/../view/plugins/common/plugin-common-pagination.phtml',
 
             // Dashboard plugins
