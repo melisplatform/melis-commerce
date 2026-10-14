@@ -52,6 +52,7 @@ use Laminas\Session\Container;
 class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
 {
     use MelisCommercePluginWidthTrait;
+    use MelisCommercePluginLoginGuardTrait;
     public function __construct($updatesPluginConfig = array())
     {
         // the key of the configuration in the app.plugins.php
@@ -66,6 +67,11 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
+        // anonymous visitor on the front: login page redirect or "please login", never the empty forms (#0011157)
+        if ($guard = $this->anonymousGuard()) {
+            return $guard;
+        }
+
         $clientId = null;
         $order = array();
         $orderAddressPluginView = array();
@@ -389,6 +395,7 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
             }
         }
         
+        $configValues = array_merge($configValues, $this->loginPageLinkFromXml($xml));
         return $configValues;
     }
     
@@ -406,6 +413,8 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
         }
         
+        $xmlValueFormatted .= $this->loginPageLinkToXml($parameters);
+
         // Something has been saved, let's generate an XML for DB
         if (!empty($xmlValueFormatted))
         {

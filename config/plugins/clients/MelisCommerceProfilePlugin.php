@@ -14,6 +14,7 @@ return [
                 'MelisCommerceProfilePlugin' => [
                     'front' => [
                         'template_path' => ['MelisCommerce/ClientProfile'],
+                        'm_login_page_link' => '', // login page for anonymous visitors (Mantis #0011157)
                         'id' => 'userProfile',
                         // User input fields
                         'cper_civility' => '',

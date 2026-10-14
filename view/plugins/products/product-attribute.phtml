@@ -22,7 +22,7 @@ input[name="m_box_product_attribute_values_ids_selected[]"]{
         			<?php
         			    $checked = '';
                         foreach($this->selectedAttributes as $k => $v) {
-                            if (in_array($val->atval_id, $v)) {
+                            if (in_array($vals->atval_id, $v)) {
                                 $checked = 'check';
                                 //stop the searching if found
                                 break;
@@ -34,7 +34,10 @@ input[name="m_box_product_attribute_values_ids_selected[]"]{
                     		<input type="checkbox" name="m_box_product_attribute_values_ids_selected[]" value="<?php echo $this->escapeHtmlAttr($vals->atval_id) ?>" <?= $checked; ?>>
                 			<?php
                     		    $valCol = 'avt_v_'.$vals->atype_column_value;
-                    		    echo $this->escapeHtml($vals->$valCol)
+                    		    // File (binary) value: its reference, not the file content (Mantis #0011155)
+                    		    echo $this->escapeHtml($vals->atype_column_value === 'binary'
+                    		        ? ((string) $vals->atval_reference !== '' ? $vals->atval_reference : 'File #'.$vals->atval_id)
+                    		        : $vals->$valCol)
                 		    ?>
                 		</label>
             		</div>

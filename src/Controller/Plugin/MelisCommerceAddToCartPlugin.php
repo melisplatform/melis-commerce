@@ -50,6 +50,7 @@ use Laminas\View\Model\ViewModel;
 class MelisCommerceAddToCartPlugin extends MelisTemplatingPlugin
 {
     use MelisCommercePluginWidthTrait;
+    use MelisCommercePluginRouteTrait;
     public function __construct($updatesPluginConfig = array())
     {
         // the key of the configuration in the app.plugins.php
@@ -74,6 +75,18 @@ class MelisCommerceAddToCartPlugin extends MelisTemplatingPlugin
         $quantity = ($this->pluginFrontConfig['m_variant_quantity']) ? $this->pluginFrontConfig['m_variant_quantity'] : 1;
         
         $is_submit = ($this->pluginFrontConfig['m_add_to_cart_is_submit']) ? true : false;
+
+        // No variant given (?m_variant_id): the product page's product (URL /pid/N, else m_product_id) → its main
+        // variant if in stock, else its first variant in stock. It said "Product is not available" for an
+        // in-stock product unless the URL carried ?m_variant_id (Mantis #0011159).
+        if (!$variantId) {
+            $productId = $this->commerceRouteParam('productId')
+                ?: (!empty($this->pluginFrontConfig['m_product_id']) ? (int) $this->pluginFrontConfig['m_product_id'] : null);
+            if ($productId) {
+                $variantId = $this->defaultVariantId($productId, $countryId);
+            }
+        }
+        $added = false;
         
         $factory = new \Laminas\Form\Factory();
         $formElements = $this->getServiceManager()->get('FormElementManager');
@@ -157,6 +170,10 @@ class MelisCommerceAddToCartPlugin extends MelisTemplatingPlugin
                                     'genError' => $translator->translate('tr_meliscommerce_products_plugins_cart_error')
                                 );
                             }
+                            else
+                            {
+                                $added = true; // shown to the visitor — nothing confirmed the add before (#0011159)
+                            }
                         }
                         else
                         {
@@ -196,12 +213,13 @@ class MelisCommerceAddToCartPlugin extends MelisTemplatingPlugin
             'addToCcart' => $addToCartForm,
             'hasStock' => $hasStock,
             'errors' => $errors,
+            'added' => $added,
         );
-        
+
         // return the variable array and let the view be created
         return $viewVariables;
     }
-    
+
     /**
      * This function generates the form displayed when editing the parameters of the plugin
      */

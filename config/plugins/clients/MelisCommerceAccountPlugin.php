@@ -15,6 +15,7 @@ return [
                     'front' => [
                         // Template path
                         'template_path' => ['MelisCommerce/ClientAccount'],
+                        'm_login_page_link' => '', // login page for anonymous visitors (Mantis #0011157)
                         'id' => 'userAccount',
                         // Parameters for the MelisCommerceProfilePlugin()
                         'profile_parameter' => [],

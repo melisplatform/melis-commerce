@@ -15,6 +15,7 @@ export const DICT = mergeDict({
     lock_checkbox: 'Cocher pour modifier',
     lock_warning: 'Attention, la modification de ces options peut avoir des conséquences critiques et irréversibles sur les comptes du module commerce.',
     err_email_invalid: 'Adresse email invalide : {u}',
+    err_stock_level_min: 'Le seuil de stock doit être un nombre entier supérieur ou égal à 0.',
     saved: 'Enregistré ✓',
   },
   en: {
@@ -30,6 +31,7 @@ export const DICT = mergeDict({
     lock_checkbox: 'Check to edit',
     lock_warning: 'Warning, editing these options can have irreversible critical consequences on the accounts of the commerce module.',
     err_email_invalid: 'Invalid email address: {u}',
+    err_stock_level_min: 'The stock alert threshold must be a whole number of 0 or more.',
     saved: 'Saved ✓',
   },
 })

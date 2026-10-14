@@ -9,13 +9,10 @@
                             <h4>
                                 <?php
                                     $prdPrice = $prd['prd_price_details'];
-                                    $prdPriceStr = 'N/A';
-                                    if (!empty($prdPrice['prd_currency_symbol']) && !empty($prdPrice['prd_price_net']))
-                                    {
-                                        $prdPriceStr = $prdPrice['prd_currency_symbol'].number_format($prdPrice['prd_price_net'],2);
-                                    }
+                                    // shared money format (Mantis #0011160) — escaped by the helper
+                                    $prdPriceStr = $this->MelisCommercePrice($prdPrice['prd_price_net'] ?? null, $prdPrice['prd_currency_symbol'] ?? '');
                                 ?>
-                                <a href="<?php echo $this->escapeHtmlAttr($this->MelisCommerceLink('product', $prd['prd_id'], $this->langId, true))?>"><?php echo $this->escapeHtml($prd['prd_text'].' ('.$prdPriceStr.')') ?></a>
+                                <a href="<?php echo $this->escapeHtmlAttr($this->MelisCommerceLink('product', $prd['prd_id'], $this->langId, true))?>"><?php echo $this->escapeHtml($prd['prd_text']).' ('.$prdPriceStr.')' ?></a>
                             </h4>
                             <?php foreach ($prd['prd_categories'] As $cats){?>
                                 <p class="label label-primary"><?php echo $this->escapeHtml($cats['catt_name'])?></p>

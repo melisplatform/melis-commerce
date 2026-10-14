@@ -23,7 +23,7 @@
     					    if($document->dtype_code == 'IMG')
     					    {
     					        echo '<div class="col-md-3">';
-    					           echo '<img class="img" src="'.$document->doc_path.'" />';
+    					           echo '<img class="img" src="'.$this->escapeHtmlAttr($document->doc_path).'" />';
     					        echo '</div>';
     					    }
     					}
@@ -60,6 +60,20 @@
                         ?>
                     </h3>
               	</div>
+              	<?php // price of the selected variant + variant choice (Mantis #0011159) — a GET form: AddToCart reads m_variant_id
+              	    $selected = $this->selectedVariant;
+              	    if ($selected) { ?>
+              	    <p class="lead product-show-price"><?php echo $this->MelisCommercePrice($selected['price'], $selected['symbol'])?></p>
+              	    <?php if (count($this->variants) > 1) { ?>
+              	    <form method="get" class="form-inline product-show-variants">
+              	        <select name="m_variant_id" class="form-control" onchange="this.form.submit()">
+              	            <?php foreach ($this->variants as $variant) { ?>
+              	                <option value="<?php echo $this->escapeHtmlAttr($variant['id'])?>"<?php echo $variant['id'] === $selected['id'] ? ' selected' : ''?>><?php echo $this->escapeHtml($variant['sku']).' — '.$this->MelisCommercePrice($variant['price'], $variant['symbol'])?></option>
+              	            <?php } ?>
+              	        </select>
+              	    </form>
+              	    <?php } ?>
+              	<?php } ?>
               	<?php 
               	    foreach($this->product->getTexts() as $prodText)
               	    {

@@ -100,6 +100,15 @@ class MelisComAuthenticationService extends Session
             if(!empty($getContactAssociatedAccounts)) {
                 //check password
                 $isCorrect = $this->isPasswordCorrect($password, $clientInfo->cper_password);
+                if (!$isCorrect && $this->isLegacyMd5Password($password, (string) $clientInfo->cper_password)) {
+                    // TEMPORARY (Mantis #0011164): contacts saved by the React BO before the fix got an md5
+                    // hash, which password_verify() never accepts. Accept it once and re-hash it right away,
+                    // so the account is on password_hash from now on. Remove once no md5 hash is left.
+                    $newHash = $this->encryptPassword($password);
+                    $this->getServiceManager()->get('MelisEcomClientPersonTable')->save(['cper_password' => $newHash], $clientInfo->cper_id);
+                    $clientInfo->cper_password = $newHash; // the AuthAdapter below compares against the stored value
+                    $isCorrect = true;
+                }
                 if ($isCorrect) {
                     $dbAdapter = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
                     $authAdapter = new AuthAdapter(
@@ -287,5 +296,11 @@ class MelisComAuthenticationService extends Session
     public function isPasswordCorrect($providedPassword, $storedHashPassword)
     {
         return password_verify($providedPassword, $storedHashPassword);
+    }
+
+    /** TEMPORARY (Mantis #0011164): the stored value is a bare md5 of the provided password. */
+    private function isLegacyMd5Password(string $providedPassword, string $stored): bool
+    {
+        return preg_match('/^[a-f0-9]{32}$/i', $stored) === 1 && hash_equals(strtolower($stored), md5($providedPassword));
     }
 }

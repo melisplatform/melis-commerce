@@ -17,8 +17,12 @@
                 }
                 
                 $column = 'avt_v_'.$value->atype_column_value;
+                // a File (binary) value is the file CONTENT: show its reference, never the bytes (Mantis #0011155)
+                $label = $value->atype_column_value === 'binary'
+                    ? ((string) $value->atval_reference !== '' ? $value->atval_reference : 'File #'.$value->atval_id)
+                    : $value->atval_trans[0]->$column;
                 echo '<option '.$selected.' value="'.$this->escapeHtmlAttr($value->atval_id).'">';
-                echo $this->escapeHtml($value->atval_trans[0]->$column);
+                echo $this->escapeHtml($label);
                 echo '</option>';
             }
             echo '</select>';

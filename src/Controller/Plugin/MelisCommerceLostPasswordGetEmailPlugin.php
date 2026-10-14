@@ -54,6 +54,7 @@ use Laminas\View\Model\ViewModel;
 class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
 {
     use MelisCommercePluginWidthTrait;
+    use MelisCommercePluginFormTrait;
     public function __construct($updatesPluginConfig = array())
     {
         // the key of the configuration in the app.plugins.php
@@ -80,6 +81,7 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
         $formData = $this->getFormData();
         
         $appConfigForm = (!empty($this->pluginFrontConfig['forms']['lost_password'])) ? $this->pluginFrontConfig['forms']['lost_password'] : array();
+        $appConfigForm = $this->notEmptyValidatorFirst($appConfigForm);
         $emailConfig = (!empty($formData['email'])) ? $formData['email'] : array();
         
         $factory = new \Laminas\Form\Factory();
@@ -98,8 +100,7 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
 
         if ($is_submit)
         {
-            $message = $translator->translate('tr_meliscommerce_general_unable_to_send_email');
-            
+            // (no "unable to send" message before anything was sent: it showed above the field errors — #0011158)
             if ($lostPassword->isValid())
             {
                 $clientSrv = $this->getServiceManager()->get('MelisComClientService');
@@ -111,11 +112,12 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
                     
                     // Checking if the Email entered is existing on the database
                     $clientPerson = $clientSrv->getClientPersonByEmail($data['m_email']);
-                    if (empty($clientPerson))
-                    {
-                        $message = $translator->translate('tr_meliscommerce_client_email_not_exist');
-                    }
-                    else 
+                    // Same neutral answer whether or not the address has an account: "Email does not
+                    // exist" let anyone test which e-mails are customers (Mantis #0011158).
+                    $message = $translator->translate('tr_meliscommerce_plugin_lost_password_sent_if_exists');
+                    $success = 1;
+                    $lostPassword->get('m_email')->setValue('');
+                    if (!empty($clientPerson))
                     {
                         $personId = $clientPerson->cper_id;
                         $recoveryKey = $clientSrv->generatePsswordRecoveryKey($personId);
@@ -143,15 +145,18 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
                         
                         // Sending email using MelisEngineSendMail Service
                         $sendMailSvc = $this->getServiceManager()->get('MelisEngineSendMail');
-                        $sendMailSvc->sendEmail(
-                            $emailConfig['email_template_path'], $emailConfig['email_from'], $emailConfig['email_from_name'],
-                            $emailConfig['email_to'], $emailConfig['email_to_name'], $emailConfig['email_subject'],
-                            $emailConfig['email_content'], $emailConfig['email_content_tag_replace'], $emailConfig['email_reply_to']
-                        );
-                        
-                        $message = $translator->translate('tr_meliscommerce_general_send_email_success');
-                        $success = 1;
-                        $lostPassword->get('m_email')->setValue('');
+                        try {
+                            $sendMailSvc->sendEmail(
+                                $emailConfig['email_template_path'], $emailConfig['email_from'], $emailConfig['email_from_name'],
+                                $emailConfig['email_to'], $emailConfig['email_to_name'], $emailConfig['email_subject'],
+                                $emailConfig['email_content'], $emailConfig['email_content_tag_replace'], $emailConfig['email_reply_to']
+                            );
+                        } catch (\Throwable $e) {
+                            // A sending failure keeps the same neutral answer for the visitor (a different
+                            // message would again tell that the address has an account) — logged instead.
+                            error_log('MelisCommerce lost password: reset e-mail not sent to contact '
+                                . $clientPerson->cper_id . ': ' . $e->getMessage());
+                        }
                     }
                 }
             }

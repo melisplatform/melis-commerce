@@ -9,7 +9,7 @@
     <?php foreach ($this->cartList As $val){?>
     	<tr>
     		<td><?php echo $this->escapeHtml($val['var_sku'])?></td>
-    		<td align="right"><?php echo $val['cur_symbol'].$val['price']?></td>
+    		<td align="right"><?php echo $this->MelisCommercePrice($val['price'], $val['cur_symbol'])?></td>
     		<td align="right"><?php echo $val['quantity']?></td>
     		<td align="right"><?php echo $val['cur_symbol'].number_format(($val['quantity']*$val['price']), 2)?></td>
     		<td align="right">

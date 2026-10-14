@@ -29,6 +29,8 @@ const L = ({
     hintPriceCountry: 'Choisissez le pays pour assigner la devise et le prix correspondant des produits.',
     hintStockCountry: 'Obtient le prix et le stock du produit en fonction du pays choisi.',
     labelDestinationPage: 'Page de destination',
+    labelLoginPage: 'Page de connexion',
+    hintLoginPage: "Page de login vers laquelle un visiteur non connecté est redirigé (puis renvoyé ici après connexion). Vide : un message lui demande de se connecter.",
     hintDestinationPage: "Saisissez l'url de la page de destination sur laquelle l'utilisateur sera redirigé. Ce peut être une url interne ou externe.",
     labelResetPage: 'Page de réinitialisation du mot de passe',
     hintResetPage: "Page sur laquelle sera redirigé l'utilisateur pour réinitialiser son mot de passe.",
@@ -109,6 +111,8 @@ const L = ({
     hintPriceCountry: 'Select the country to assign the corresponding currency and price of the products.',
     hintStockCountry: 'Get the product price and stock based on the selected country.',
     labelDestinationPage: 'Destination page',
+    labelLoginPage: 'Login page',
+    hintLoginPage: 'Login page a visitor who is not logged in is redirected to (and sent back here after login). Empty: a message asks them to log in.',
     hintDestinationPage: 'Enter the url of the destination page the user will be redirected to. It can be an internal or external url.',
     labelResetPage: 'Password reset page',
     hintResetPage: 'The page where the user will be redirected to reset the password.',
@@ -484,6 +488,8 @@ const site = (name: string) => select(name, L.labelSite, L.hintSite)
 const priceCountry = (name: string) => select(name, L.labelCountry, L.hintPriceCountry)
 const pageLink = (name: string, label: string, hint?: string): FieldSpec => ({ kind: 'link', name, label, hint })
 const destinationPage = (name: string) => pageLink(name, L.labelDestinationPage, L.hintDestinationPage)
+// where an anonymous visitor is sent by the account-area / checkout plugins (Mantis #0011157)
+const loginPage = pageLink('m_login_page_link', L.labelLoginPage, L.hintLoginPage)
 const order = (name: string) => select(name, L.labelOrder, L.hintOrder)
 const pagination = (perPage: string, beforeAfter: string) => [
   number(perPage, L.labelPerPage, L.hintPerPage),
@@ -499,8 +505,8 @@ const paginationTab = (perPage: string, beforeAfter: string) => tab('pagination'
 /** Per plugin: its tabs, in the legacy modal order. */
 const PLUGINS: Record<string, TabDef[]> = {
   /* ── Clients ── */
-  MelisCommerceAccountPlugin: [properties()],
-  MelisCommerceProfilePlugin: [properties()],
+  MelisCommerceAccountPlugin: [properties(loginPage)],
+  MelisCommerceProfilePlugin: [properties(loginPage)],
   MelisCommerceLoginPlugin: [properties(destinationPage('m_redirection_link_ok'))],
   MelisCommerceRegisterPlugin: [properties(
     destinationPage('m_redirection_link_ok'),
@@ -511,8 +517,8 @@ const PLUGINS: Record<string, TabDef[]> = {
     destinationPage('m_redirection_link_ok'),
     toggle('m_autologin', L.labelAutologin, L.hintAutologin),
   )],
-  MelisCommerceBillingAddressPlugin: [properties(toggle('show_select_address_data', L.labelSelectAddress, L.hintSelectAddress))],
-  MelisCommerceDeliveryAddressPlugin: [properties(toggle('show_select_address_data', L.labelSelectAddress, L.hintSelectAddress))],
+  MelisCommerceBillingAddressPlugin: [properties(toggle('show_select_address_data', L.labelSelectAddress, L.hintSelectAddress), loginPage)],
+  MelisCommerceDeliveryAddressPlugin: [properties(toggle('show_select_address_data', L.labelSelectAddress, L.hintSelectAddress), loginPage)],
 
   /* ── Cart & checkout ── */
   MelisCommerceAddToCartPlugin: [properties()],
@@ -522,6 +528,7 @@ const PLUGINS: Record<string, TabDef[]> = {
     priceCountry('m_checkout_country_id'),
     site('m_checkout_site_id'),
     destinationPage('m_checkout_page_link'),
+    loginPage,
   )],
   MelisCommerceCheckoutCartPlugin: [properties(priceCountry('m_cc_country_id'), site('m_cc_site_id'))],
   MelisCommerceCheckoutAddressesPlugin: [properties(
@@ -537,13 +544,13 @@ const PLUGINS: Record<string, TabDef[]> = {
   )],
 
   /* ── Orders ── */
-  MelisCommerceOrderPlugin: [properties()],
+  MelisCommerceOrderPlugin: [properties(loginPage)],
   MelisCommerceOrderAddressPlugin: [properties()],
   MelisCommerceOrderMessagesPlugin: [properties()],
   MelisCommerceOrderReturnProductPlugin: [properties()],
   MelisCommerceOrderShippingDetailsPlugin: [properties()],
   MelisCommerceOrderHistoryPlugin: [
-    configuration(select('m_order_sort', L.labelOrder, L.hintOrderHistory)),
+    configuration(select('m_order_sort', L.labelOrder, L.hintOrderHistory), loginPage),
     paginationTab('order_history_per_page', 'order_history_page_before_after'),
   ],
 

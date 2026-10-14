@@ -1,3 +1,5 @@
+<?php // anonymous visitor (no login page set): the login message instead of empty editable forms (Mantis #0011157)
+if (!empty($this->notLoggedIn)) { echo '<label class="alert alert-danger">'.$this->escapeHtml($this->loginMessage).'</label>'; return; } ?>
 <?php if($this->hasData) { ?>
     <table class="table table-striped">
         <thead>

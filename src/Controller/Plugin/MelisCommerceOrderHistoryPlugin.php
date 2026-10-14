@@ -55,6 +55,7 @@ use Laminas\View\Model\ViewModel;
 class MelisCommerceOrderHistoryPlugin extends MelisTemplatingPlugin
 {
     use MelisCommercePluginWidthTrait;
+    use MelisCommercePluginLoginGuardTrait;
     public function __construct($updatesPluginConfig = array())
     {
         $this->configPluginKey = 'meliscommerce';
@@ -68,6 +69,11 @@ class MelisCommerceOrderHistoryPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
+        // anonymous visitor on the front: login page redirect or "please login", never the empty forms (#0011157)
+        if ($guard = $this->anonymousGuard()) {
+            return $guard;
+        }
+
         $clientId = null;
         $orders = array();
 
@@ -317,6 +323,7 @@ class MelisCommerceOrderHistoryPlugin extends MelisTemplatingPlugin
             }
         }
 
+        $configValues = array_merge($configValues, $this->loginPageLinkFromXml($xml));
         return $configValues;
     }
 
@@ -352,6 +359,8 @@ class MelisCommerceOrderHistoryPlugin extends MelisTemplatingPlugin
         {
             $xmlValueFormatted .= "\t\t" . '<order_history_page_before_after><![CDATA[' . $parameters['order_history_page_before_after'] . ']]></order_history_page_before_after>';
         }
+
+        $xmlValueFormatted .= $this->loginPageLinkToXml($parameters);
 
         // Something has been saved, let's generate an XML for DB
         //if (!empty($xmlValueFormatted))

@@ -1160,6 +1160,23 @@ class MelisComProductService extends MelisComGeneralService
 		$melisComPriceService = $this->getServiceManager()->get('MelisComPriceService');
 		$prdVarPrice = $melisComPriceService->getItemPrice($arrayParameters['productId'], $arrayParameters['countryId'], $arrayParameters['groupId'], 'product');
 
+		// No product-level price: the lowest price of its ACTIVE variants, resolved with the same rules as
+		// the cart (country → general, client group → general) — prices set on variants only showed "N/A"
+		// in ProductList (Mantis #0011160).
+		if (!isset($prdVarPrice['price']) || !is_numeric($prdVarPrice['price'])) {
+			$variantTbl = $this->getServiceManager()->get('MelisEcomVariantTable');
+			foreach ($variantTbl->getEntryByField('var_prd_id', $arrayParameters['productId']) as $variant) {
+				if ((int) $variant->var_status !== 1) {
+					continue;
+				}
+				$varPrice = $melisComPriceService->getItemPrice($variant->var_id, $arrayParameters['countryId'], $arrayParameters['groupId'], 'variant');
+				if (isset($varPrice['price']) && is_numeric($varPrice['price'])
+					&& (!isset($prdVarPrice['price']) || !is_numeric($prdVarPrice['price']) || (float) $varPrice['price'] < (float) $prdVarPrice['price'])) {
+					$prdVarPrice = $varPrice;
+				}
+			}
+		}
+
 		$prdPriceDetails = [
 			'prd_currency_symbol' => $prdVarPrice['price_currency']['symbol'] ?? null,
 			'prd_currency_code' => $prdVarPrice['price_currency']['code'] ?? null,

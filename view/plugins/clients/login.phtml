@@ -6,7 +6,11 @@
 <?php
 	$form = $this->login;
 	$form->prepare();
-	echo $this->form()->openTag($form); 
+	// Credential failure (wrong e-mail / password…) — it was set but never displayed (Mantis #0011164)
+	if (!empty($this->message) && empty($this->success)) {
+	    echo '<div class="alert alert-danger">'.$this->escapeHtml($this->translate($this->message)).'</div>';
+	}
+	echo $this->form()->openTag($form);
 	
 	foreach ($form->getElements() As $key => $val)
 	{

@@ -19,6 +19,8 @@ return [
                         'm_product_id' => null,
                         // country id
                         'm_product_country' => null,
+                        // selected variant (?m_variant_id, also read by AddToCart) — Mantis #0011159
+                        'm_variant_id' => null,
                     ],
                     'melis' => [
                         /*

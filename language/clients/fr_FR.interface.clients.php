@@ -250,6 +250,7 @@
 		'tr_meliscommerce_client_add_new_address' => 'Ajouter une nouvelle adresse',
 			
 		'tr_meliscommerce_client_email_not_exist' => 'L\'email n\'existe pas, veuillez saisir une adresse email valide',
+		'tr_meliscommerce_plugin_lost_password_sent_if_exists' => 'Si un compte existe pour cette adresse e-mail, un e-mail de réinitialisation du mot de passe lui a été envoyé.',
 		'tr_meliscommerce_client_email_not_available' => 'Cette adresse email est déjà utilisée',
 		'tr_meliscommerce_client_pass_change_success' => 'Le mot de passe a été changé avec succès',
 		'tr_meliscommerce_client_pass_key_invalid' => 'Erreur! Clef de récupération de mot de passe invalide',

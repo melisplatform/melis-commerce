@@ -98,6 +98,12 @@ class MelisComReactApiSettingsController extends MelisAbstractActionController
         try {
             $b = json_decode((string) $this->getRequest()->getContent(), true) ?? [];
 
+            $rawStock = $b['stockLevelAlert'] ?? null;
+            if ($rawStock !== null && $rawStock !== '' && (filter_var($rawStock, FILTER_VALIDATE_INT) === false || (int) $rawStock < 0)) {
+                // a negative threshold was accepted and saved (Mantis #0011165): empty or an integer >= 0 only
+                $msg = $this->getServiceManager()->get('translator')->translate('tr_meliscommerce_settings_alert_stock_min');
+                return $this->jsonResponse(['success' => false, 'error' => $msg], 400);
+            }
             $stockLevelAlert = ($b['stockLevelAlert'] ?? '') === '' || $b['stockLevelAlert'] === null ? null : (int) $b['stockLevelAlert'];
             $recipients = is_array($b['recipients'] ?? null) ? $b['recipients'] : [];
             $accountType = (string) ($b['accountType'] ?? 'manual_input');

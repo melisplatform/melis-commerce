@@ -3,11 +3,15 @@
     display: inherit;
 }
 </style>
+<?php if (!empty($this->added)){?>
+    <?php // nothing confirmed the add before (Mantis #0011159) ?>
+    <div class="alert alert-success"><?php echo $this->escapeHtml($this->translate('tr_meliscommerce_products_plugins_added_to_cart'))?></div>
+<?php }?>
 <?php if (!empty($this->errors)){?>
     <div class="alert alert-danger">
     	<?php foreach ($this->errors As $err){?>
     		<?php foreach ($err As $error){?>
-    			<p><?php echo $error?></p>
+    			<p><?php echo $this->escapeHtml($error)?></p>
     		<?php }?>
     	<?php }?>
     </div>

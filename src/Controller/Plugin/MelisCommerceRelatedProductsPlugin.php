@@ -51,6 +51,7 @@ use Laminas\View\Model\ViewModel;
 class MelisCommerceRelatedProductsPlugin extends MelisTemplatingPlugin
 {
     use MelisCommercePluginWidthTrait;
+    use MelisCommercePluginRouteTrait;
     public function __construct($updatesPluginConfig = array())
     {
         $this->configPluginKey = 'meliscommerce';
@@ -70,15 +71,22 @@ class MelisCommerceRelatedProductsPlugin extends MelisTemplatingPlugin
         $langId = $container['melis-plugins-lang-id'];
 
         $data = $this->getFormData();
-        $productId = ($data['m_product_id']) ? $data['m_product_id'] : null;
+        // the product of the URL (/pid/N) first, then the one configured in the plugin (Mantis #0011156)
+        $productId = $this->commerceRouteParam('productId') ?: (($data['m_product_id']) ? $data['m_product_id'] : null);
         $productSvc = $this->getServiceManager()->get('MelisComProductService');
         $assocProducts = $productSvc->getAssocProducts($productId, $langId);
         $data = array();
-        
+
+        // Same price as ProductList / the cart (Mantis #0011160): getProductVariantPriceById returned the
+        // cheapest price row of any variant, any country, any client group.
+        $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
+        $clientGroupId = $ecomAuthSrv->hasIdentity() ? $ecomAuthSrv->getClientGroup() : 1;
+
         foreach($assocProducts as $productObj){
-            
-            // Retrieve display price, check MelisComProductService for available parameters
-            $productObj->display_price = $productSvc->getProductVariantPriceById($productObj->getId());
+
+            // display price = product price, else the lowest valid variant price (country general, client group)
+            $basic = $productSvc->getProductBasicDetails($productObj->getId(), null, $clientGroupId, $langId);
+            $productObj->display_price = $basic['prd_price_details'] ?? [];
             $data[]= $productObj;
         }
 
