@@ -97,6 +97,7 @@ return array(
     // Plugins
     'tr_meliscommerce_products_plugins_stock_left' => "L'élément sélectionné n'a que \"%s\" produits en stock",
     'tr_meliscommerce_products_plugins_no_stock' => "Le produit est indisponible",
+    'tr_meliscommerce_products_plugins_added_to_cart' => "Le produit a été ajouté à votre panier.",
     'tr_meliscommerce_products_plugins_cart_error' => "Une erreur est survenue, veuillez contacter l'administrateur",
 	'tr_meliscommerce_products_plugins_quantity_error' => 'La quantité doit être un nombre',
     

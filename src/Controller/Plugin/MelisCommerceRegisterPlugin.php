@@ -52,6 +52,7 @@ use Laminas\View\Model\ViewModel;
 class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
 {
     use MelisCommercePluginWidthTrait;
+    use MelisCommercePluginFormTrait;
     public function __construct($updatesPluginConfig = array())
     {
         // the key of the configuration in the app.plugins.php
@@ -69,6 +70,7 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
         $appConfigForm = (!empty($this->pluginFrontConfig['forms']['meliscommerce_registration'])) ? $this->pluginFrontConfig['forms']['meliscommerce_registration'] : array();
         $appConfigForm = $this->getFormMergedAndOrdered($appConfigForm, 'meliscommerce_registration');
+        $appConfigForm = $this->notEmptyValidatorFirst($appConfigForm);
 
         $factory = new \Laminas\Form\Factory();
         $formElements = $this->getServiceManager()->get('FormElementManager');
@@ -83,7 +85,9 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
         
         // get submitted form values
         foreach($registrationForm->getElements() as $key => $val){
-            $data[$key] = (!empty($this->pluginFrontConfig[$key])) ? $this->pluginFrontConfig[$key] : null;
+            // '' rather than null for an empty field: StringLength rejected null as "Invalid type given" and
+            // Identical compared an absent token to its literal name ("does not match") — Mantis #0011158
+            $data[$key] = (!empty($this->pluginFrontConfig[$key])) ? $this->pluginFrontConfig[$key] : '';
         }
         
         $redirection_link = $data['m_redirection_link_ok'];

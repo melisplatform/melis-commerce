@@ -348,6 +348,7 @@ return [
     'view_helpers' => [
         'invokables' => [
             'ToolTipTable' => \MelisCommerce\View\Helper\ToolTipTableHelper::class,
+            'MelisCommercePrice' => \MelisCommerce\View\Helper\MelisCommercePriceHelper::class,
         ],
         'aliases' => [
             'MelisCommerceLink' => \MelisCommerce\View\Helper\MelisCommerceLinksHelper::class

@@ -136,7 +136,7 @@
         'tr_meliscommerce_plugin_checkout_description' => 'Ce plugin affiche tous les détails du processus de commande',
 
         // MelisCommerceCheckoutCartPlugin()
-        'tr_meliscommerce_plugin_checkout_cart_name' => 'Panier',
+        'tr_meliscommerce_plugin_checkout_cart_name' => 'Panier de commande', // was 'Panier', same as the Cart plugin (Mantis #0011161)
         'tr_meliscommerce_plugin_checkout_cart_description' => 'Ce plugin affiche la liste du panier',
         'tr_meliscommerce_plugin_checkout_cart_sku' => 'SKU',
         'tr_meliscommerce_plugin_checkout_cart_product' => 'Produit',
@@ -172,7 +172,7 @@
         'tr_meliscommerce_plugin_checkout_summary_shipping_cost' => 'Coûts de tansport',
 
         // MelisCommerceCheckoutConfirmSummaryPlugin()
-        'tr_meliscommerce_plugin_checkout_confirm_summary_name' => 'Erreur de paiement',
+        'tr_meliscommerce_plugin_checkout_confirm_summary_name' => 'Erreur du résumé de commande', // as EN "Checkout summary error" (Mantis #0011161)
         'tr_meliscommerce_plugin_checkout_confirm_summary_description' => 'Ce plugin affiche une erreur de résumé de commande',
         'tr_meliscommerce_plugin_checkout_confirm_summary_err_msg' => 'Impossible de procéder au paiement, veuillez vérifier vos détails de commande avant de procéder au paiement',
 

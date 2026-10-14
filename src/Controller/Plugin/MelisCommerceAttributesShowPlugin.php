@@ -51,6 +51,7 @@ use Laminas\Stdlib\ArrayUtils;
 class MelisCommerceAttributesShowPlugin extends MelisTemplatingPlugin
 {
     use MelisCommercePluginWidthTrait;
+    use MelisCommercePluginRouteTrait;
     public function __construct($updatesPluginConfig = array())
     {
         // the key of the configuration in the app.plugins.php
@@ -67,7 +68,8 @@ class MelisCommerceAttributesShowPlugin extends MelisTemplatingPlugin
     {
         $data = $this->getFormData();
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
-        $productId = (!empty($this->pluginFrontConfig['m_product_id']))? $this->pluginFrontConfig['m_product_id'] : null;    
+        // the product of the URL (/pid/N) first, then the one configured in the plugin (Mantis #0011156)
+        $productId = $this->commerceRouteParam('productId') ?: ((!empty($this->pluginFrontConfig['m_product_id']))? $this->pluginFrontConfig['m_product_id'] : null);
         $selectedAttr = (!empty($this->pluginFrontConfig['m_selected_attr']))? $this->pluginFrontConfig['m_selected_attr'] : array();    
         
         $container = new Container('melisplugins');

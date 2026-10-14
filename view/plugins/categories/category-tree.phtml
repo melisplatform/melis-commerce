@@ -31,7 +31,10 @@
     		                    $selected = 'selected';
     		                }
 
-    		                $temp .= '<li class="'.$opened.'"><span class="'.$selected.'" title="'.$this->escapeHtmlAttr($items['text']).'">'.$this->escapeHtml($items['cat_id'].' - '.$items['text']).'</span>';
+    		                // A link to the category, labelled by its name only (Mantis #0011156: plain <span> with the id
+    		                // prefixed, "1 - My catalog"). $items['text'] is already escaped by the plugin.
+    		                $catLink = $this->MelisCommerceLink('category', $items['cat_id'], $this->langId, true);
+    		                $temp .= '<li class="'.$opened.'"><a class="'.$selected.'" href="'.$this->escapeHtmlAttr($catLink).'" title="'.$items['text'].'">'.$items['text'].'</a>';
     		                $temp .= (!empty($data['html'])) ? $data['html'] : '';
     		                $temp .= '</li>';
     		            }

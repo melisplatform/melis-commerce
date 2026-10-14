@@ -1,3 +1,5 @@
+<?php // anonymous visitor (no login page set): the login message instead of empty editable forms (Mantis #0011157)
+if (!empty($this->notLoggedIn)) { echo '<label class="alert alert-danger">'.$this->escapeHtml($this->loginMessage).'</label>'; return; } ?>
 <?php if (!empty($order)) {?>
     <h3><?= $this->translate('tr_meliscommerce_plugin_order_details_name');?></h3>
     

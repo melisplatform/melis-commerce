@@ -112,7 +112,8 @@ class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
                      * This will redirect to the $redirection_link url 
                      * if the request is not from ajax request
                      */
-                    if (!$this->getController()->getRequest()->isXmlHttpRequest())
+                    // (no redirection link configured → stay on the page: toUrl('') made the response a 500)
+                    if ($redirection_link !== '' && !$this->getController()->getRequest()->isXmlHttpRequest())
                     {
                         $this->getController()->redirect()->toUrl($redirection_link);
                     }
@@ -132,9 +133,11 @@ class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
          * after submission of the form proivided of this plugin
          */
         $loginForm->get('m_login_is_submit')->setValue(true);
-        
-        
-        
+
+        // Never render the submitted password back into the page (Mantis #0011163): after a failed
+        // login the form was re-displayed with value="<password>" in the HTML source.
+        $loginForm->get('m_password')->setValue('');
+
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
             'login' => $loginForm,

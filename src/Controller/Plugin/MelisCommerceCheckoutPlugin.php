@@ -50,6 +50,7 @@ use Laminas\View\Model\ViewModel;
 class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
 {
     use MelisCommercePluginWidthTrait;
+    use MelisCommercePluginLoginGuardTrait;
     public function __construct($updatesPluginConfig = array())
     {
         // the key of the configuration in the app.plugins.php
@@ -107,7 +108,8 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
         $steps = (!empty($data['m_checkout_step'])) ? $data['m_checkout_step'] : '';
         
         $checkoutPage = (!empty($data['m_checkout_page_link'])) ? $data['m_checkout_page_link'] : '';
-        $loginPage = (!empty($data['m_login_page_link'])) ? $data['m_login_page_link'] : '';
+        // page id (page picker) or URL — and now configurable in the plugin settings (Mantis #0011157)
+        $loginPage = $this->loginPageUrl((string) ($data['m_login_page_link'] ?? ''));
         
         // Preparing the Container/Session of Commerce checkout
         $container = new Container('meliscommerce');
@@ -132,7 +134,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                  */
                 if (!$melisComAuthSrv->hasIdentity())
                 {
-                    if($this->renderMode != "melis")
+                    if($this->renderMode != "melis" && $loginPage !== '') // no login page: no self-redirect (#0011157)
                     {
                         $link_query = array(
                             'm_redirection_link_ok' => $checkoutPage . '?' . http_build_query(array('m_checkout_step' => 'checkout-addresses')),
@@ -205,7 +207,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                  */
                 if (!$melisComAuthSrv->hasIdentity())
                 {
-                    if($this->renderMode != "melis")
+                    if($this->renderMode != "melis" && $loginPage !== '') // no login page: no self-redirect (#0011157)
                     {
                         $link_query = array(
                             'm_redirection_link_ok' => $checkoutPage,
@@ -245,7 +247,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                  */
                 if (!$melisComAuthSrv->hasIdentity())
                 {
-                    if($this->renderMode != "melis")
+                    if($this->renderMode != "melis" && $loginPage !== '') // no login page: no self-redirect (#0011157)
                     {
                         $link_query = array(
                             'm_redirection_link_ok' => $checkoutPage,
@@ -303,7 +305,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                  */
                 if (!$melisComAuthSrv->hasIdentity())
                 {
-                    if($this->renderMode != "melis")
+                    if($this->renderMode != "melis" && $loginPage !== '') // no login page: no self-redirect (#0011157)
                     {
                         $link_query = array(
                             'm_redirection_link_ok' => $checkoutPage,
@@ -362,7 +364,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                  */
                 if (!$melisComAuthSrv->hasIdentity())
                 {
-                    if($this->renderMode != "melis")
+                    if($this->renderMode != "melis" && $loginPage !== '') // no login page: no self-redirect (#0011157)
                     {
                         $link_query = array(
                             'm_redirection_link_ok' => $checkoutPage,
@@ -418,6 +420,17 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
          * if the plugin redturn a redirect url this should redirect to the return url
          * in-order to proceed the next step of the checkout
          */
+        // Anonymous visitor on a step that needs a login while NO login page is configured: the redirect
+        // above used to target "?…" = this same page, showing the cart again with no message (Mantis
+        // #0011157). Render the addresses step instead — it shows "Please login to access this page".
+        if (!$redirect && $loginPage === '' && $this->renderMode != 'melis'
+            && in_array($steps, ['checkout-addresses', 'checkout-summary', 'checkout-confirm-summary', 'checkout-payment', 'checkout-confirm'], true)
+            && !$this->getServiceManager()->get('MelisComAuthenticationService')->hasIdentity())
+        {
+            $checkout = $pluginManager->get('MelisCommerceCheckoutAddressesPlugin')->render(
+                ArrayUtils::merge($checkOutAddressesParameters, ['m_add_site_id' => $siteId]));
+        }
+
         if ($redirect)
         {
             $this->getController()->redirect()->toUrl($redirect);
@@ -602,6 +615,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                 $configValues['m_checkout_page_link'] = json_decode((string)$xml->m_checkout_page_link);
             }
         }
+        $configValues = array_merge($configValues, $this->loginPageLinkFromXml($xml));
         
         return $configValues;
     }
@@ -640,6 +654,8 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<m_checkout_page_link><![CDATA[' . $parameters['m_checkout_page_link'] . ']]></m_checkout_page_link>';
         }
         
+        $xmlValueFormatted .= $this->loginPageLinkToXml($parameters);
+
         // Something has been saved, let's generate an XML for DB
         if (!empty($xmlValueFormatted))
         {

@@ -14,6 +14,7 @@ return [
                 'MelisCommerceBillingAddressPlugin' => [
                     'front' => [
                         'template_path' => ['MelisCommerce/ClientBillingAddress'],
+                        'm_login_page_link' => '', // login page for anonymous visitors (Mantis #0011157)
                         'id' => 'userBillingAddress',
                         
                         // enables user to add new addresses, select address to edit

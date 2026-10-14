@@ -22,8 +22,12 @@
         			?>
         			<div class="col-xs-4">
                     	<label class="full-category-product-list-attr-config-checkbox">
-                    		<?php $valCol = 'avt_v_'.$vals->atype_column_value;?>
-                    		<i class="fa fa-<?php echo ($checked) ? $checked.'-' : '' ?>square-o fa-lg"></i> <?php echo $vals->$valCol?>
+                    		<?php $valCol = 'avt_v_'.$vals->atype_column_value;
+                    		    // File (binary) value: its reference, not the (unescaped) file content (Mantis #0011155)
+                    		    $valLabel = $vals->atype_column_value === 'binary'
+                    		        ? ((string) $vals->atval_reference !== '' ? $vals->atval_reference : 'File #'.$vals->atval_id)
+                    		        : $vals->$valCol;?>
+                    		<i class="fa fa-<?php echo ($checked) ? $checked.'-' : '' ?>square-o fa-lg"></i> <?php echo $this->escapeHtml($valLabel)?>
                     		<input type="checkbox" <?= $reactEditor ? '' : 'name="m_box_product_attribute_values_ids_selected[]" ' ?>value="<?php echo $vals->atval_id ?>" <?php echo ($checked) ? $checked.'ed' : '' ?> style="display: none">
                     	</label>
             		</div>

@@ -17,6 +17,8 @@ return [
                         'id' => 'addToCart',
                         // Id of the variant
                         'm_variant_id' => null,
+                        // product of the page when no variant is given: its default variant is used (Mantis #0011159)
+                        'm_product_id' => null,
                         // country id of the variant,
                         'm_variant_country' => -1,
                         // Quantity of the variant added

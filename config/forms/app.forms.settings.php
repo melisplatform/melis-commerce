@@ -70,6 +70,17 @@ return [
                                             ],
                                         ],
                                     ],
+                                    // IsInt accepts "-3": the threshold must be >= 0 (Mantis #0011165)
+                                    [
+                                        'name'    => 'GreaterThan',
+                                        'options' => [
+                                            'min'       => 0,
+                                            'inclusive' => true,
+                                            'messages'  => [
+                                                \Laminas\Validator\GreaterThan::NOT_GREATER_INCLUSIVE => 'tr_meliscommerce_settings_alert_stock_min',
+                                            ],
+                                        ],
+                                    ],
                                     [
                                         'name'    => 'StringLength',
                                         'options' => [

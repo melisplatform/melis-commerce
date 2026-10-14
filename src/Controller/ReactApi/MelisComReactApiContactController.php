@@ -22,6 +22,16 @@ class MelisComReactApiContactController extends MelisAbstractActionController
 {
     private const MELIS_KEY = 'meliscommerce_contact_list_page';
 
+    /**
+     * Hash d'un mot de passe de contact, au format que vérifie le login front (password_hash, via
+     * MelisComAuthenticationService — comme le BO legacy et l'inscription). Le React stockait un md5 :
+     * password_verify() le refusait toujours → login front impossible (Mantis #0011164).
+     */
+    private function hashPassword(string $password): string
+    {
+        return $this->getServiceManager()->get('MelisComAuthenticationService')->encryptPassword($password);
+    }
+
     /** Langue back-office courante (civt_lang_id des civilités), repli 1. */
     private function langId(): int
     {
@@ -337,7 +347,7 @@ class MelisComReactApiContactController extends MelisAbstractActionController
                 $params = [$status, $type, $civility, $firstname, $name,
                            $middleName, $langId ?: null, $email, $accountId ?: null,
                            $jobTitle, $jobService, $telMobile, $telLandline, $tags, $now];
-                if ($password !== '') { $setSql .= ', cper_password = ?'; $params[] = md5($password); }
+                if ($password !== '') { $setSql .= ', cper_password = ?'; $params[] = $this->hashPassword($password); }
                 $params[] = $id;
                 $db->query("UPDATE melis_ecom_client_person SET $setSql WHERE cper_id = ?", $params);
 
@@ -357,7 +367,7 @@ class MelisComReactApiContactController extends MelisAbstractActionController
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 [$accountId ?: null, $langId ?: $this->langId(), $type, $status, $civility, $email,
                  $name, $firstname, $middleName, $jobTitle, $jobService,
-                 $telMobile, $telLandline, $password !== '' ? md5($password) : '', $tags, $now]
+                 $telMobile, $telLandline, $password !== '' ? $this->hashPassword($password) : '', $tags, $now]
             );
             $newId = (int) iterator_to_array($db->query('SELECT LAST_INSERT_ID() AS id', []))[0]['id'];
 

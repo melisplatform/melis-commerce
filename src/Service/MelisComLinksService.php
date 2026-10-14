@@ -364,7 +364,10 @@ class MelisComLinksService extends MelisComGeneralService
                     $pageUrl = ''; // page uses SEO URL, so just use the categories name
 
             $link = $melisTree->cleanLink($link);
-            
+
+            // the home page's link is "/" (or "https://host/"): appending "/product1/id/…" made "//product1"
+            // (Mantis #0011156)
+            $pageUrl = rtrim($pageUrl, '/');
             $pageUrl .= $link . '/id/' . $pageId . '/' . $varName . '/' . $id;
             }
             else

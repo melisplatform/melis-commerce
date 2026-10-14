@@ -51,6 +51,7 @@ use Laminas\View\Model\ViewModel;
 class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
 {
     use MelisCommercePluginWidthTrait;
+    use MelisCommercePluginLoginGuardTrait;
     public function __construct($updatesPluginConfig = array())
     {
         // the key of the configuration in the app.plugins.php
@@ -65,6 +66,11 @@ class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
+        // anonymous visitor on the front: login page redirect or "please login", never the empty forms (#0011157)
+        if ($guard = $this->anonymousGuard()) {
+            return $guard;
+        }
+
         $addressType = 'DEL';
         $success = 0;
         $errors = array();
@@ -407,6 +413,7 @@ class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
             }
         }
         
+        $configValues = array_merge($configValues, $this->loginPageLinkFromXml($xml));
         return $configValues;
     }
     
@@ -429,6 +436,8 @@ class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<show_select_address_data><![CDATA[' . $parameters['show_select_address_data'] . ']]></show_select_address_data>';
         }
         
+        $xmlValueFormatted .= $this->loginPageLinkToXml($parameters);
+
         // Something has been saved, let's generate an XML for DB
         if (!empty($xmlValueFormatted))
         {

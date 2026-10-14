@@ -92,6 +92,7 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
             'pluginId' => $data['id'],
             'categoryList' => $categoryList,
             'selectedCategories' => $selectedCategories,
+            'langId' => $langId, // category links in the tree (Mantis #0011156)
         );
         
         // return the variable array and let the view be created

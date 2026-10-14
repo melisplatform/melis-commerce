@@ -54,8 +54,32 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
     {
         // the key of the configuration in the app.plugins.php
         $this->configPluginKey = 'meliscommerce';
-        $this->pluginXmlDbKey = 'MelisCommerceCheckoutPlugin';
+        // its own tag (Mantis #0011153) — it used to be saved as <MelisCommerceCheckoutPlugin id="checkoutAddresses_…">,
+        // a copy-paste of the Checkout plugin's key
+        $this->pluginXmlDbKey = 'MelisCommerceCheckoutAddressesPlugin';
         parent::__construct($updatesPluginConfig);
+    }
+
+    /** The tag this plugin's settings were saved under before Mantis #0011153. */
+    private const LEGACY_XML_DB_KEY = 'MelisCommerceCheckoutPlugin';
+
+    /**
+     * Pages saved before the fix hold the settings under the legacy tag: when nothing is found under the
+     * plugin's own tag, read them from there (same id) so m_add_site_id etc. are not lost. The next save
+     * of the plugin writes the correct tag.
+     */
+    protected function getPluginValueFromDb()
+    {
+        parent::getPluginValueFromDb();
+        if (empty($this->pluginXmlDbValue)) {
+            $ownKey = $this->pluginXmlDbKey;
+            $this->pluginXmlDbKey = self::LEGACY_XML_DB_KEY;
+            try {
+                parent::getPluginValueFromDb();
+            } finally {
+                $this->pluginXmlDbKey = $ownKey;
+            }
+        }
     }
 
     /**

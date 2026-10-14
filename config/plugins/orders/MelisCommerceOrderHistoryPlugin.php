@@ -14,6 +14,7 @@ return [
                 'MelisCommerceOrderHistoryPlugin' => [
                     'front' => [
                         'template_path' => ['MelisCommerceOrder/order-history'],
+                        'm_login_page_link' => '', // login page for anonymous visitors (Mantis #0011157)
                         'id' => 'orderHistoryPlugin',
                         'm_order_sort' => null,
 

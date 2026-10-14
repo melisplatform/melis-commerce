@@ -51,6 +51,7 @@ use Laminas\Stdlib\ArrayUtils;
 class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
 {
     use MelisCommercePluginWidthTrait;
+    use MelisCommercePluginLoginGuardTrait;
     public function __construct($updatesPluginConfig = array())
     {
         // the key of the configuration in the app.plugins.php
@@ -65,6 +66,11 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
+        // anonymous visitor on the front: login page redirect or "please login", never the empty forms (#0011157)
+        if ($guard = $this->anonymousGuard()) {
+            return $guard;
+        }
+
         $pluginManager = $this->getServiceManager()->get('ControllerPluginManager');
         
         $data = $this->getFormData();
@@ -303,6 +309,7 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
             }
         }
         
+        $configValues = array_merge($configValues, $this->loginPageLinkFromXml($xml));
         return $configValues;
     }
     
@@ -320,6 +327,8 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
         }
         
+        $xmlValueFormatted .= $this->loginPageLinkToXml($parameters);
+
         // Something has been saved, let's generate an XML for DB
         if (!empty($xmlValueFormatted))
         {

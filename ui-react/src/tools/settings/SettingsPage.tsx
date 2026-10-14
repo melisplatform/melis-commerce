@@ -83,6 +83,8 @@ export default function SettingsPage() {
   }
 
   async function submit() {
+    // min={0} on the input is only a hint: refuse a negative / non-integer threshold (Mantis #0011165)
+    if (stockLevelAlert.trim() !== '' && !/^\d+$/.test(stockLevelAlert.trim())) { notify('ko', t('title'), t('err_stock_level_min')); return }
     for (const r of recipients) {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.email)) { notify('ko', t('title'), t('err_email_invalid', { u: r.email })); return }
     }

@@ -252,6 +252,7 @@
 		'tr_meliscommerce_client_add_new_address' => 'Add new address',
 		
 		'tr_meliscommerce_client_email_not_exist' => 'Email does not exist, please try another email address',
+		'tr_meliscommerce_plugin_lost_password_sent_if_exists' => 'If an account exists for this e-mail address, an e-mail to reset the password has been sent to it.',
 		'tr_meliscommerce_client_email_not_available' => 'This email address is already used',
 		'tr_meliscommerce_client_pass_change_success' => 'Password has been successfully changed',
 		'tr_meliscommerce_client_pass_key_invalid' => 'Error! Invalid password recovery key',

@@ -50,6 +50,7 @@ use Laminas\Session\Container;
 class MelisCommerceProductShowPlugin extends MelisTemplatingPlugin
 {
     use MelisCommercePluginWidthTrait;
+    use MelisCommercePluginRouteTrait;
     public function __construct($updatesPluginConfig = array())
     {
         // the key of the configuration in the app.plugins.php
@@ -70,7 +71,8 @@ class MelisCommerceProductShowPlugin extends MelisTemplatingPlugin
         $langId = $container['melis-plugins-lang-id'];
         
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
-        $productId = ($this->pluginFrontConfig['m_product_id'])? $this->pluginFrontConfig['m_product_id'] : null;
+        // the product of the URL (/pid/N) first, then the one configured in the plugin (Mantis #0011156)
+        $productId = $this->commerceRouteParam('productId') ?: (($this->pluginFrontConfig['m_product_id'])? $this->pluginFrontConfig['m_product_id'] : null);
         $countryId = ($this->pluginFrontConfig['m_product_country'])? $this->pluginFrontConfig['m_product_country'] : null;
 
         $clientGroupId = 1;
@@ -81,11 +83,43 @@ class MelisCommerceProductShowPlugin extends MelisTemplatingPlugin
         // get variant, main variant is fetch by default
         $productSvc = $this->getServiceManager()->get('MelisComProductService');
         $product = $productSvc->getProductById($productId, $langId, $countryId, $clientGroupId);
-        
+
+        // Variants + prices (Mantis #0011159: no price and no variant choice on the product page). Same price
+        // rules as the cart; the selected one = ?m_variant_id (also what AddToCart reads), else the main variant.
+        $variants = [];
+        $selectedVariantId = !empty($this->pluginFrontConfig['m_variant_id']) ? (int) $this->pluginFrontConfig['m_variant_id'] : null;
+        $mainVariantId = null;
+        if ($productId) {
+            $priceSvc = $this->getServiceManager()->get('MelisComPriceService');
+            foreach ($this->getServiceManager()->get('MelisEcomVariantTable')->getEntryByField('var_prd_id', (int) $productId) as $variant) {
+                if ((int) $variant->var_status !== 1) {
+                    continue;
+                }
+                $price = $priceSvc->getItemPrice($variant->var_id, $countryId ?: -1, $clientGroupId, 'variant');
+                $variants[(int) $variant->var_id] = [
+                    'id'     => (int) $variant->var_id,
+                    'sku'    => (string) $variant->var_sku,
+                    'price'  => $price['price'] ?? null,
+                    'symbol' => $price['price_currency']['symbol'] ?? '',
+                ];
+                if ((int) $variant->var_main_variant === 1) {
+                    $mainVariantId = (int) $variant->var_id;
+                }
+            }
+        }
+        if (!$selectedVariantId || !isset($variants[$selectedVariantId])) {
+            // the same default as AddToCart (main variant if in stock, else first in stock), so the price shown is
+            // the price of the variant "Add to cart" adds
+            $default = $productId ? $this->defaultVariantId((int) $productId, $countryId ?: -1) : null;
+            $selectedVariantId = ($default && isset($variants[$default])) ? $default : ($mainVariantId ?: (array_key_first($variants) ?: null));
+        }
+
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
             'product' => $product,
-        ); 
+            'variants' => array_values($variants),
+            'selectedVariant' => $selectedVariantId ? $variants[$selectedVariantId] : null,
+        );
         
         // return the variable array and let the view be created
         return $viewVariables;

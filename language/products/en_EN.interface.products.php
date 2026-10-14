@@ -97,6 +97,7 @@ return array(
     // Plugins
     'tr_meliscommerce_products_plugins_stock_left' => "\"%s\" stock(s) left",
     'tr_meliscommerce_products_plugins_no_stock' => "Product is not available",
+    'tr_meliscommerce_products_plugins_added_to_cart' => "The product has been added to your cart.",
     'tr_meliscommerce_products_plugins_cart_error' => "Something is wrong, please contact administrator for assistance",
     'tr_meliscommerce_products_plugins_quantity_error' => 'Quantity must be numeric',
     
