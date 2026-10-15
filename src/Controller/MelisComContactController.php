@@ -487,8 +487,13 @@ class MelisComContactController extends MelisAbstractActionController
         if (! empty($postValues['cper_email'])) {
             // check if email is not used twice
             $personWithSameEmail = $clientSvc->getPersonsByEmail($postValues['cper_email']);
+            $personTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
             if(!empty($personWithSameEmail)) {
                 foreach ($personWithSameEmail as $mail) {
+                    // rows left by a deleted contact do not make the address "used" (Mantis #0011209)
+                    if ($mail['cpmail_cper_id'] != $postValues['cper_id'] && empty($personTable->getEntryById($mail['cpmail_cper_id'])->current())) {
+                        continue;
+                    }
                     if ($mail['cpmail_cper_id'] != $postValues['cper_id']) {
                         $errors['cper_email'] = [
                             'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
@@ -501,7 +506,16 @@ class MelisComContactController extends MelisAbstractActionController
                         ];
                     }
                 }
-            }else{
+            }
+            // Contacts saved by the React BO have no melis_ecom_client_person_emails row: the e-mail of another
+            // contact was accepted (Mantis #0011168) → also checked against the contacts' own cper_email
+            if (empty($errors['cper_email']) && $clientSvc->checkEmailExist($postValues['cper_email'], (int) ($postValues['cper_id'] ?? 0))) {
+                $errors['cper_email'] = [
+                    'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
+                    'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
+                ];
+            }
+            if (empty($personEmail) && empty($errors['cper_email'])) {
                 $personEmail[0] = [
                     'cpmail_email' => $postValues['cper_email']
                 ];

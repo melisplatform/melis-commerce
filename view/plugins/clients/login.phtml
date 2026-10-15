@@ -4,6 +4,12 @@
 }
 </style>
 <?php
+	// already logged in: who, and a way to log out — the login form was shown again (Mantis #0011208)
+	if (!empty($this->loggedInName)) {
+	    echo '<div class="alert alert-success">'.$this->escapeHtml(sprintf($this->translate('tr_meliscommerce_plugin_logged_in_as'), $this->loggedInName)).'</div>';
+	    echo '<a class="btn btn-default" href="'.$this->escapeHtml($this->logoutLink).'">'.$this->translate('tr_meliscommerce_plugin_logout').'</a>';
+	    return;
+	}
 	$form = $this->login;
 	$form->prepare();
 	// Credential failure (wrong e-mail / password…) — it was set but never displayed (Mantis #0011164)

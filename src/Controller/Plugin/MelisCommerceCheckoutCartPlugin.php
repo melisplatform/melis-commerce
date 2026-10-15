@@ -205,6 +205,15 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
         $melisComOrderCheckoutService->setSiteId($siteId);
         $clientOrderCost = $melisComOrderCheckoutService->computeAllCosts($clientId, $clientKey);
 
+        // The computation re-validates the applied coupons (a deactivated / expired / used-up one is dropped,
+        // Mantis #0011213): show what it kept, not the coupon plugin's copy taken before it
+        $checkedCoupons = (new \Laminas\Session\Container('meliscommerce'))['checkout'][$siteId]['coupons'] ?? null;
+        if (is_array($checkedCoupons))
+        {
+            $couponView->setVariable('coupon', $checkedCoupons);
+            $generalCoupons = !empty($checkedCoupons['generalCoupons']) ? $checkedCoupons['generalCoupons'] : array();
+        }
+
         // Basket items
         $orderBasket = $clientOrderCost['costs']['order']['details'];
 

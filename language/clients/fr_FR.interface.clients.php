@@ -271,6 +271,8 @@
 		
 		// Plugin MelisCommerceLoginPlugin
 		'tr_meliscommerce_plugin_login' => 'Login',
+		'tr_meliscommerce_plugin_logout' => 'Se déconnecter',
+		'tr_meliscommerce_plugin_logged_in_as' => 'Vous êtes connecté en tant que %s',
 		'tr_meliscommerce_plugin_login_description' => 'Le plugin de login affiche le formulaire pour que l\'utilisateur se connecte',
 		'tr_meliscommerce_plugin_login_email' => 'Adresse email',
 		'tr_meliscommerce_plugin_login_password' => 'Mot de passe',

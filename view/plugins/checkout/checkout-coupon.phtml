@@ -8,6 +8,26 @@
 	</div>
 <?php }?>
 
+<?php
+    // Applied coupons can be removed, and one that is no longer valid (deactivated, expired, used up…) is reported
+    // when it is dropped — it stayed applied with no way to remove it (Mantis #0011213)
+    $sessionCoupons = is_array($this->coupon) ? $this->coupon : [];
+    if (!empty($sessionCoupons['couponErr']) && is_string($sessionCoupons['couponErr']) && $sessionCoupons['couponErr'] !== $this->message) {
+        echo '<div class="alert alert-warning"><p>' . $this->escapeHtml($sessionCoupons['couponErr']) . '</p></div>';
+    }
+    $applied = [];
+    foreach (['generalCoupons', 'productCoupons'] as $list) {
+        foreach ((array) ($sessionCoupons[$list] ?? []) as $c) {
+            if (is_object($c) && !empty($c->coup_code)) { $applied[$c->coup_code] = $c; }
+        }
+    }
+    foreach ($applied as $code => $c) {
+        echo '<div class="checkout-applied-coupon">' . $this->translate('tr_meliscommerce_plugin_checkout_coupon_code') . ': <strong>' . $this->escapeHtml($code) . '</strong> '
+            . '<a class="btn btn-link btn-sm" href="?' . $this->escapeHtml(http_build_query(['m_coupon_remove' => $code, 'removeCoupon' => $code])) . '">'
+            . $this->translate('tr_meliscommerce_plugin_cart_remove') . '</a></div>';
+    }
+?>
+
 <style>
 .default-form-err-msg-plugin li{
     display: inherit;

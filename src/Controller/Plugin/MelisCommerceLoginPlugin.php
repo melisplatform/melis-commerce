@@ -50,6 +50,7 @@ use Laminas\View\Model\ViewModel;
 class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
 {
     use MelisCommercePluginWidthTrait;
+    use MelisCommercePluginLogoutTrait;
     public function __construct($updatesPluginConfig = array())
     {
         // the key of the configuration in the app.plugins.php
@@ -64,6 +65,8 @@ class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
+        $this->handleFrontLogout(); // "?m_logout=1" (Mantis #0011208)
+
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
         $appConfigForm = (!empty($this->pluginFrontConfig['forms']['meliscommerce_login'])) ? $this->pluginFrontConfig['forms']['meliscommerce_login'] : array();
         
@@ -144,9 +147,12 @@ class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
             'redirect_link' => $redirection_link,
             'message' => $message,
             'success' => $success,
-            'errors' => $errors
+            'errors' => $errors,
+            // a logged-in visitor got the login form again, with no way to log out (Mantis #0011208)
+            'loggedInName' => $this->renderMode === 'melis' ? '' : $this->loggedInName(),
+            'logoutLink' => $this->logoutLink(),
         );
-        
+
         // return the variable array and let the view be created
         return $viewVariables;
     }
