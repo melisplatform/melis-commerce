@@ -218,6 +218,11 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
                     $personData['cper_client_id'] = 0;//$clientId;
 
                     $this->validateEmail($personData, $errors);
+                    if (!empty($errors)) {
+                        // this refusal was silent: no message, nothing saved (Mantis #0011209)
+                        $message = $translator->translate('tr_meliscommerce_client_pass_errors');
+                        $profile->setMessages(['cper_email' => array_diff_key($errors['cper_email'] ?? [], ['label' => 1])]);
+                    }
                     if(empty($errors)) {
                         //execute saving records with transactions
                         $adapter = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
@@ -307,7 +312,12 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
             // check if email is not used twice
             $personWithSameEmail = $clientSrv->getPersonsByEmail($personData['cper_email']);
             if(!empty($personWithSameEmail)) {
+                $personTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
                 foreach ($personWithSameEmail as $mail) {
+                    // rows left by a deleted contact made the address "used by another contact" forever (Mantis #0011209)
+                    if ($mail['cpmail_cper_id'] != $personData['cper_id'] && empty($personTable->getEntryById($mail['cpmail_cper_id'])->current())) {
+                        continue;
+                    }
                     if ($mail['cpmail_cper_id'] != $personData['cper_id']) {
                         $errors['cper_email'] = [
                             'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
