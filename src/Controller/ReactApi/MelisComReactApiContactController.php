@@ -393,6 +393,9 @@ class MelisComReactApiContactController extends MelisAbstractActionController
         try {
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             $db->query('DELETE FROM melis_ecom_client_person WHERE cper_id = ?', [$id]);
+            // like the legacy MelisComContactService::deleteContact: its e-mail rows went orphan and blocked the
+            // address for any later contact (Profile save silently refused, Mantis #0011209)
+            $db->query('DELETE FROM melis_ecom_client_person_emails WHERE cpmail_cper_id = ?', [$id]);
 
             $this->getEventManager()->trigger('meliscommerce_contact_delete_end', $this, [
                 'success' => true, 'textTitle' => 'Contact', 'textMessage' => 'tr_meliscommerce_contact_delete_contact_message_success',
