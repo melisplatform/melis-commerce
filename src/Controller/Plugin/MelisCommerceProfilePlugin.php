@@ -330,7 +330,10 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
                         ];
                     }
                 }
-            }else{
+            }
+            // no row of this contact (none at all, or only rows of deleted contacts): a new one, as for a fresh
+            // address — an empty list reached saveContact() as an "emails" column → SQL error (#0011209)
+            if (empty($personEmail) && empty($errors['cper_email'])) {
                 $personEmail[0] = [
                     'cpmail_email' => $personData['cper_email']
                 ];
