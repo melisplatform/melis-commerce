@@ -238,14 +238,24 @@ export function readFileDataUrl(file: File): Promise<string> {
 const ynBtn = (on: boolean, color: string) => ({ padding: '6px 16px', borderRadius: 6, border: 0, cursor: 'pointer', fontSize: 14, fontWeight: 600, minWidth: 56, background: on ? color : 'transparent', color: on ? '#fff' : 'var(--color-foreground)' } as const)
 export function DuplicateModal({ title, intro, fieldLabel, fieldPlaceholder, t, onClose, onConfirm }: {
   title: string; intro: string; fieldLabel: string; fieldPlaceholder: string; t: TFn
-  onClose: () => void; onConfirm: (o: { duplicateImages: boolean; duplicateDocuments: boolean; putOnline: boolean; field: string }) => void
+  onClose: () => void; onConfirm: (o: { duplicateImages: boolean; duplicateDocuments: boolean; putOnline: boolean; field: string }) => Promise<void>
 }) {
   const [images, setImages] = useState(true)
   const [docs, setDocs] = useState(true)
   const [online, setOnline] = useState(false)
   const [field, setField] = useState('')
   const [err, setErr] = useState(false)
+  const [errMsg, setErrMsg] = useState('')
   const [busy, setBusy] = useState(false)
+  // The field is optional (empty → the server picks a free "<original>-copy"); it used to silently block the
+  // dialog when empty. A server refusal (SKU/reference already used) keeps it open with the message
+  // (Mantis #0011183 #0011184).
+  async function confirm() {
+    setBusy(true); setErrMsg('')
+    try { await onConfirm({ duplicateImages: images, duplicateDocuments: docs, putOnline: online, field: field.trim() }) }
+    catch (e) { setErr(true); setErrMsg(e instanceof Error && e.message ? e.message : t('err_save')) }
+    finally { setBusy(false) }
+  }
   const YesNo = ({ v, set }: { v: boolean; set: (b: boolean) => void }) => (
     <div style={{ display: 'inline-flex', gap: 2, padding: 2, borderRadius: 8, border: '1px solid var(--color-border)' }}>
       <button style={ynBtn(v, '#16a34a')} onClick={() => set(true)}>{t('yes')}</button>
@@ -265,11 +275,12 @@ export function DuplicateModal({ title, intro, fieldLabel, fieldPlaceholder, t, 
           <div style={row}><span style={{ fontSize: 14, fontWeight: 500 }}>{t('dup_documents')}</span><YesNo v={docs} set={setDocs} /></div>
           <div style={row}><span style={{ fontSize: 14, fontWeight: 500 }}>{t('dup_online')}</span><YesNo v={online} set={setOnline} /></div>
           <label style={{ ...label, marginTop: 18, color: err ? '#dc2626' : undefined }}>{fieldLabel}</label>
-          <input style={{ ...inputCss, ...(err ? { borderColor: '#dc2626' } : {}) }} value={field} onChange={(e) => { setField(e.target.value); setErr(false) }} autoComplete="off" />
+          <input style={{ ...inputCss, ...(err ? { borderColor: '#dc2626' } : {}) }} value={field} placeholder={fieldPlaceholder} onChange={(e) => { setField(e.target.value); setErr(false); setErrMsg('') }} autoComplete="off" />
+          {errMsg && <p style={{ color: '#dc2626', fontSize: 13, margin: '6px 0 0' }}>{errMsg}</p>}
         </div>
         <div style={{ padding: '14px 20px', borderTop: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between' }}>
           <button style={btnGhost} onClick={onClose}>✕ {t('cancel')}</button>
-          <button style={btnPrimary} disabled={busy} onClick={() => { if (!field.trim()) { setErr(true); return } setBusy(true); onConfirm({ duplicateImages: images, duplicateDocuments: docs, putOnline: online, field: field.trim() }) }}>{busy ? '…' : t('var_duplicate')}</button>
+          <button style={btnPrimary} disabled={busy} onClick={confirm}>{busy ? '…' : t('var_duplicate')}</button>
         </div>
       </div>
     </div>
@@ -1120,7 +1131,7 @@ export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: n
       {toDup && (
         <DuplicateModal t={t} title={t('dup_var_title')} intro={t('dup_var_intro')} fieldLabel={`${t('dup_sku')} (${toDup.sku})`} fieldPlaceholder={t('dup_sku_ph')}
           onClose={() => setToDup(null)}
-          onConfirm={async (o) => { try { await duplicateProductVariant(productId, toDup.id, { duplicateImages: o.duplicateImages, duplicateDocuments: o.duplicateDocuments, putOnline: o.putOnline, sku: o.field }); } catch { /* */ } setToDup(null); setTick((x) => x + 1) }} />
+          onConfirm={async (o) => { await duplicateProductVariant(productId, toDup.id, { duplicateImages: o.duplicateImages, duplicateDocuments: o.duplicateDocuments, putOnline: o.putOnline, sku: o.field }); setToDup(null); setTick((x) => x + 1) }} />
       )}
     </div>
   )

@@ -22,7 +22,7 @@ export interface OrderAddress {
 
 export interface OrderBasketItem {
   id: number; sku: string; name: string; category: string; variantId: number; productId: number
-  qty: number; priceNet: number; priceGross: number; attributes: string; currency: string
+  qty: number; priceNet: number; priceGross: number; lineTotal?: number | null; attributes: string; currency: string
 }
 
 export interface OrderPaymentCoupon { code: string; percentage: number | null; discountValue: number | null; qtyUsed: number }

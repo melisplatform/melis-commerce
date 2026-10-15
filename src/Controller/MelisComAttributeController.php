@@ -1029,6 +1029,24 @@ class MelisComAttributeController extends MelisAbstractActionController
                     $errors[] = $this->getFormErrors($attributeForm, $appConfigForm);
                 }
                 $attribute = $attributeForm->getData();
+                // The reference identifies the attribute: refuse one already used by another attribute (Mantis #0011178)
+                $reference = trim((string) ($attribute['attr_reference'] ?? ''));
+                if ($reference !== '') {
+                    $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
+                    $dup = iterator_to_array($db->query('SELECT attr_id FROM melis_ecom_attribute WHERE attr_reference = ? AND attr_id <> ? LIMIT 1',
+                        [$reference, (int) ($attribute['attr_id'] ?? 0) ?: (int) ($postValues['attributeId'] ?? 0)]));
+                    if ($dup) {
+                        $success = 0;
+                        $label = 'tr_meliscommerce_attribute_reference';
+                        foreach ($appConfigForm['elements'] as $el) {
+                            if (($el['spec']['name'] ?? '') === 'attr_reference' && !empty($el['spec']['options']['label'])) { $label = $el['spec']['options']['label']; }
+                        }
+                        $errors[] = ['attr_reference' => [
+                            'label'  => $label,
+                            'unique' => $this->getServiceManager()->get('translator')->translate('tr_meliscommerce_attribute_reference_exists'),
+                        ]];
+                    }
+                }
                 $attribute = array_merge($attribute, $postValues['switch']);
                 $data['attribute'] = $attribute;
             }

@@ -12,7 +12,8 @@ export type AccountStats = Stats
 export type AccountNameMode = 'manual_input' | 'company_name' | 'contact_name'
 // Pays avec drapeau (data URI PNG) pour le sélecteur.
 export interface CountryOption { id: number; name: string; flag?: string | null }
-export interface AccountOptions { groups: Option[]; countries: CountryOption[]; accountNameMode: AccountNameMode }
+export interface GroupOption extends Option { status?: number }
+export interface AccountOptions { groups: GroupOption[]; countries: CountryOption[]; accountNameMode: AccountNameMode }
 export interface AccountSavePayload { id?: number | null; name: string; status: boolean; groupId: number; countryId: number; tags: string; contactId?: number }
 
 export type AccountSortKey = 'id' | 'status' | 'group' | 'name' | 'contact' | 'company' | 'created'

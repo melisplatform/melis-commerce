@@ -413,12 +413,14 @@ function VarAttributes({ productId, variantId, t, onNeedVid }: { productId: numb
   const [groups, setGroups] = useState<VariantAttrGroup[]>([])
   const [tick, setTick] = useState(0)
   const [saving, setSaving] = useState<number | null>(null)
-  useEffect(() => { if (variantId == null) return; fetchVariantAttributes(productId, variantId).then((r) => setGroups(r.attributes)).catch(() => null) }, [productId, variantId, tick])
+  // A new variant (no id yet) gets the product's attributes too (variantId 0); the first pick creates the
+  // variant through onNeedVid (Mantis #0011184).
+  useEffect(() => { fetchVariantAttributes(productId, variantId ?? 0).then((r) => setGroups(r.attributes)).catch(() => null) }, [productId, variantId, tick])
   async function pick(attributeId: number, valueId: number) {
     const id = variantId ?? await onNeedVid?.(); if (!id) return
     setSaving(attributeId)
     try { await saveVariantAttribute(productId, id, attributeId, valueId); setTick((x) => x + 1) }
-    catch { /* */ } finally { setSaving(null) }
+    catch (e) { notify('ko', t('title'), e instanceof Error ? e.message : t('err_save')) } finally { setSaving(null) }
   }
   return (
     <section>

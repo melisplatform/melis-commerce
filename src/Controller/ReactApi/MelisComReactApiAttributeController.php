@@ -229,6 +229,8 @@ class MelisComReactApiAttributeController extends MelisAbstractActionController
                 'searchable' => (int) $a['attr_searchable'],
                 'translations' => $translations,
                 'valuesCount' => $valuesCount,
+                // BO language: the page title uses it, like the list (Mantis #0011179)
+                'boLangId' => (int) $this->langId(),
             ]]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -257,6 +259,11 @@ class MelisComReactApiAttributeController extends MelisAbstractActionController
                 $existing = iterator_to_array($db->query('SELECT attr_type_id FROM melis_ecom_attribute WHERE attr_id = ? LIMIT 1', [$id]));
                 if (empty($existing)) { return $this->jsonResponse(['success' => false, 'error' => 'Attribute not found'], 404); }
                 $typeId = (int) ((array) $existing[0])['attr_type_id'];
+            }
+
+            // La référence identifie l'attribut (imports, intégrations) : unique (Mantis #0011178).
+            if (iterator_to_array($db->query('SELECT attr_id FROM melis_ecom_attribute WHERE attr_reference = ? AND attr_id <> ? LIMIT 1', [$reference, $id]))) {
+                return $this->jsonResponse(['success' => false, 'error' => 'Cette référence est déjà utilisée.'], 409);
             }
 
             $rawTranslations = is_array($b['translations'] ?? null) ? $b['translations'] : [];

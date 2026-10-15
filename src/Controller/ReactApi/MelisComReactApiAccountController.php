@@ -184,9 +184,10 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
 
             $groups = [];
-            foreach ($db->query('SELECT cgroup_id, cgroup_name FROM melis_ecom_client_groups ORDER BY cgroup_name', []) as $r) {
+            // status: the screens offer only active groups (+ the account's current one), like legacy (Mantis #0011192)
+            foreach ($db->query('SELECT cgroup_id, cgroup_name, cgroup_status FROM melis_ecom_client_groups ORDER BY cgroup_name', []) as $r) {
                 $r = (array) $r;
-                $groups[] = ['id' => (int) $r['cgroup_id'], 'name' => (string) $r['cgroup_name']];
+                $groups[] = ['id' => (int) $r['cgroup_id'], 'name' => (string) $r['cgroup_name'], 'status' => (int) $r['cgroup_status']];
             }
 
             $countries = [];
@@ -422,6 +423,21 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
             // devient obligatoire ici, cf. ticket Mantis #10677.
             if ($this->accountNameMode() === 'company_name' && trim((string) ($b['name'] ?? '')) === '') {
                 return $this->jsonResponse(['success' => false, 'error' => 'Le nom de la société est obligatoire.'], 400);
+            }
+
+            // Mantis #0011175 : effectif négatif, téléphone « abc » et site « not a url » étaient acceptés.
+            // Mêmes motifs que le formulaire legacy (config/forms/app.forms.clients.php).
+            $employees = trim((string) ($b['employees'] ?? ''));
+            if ($employees !== '' && !preg_match('/^\d+$/', $employees)) {
+                return $this->jsonResponse(['success' => false, 'error' => "L'effectif doit être un nombre entier supérieur ou égal à 0."], 400);
+            }
+            $phone = trim((string) ($b['phone'] ?? ''));
+            if ($phone !== '' && !preg_match('/^\+?[0-9 ().\/-]{3,}$/', $phone)) {
+                return $this->jsonResponse(['success' => false, 'error' => 'Numéro de téléphone invalide (chiffres, espaces, + ( ) . / - uniquement).'], 400);
+            }
+            $website = trim((string) ($b['website'] ?? ''));
+            if ($website !== '' && !preg_match('/^(https?:\/\/)?[\w-]+(\.[\w-]+)+(:\d+)?([\/?#]\S*)?$/i', $website)) {
+                return $this->jsonResponse(['success' => false, 'error' => 'Adresse de site web invalide (ex. https://www.example.com).'], 400);
             }
 
             $logoRaw = (string) ($b['logo'] ?? '');

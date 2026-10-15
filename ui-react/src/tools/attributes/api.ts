@@ -20,6 +20,7 @@ export interface AttributeDetail {
   status: number; visible: number; searchable: number
   translations: AttributeTranslation[]
   valuesCount: number
+  boLangId?: number
 }
 
 export type AttributeSortKey = 'id' | 'name' | 'reference' | 'type' | 'status' | 'visible' | 'searchable' | 'values'

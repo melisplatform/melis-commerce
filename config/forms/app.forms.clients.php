@@ -1715,6 +1715,57 @@ return [
                                             ]
                                         ]
                                     ],
+                                    [
+                                        // A negative employee count was accepted (Mantis #0011175)
+                                        'name' => 'GreaterThan',
+                                        'options' => [
+                                            'min' => 0,
+                                            'inclusive' => true,
+                                            'messages' => [
+                                                \Laminas\Validator\GreaterThan::NOT_GREATER_INCLUSIVE => 'tr_meliscommerce_client_Company_employee_nb_negative',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            // Phone and website had no check at all ("abc", "not a url" saved) — Mantis #0011175.
+                            // Same patterns as MelisComReactApiAccountController::companySaveAction().
+                            'ccomp_phone_number' => [
+                                'name'     => 'ccomp_phone_number',
+                                'required' => false,
+                                'validators' => [
+                                    [
+                                        'name' => 'Regex',
+                                        'options' => [
+                                            'pattern' => '/^\+?[0-9 ().\/-]{3,}$/',
+                                            'messages' => [
+                                                \Laminas\Validator\Regex::NOT_MATCH => 'tr_meliscommerce_client_Company_phone_invalid',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'ccomp_website' => [
+                                'name'     => 'ccomp_website',
+                                'required' => false,
+                                'validators' => [
+                                    [
+                                        'name' => 'Regex',
+                                        'options' => [
+                                            'pattern' => '/^(https?:\/\/)?[\w-]+(\.[\w-]+)+(:\d+)?([\/?#]\S*)?$/i',
+                                            'messages' => [
+                                                \Laminas\Validator\Regex::NOT_MATCH => 'tr_meliscommerce_client_Company_website_invalid',
+                                            ],
+                                        ],
+                                    ],
                                 ],
                                 'filters'  => [
                                     ['name' => 'StripTags'],

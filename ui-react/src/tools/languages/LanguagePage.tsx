@@ -330,7 +330,9 @@ function LanguageEditor({ language, t, onClose, onSaved }: {
   async function submit() {
     const issues: FormIssue[] = []
     if (!name.trim()) { setErrName(true); issues.push({ message: t('err_name_required') }) } else setErrName(false)
-    if (!locale.trim()) { setErrLocale(true); issues.push({ message: t('err_locale_required') }) } else setErrLocale(false)
+    if (!locale.trim()) { setErrLocale(true); issues.push({ message: t('err_locale_required') }) }
+    else if (!/^[a-z]{2,3}(_[A-Z]{2})?$/.test(locale.trim())) { setErrLocale(true); issues.push({ message: t('err_locale_format') }) } // Mantis #0011190
+    else setErrLocale(false)
     if (issues.length) { setFormIssues(issues); setFormError(true); return }
     setFormError(false); setFormIssues([])
     setSaving(true)
@@ -343,7 +345,12 @@ function LanguageEditor({ language, t, onClose, onSaved }: {
       }
       notify('ok', t('title'), t('saved'))
       onSaved()
-    } catch (e) { notify('ko', t('title'), e instanceof Error ? e.message : 'Error') }
+    } catch (e) {
+      // Server messages are English: show them in the BO language (Mantis #0011190)
+      const msg = e instanceof Error ? e.message : 'Error'
+      const known: Record<string, string> = { 'Language locale already exists': 'err_locale_exists', 'Invalid locale format': 'err_locale_format', 'Locale is empty': 'err_locale_required', 'Please enter the language name': 'err_name_required' }
+      notify('ko', t('title'), known[msg] ? t(known[msg]) : msg)
+    }
     finally { setSaving(false) }
   }
 

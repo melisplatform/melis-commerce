@@ -17,7 +17,7 @@ import { ExpandToggle, HiddenColsRow } from '../../shared/ExpandableRow'
 import { useIsNarrow } from '../../shared/useIsNarrow'
 import { ExportModal } from '../../shared/ExportModal'
 import { ColManager } from '../../shared/ColManager'
-import { openSubTab, updateSubLabel } from '../../shared/subtabs'
+import { openSubTab, updateSubLabel, closeSubTab } from '../../shared/subtabs'
 import { useCaps } from '../../shared/useCaps'
 import { Tabs } from '../../shared/Tabs'
 import { FormErrorBanner, type FormIssue } from '../../shared/melis-form-errors'
@@ -413,6 +413,8 @@ function AttributeForm({ id, base }: { id: string; base: string }) {
   const [formIssues, setFormIssues] = useState<FormIssue[]>([])
 
   useEffect(() => {
+    // After a create the "new" tab stayed open next to the created attribute (Mantis #0011179)
+    if (isEdit) closeSubTab(base, `${base}/new`)
     openSubTab(base, { id: subTabPath, label: isEdit ? t('loading') : t('new'), path: subTabPath })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -435,10 +437,14 @@ function AttributeForm({ id, base }: { id: string; base: string }) {
         const byLang = new Map(a.translations.map((tr) => [tr.langId, tr]))
         return prev.map((tr) => byLang.get(tr.langId) ?? tr)
       })
-      const name = a.translations.find((tr) => tr.name.trim())?.name || a.reference
-      updateSubLabel(base, subTabPath, name)
+      updateSubLabel(base, subTabPath, displayName(a.translations, a.reference, a.boLangId))
     }).catch(() => null)
   }, [attributeId])
+
+  // Title / tab label: BO language first, like the list, then any label, then the reference (Mantis #0011179)
+  function displayName(trs: AttributeTranslation[], ref: string, boLangId = attribute?.boLangId) {
+    return trs.find((tr) => tr.langId === boLangId && tr.name.trim())?.name || trs.find((tr) => tr.name.trim())?.name || ref
+  }
 
   function setTrans(langId: number, field: 'name' | 'description', value: string) {
     setTranslations((prev) => prev.map((x) => x.langId === langId ? { ...x, [field]: value } : x))
@@ -468,8 +474,7 @@ function AttributeForm({ id, base }: { id: string; base: string }) {
       const payload = { reference: reference.trim(), typeId, status, visible, searchable, translations }
       if (isEdit && attributeId) {
         await saveAttribute({ ...payload, id: attributeId })
-        const name = translations.find((tr) => tr.name.trim())?.name || reference.trim()
-        updateSubLabel(base, subTabPath, name)
+        updateSubLabel(base, subTabPath, displayName(translations, reference.trim()))
         notify('ok', t('title'), t('saved'))
       } else {
         const r = await saveAttribute(payload)
@@ -488,7 +493,7 @@ function AttributeForm({ id, base }: { id: string; base: string }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 8, background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', color: 'var(--color-primary)' }}><TagIcon /></span>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>
-            {isEdit ? (attribute ? (translations.find((tr) => tr.name.trim())?.name || attribute.reference) : t('loading')) : t('new')}
+            {isEdit ? (attribute ? displayName(translations, attribute.reference) : t('loading')) : t('new')}
           </h1>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexBasis: narrow ? '100%' : undefined }}>

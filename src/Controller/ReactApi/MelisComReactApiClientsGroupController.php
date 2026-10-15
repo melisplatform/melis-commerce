@@ -151,6 +151,11 @@ class MelisComReactApiClientsGroupController extends MelisAbstractActionControll
 
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
 
+            // Deux groupes au même nom sont indiscernables (compte, filtre, remises catégorie) — Mantis #0011192
+            if (iterator_to_array($db->query('SELECT cgroup_id FROM melis_ecom_client_groups WHERE LOWER(TRIM(cgroup_name)) = LOWER(?) AND cgroup_id <> ? LIMIT 1', [$name, $id]))) {
+                return $this->jsonResponse(['success' => false, 'error' => 'Group name already exists'], 409);
+            }
+
             $data = [
                 'cgroup_name' => $name,
                 'cgroup_status' => (int) (!empty($b['status']) ? 1 : 0),

@@ -334,7 +334,8 @@ export function FilesTab({ accountId, t, can }: { accountId: number; t: T; can?:
   }
   function onPick(e: ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] ?? null
-    setFile(f); if (f && !fname) setFname(f.name); setMerr(null)
+    // "Nom" follows the picked file unless the user typed their own name (Mantis #0011176)
+    setFile(f); if (f && (!fname || fname === file?.name)) setFname(f.name); setMerr(null)
   }
   async function save() {
     if (!file) { setMerr(t('fi_err_file')); return }
@@ -342,7 +343,7 @@ export function FilesTab({ accountId, t, can }: { accountId: number; t: T; can?:
     if (!fcountry) { setMerr(t('fi_err_country')); return }
     setUploading(true)
     try { await uploadAccountFile(accountId, file, { name: fname.trim() || file.name, typeId: ftype, countryId: fcountry }); setModal(false); setTick((x) => x + 1) }
-    catch { setMerr(t('err_save')) } finally { setUploading(false) }
+    catch (e) { setMerr(e instanceof Error && e.message ? e.message : t('err_save')) } finally { setUploading(false) }
   }
   async function confirmDelete() {
     if (!toDelete) return

@@ -321,7 +321,7 @@ function ProductList({ base }: { base: string }) {
       {toDup && (
         <DuplicateModal t={t} title={t('dup_prd_title')} intro={t('dup_prd_intro')} fieldLabel={`${t('dup_ref')} (${toDup.reference})`} fieldPlaceholder={t('dup_ref_ph')}
           onClose={() => setToDup(null)}
-          onConfirm={async (o) => { try { await duplicateProduct(toDup.id, { duplicateImages: o.duplicateImages, duplicateDocuments: o.duplicateDocuments, putOnline: o.putOnline, reference: o.field }) } catch { /* */ } setToDup(null); setTick((x) => x + 1) }} />
+          onConfirm={async (o) => { await duplicateProduct(toDup.id, { duplicateImages: o.duplicateImages, duplicateDocuments: o.duplicateDocuments, putOnline: o.putOnline, reference: o.field }); setToDup(null); setTick((x) => x + 1) }} />
       )}
     </div>
   )

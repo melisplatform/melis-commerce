@@ -56,6 +56,7 @@
 	     
 	    // Form Validation Messages
 	    'tr_meliscommerce_attribute_save_failed' => 'Impossible de sauvegarder l\'attribut',
+	    'tr_meliscommerce_attribute_reference_exists' => 'Cette référence est déjà utilisée par un autre attribut',
 	    'tr_meliscommerce_attribute_value_save_failed' => 'Impossible de sauvegarder la valeur de l\'attribut',
 	    
 	    //flash message

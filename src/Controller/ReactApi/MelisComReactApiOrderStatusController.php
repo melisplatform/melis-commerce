@@ -187,6 +187,10 @@ class MelisComReactApiOrderStatusController extends MelisAbstractActionControlle
 
             $colorCode = trim((string) ($b['colorCode'] ?? ''));
             if ($colorCode === '') { return $this->jsonResponse(['success' => false, 'error' => 'La couleur est obligatoire.'], 400); }
+            // « zzz » / « notacolor » étaient acceptés, puis utilisés comme couleur du badge (Mantis #0011191)
+            if (!preg_match('/^#([0-9a-f]{3}|[0-9a-f]{6})$/i', $colorCode)) {
+                return $this->jsonResponse(['success' => false, 'error' => 'Code couleur invalide : format attendu #rrggbb (ex. #0696cb).'], 400);
+            }
 
             $rawTranslations = is_array($b['translations'] ?? null) ? $b['translations'] : [];
             $hasName = false;
@@ -209,6 +213,10 @@ class MelisComReactApiOrderStatusController extends MelisAbstractActionControlle
                 if ($name === '') { continue; }
                 $langId = (int) ($t['langId'] ?? 0);
                 if ($langId <= 0) { continue; }
+                // Deux statuts au même nom (dans une même langue) sont indiscernables dans les filtres (Mantis #0011191)
+                if (iterator_to_array($db->query('SELECT ostt_id FROM melis_ecom_order_status_trans WHERE ostt_lang_id = ? AND LOWER(TRIM(ostt_status_name)) = LOWER(?) AND ostt_status_id <> ? LIMIT 1', [$langId, $name, $id]))) {
+                    return $this->jsonResponse(['success' => false, 'error' => "Le nom « $name » est déjà utilisé par un autre statut."], 409);
+                }
                 $row = ['ostt_lang_id' => $langId, 'ostt_status_name' => $name];
                 if (isset($existingByLang[$langId])) { $row['ostt_id'] = $existingByLang[$langId]; }
                 $transArray[] = $row;
