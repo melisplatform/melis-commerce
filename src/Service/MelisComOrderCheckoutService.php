@@ -662,8 +662,14 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 foreach ($varianData->getAttributeValues() As $aVal)
                     foreach ($aVal->atval_trans As $tVal)
                         if ($tVal->avt_lang_id == $langId) {
+                            // A "File" attribute (avt_v_binary) put the raw file (e.g. a PDF) in obas_attributes: not
+                            // valid UTF-8 → MySQL refused the line and the order had no basket (Mantis #0011201)
+                            if ($aVal->atype_column_value === 'binary')
+                                continue;
                             $varAttrArray = (Array) $tVal;
-                            array_push($variantAttributes, $varAttrArray['avt_v_'.$aVal->atype_column_value]);
+                            $attrValue = (string) ($varAttrArray['avt_v_'.$aVal->atype_column_value] ?? '');
+                            if ($attrValue !== '' && mb_check_encoding($attrValue, 'UTF-8'))
+                                array_push($variantAttributes, $attrValue);
                         }
 
                 if (!empty($variantAttributes))
