@@ -273,6 +273,8 @@
 		
 		// Plugin MelisCommerceLoginPlugin
 		'tr_meliscommerce_plugin_login' => 'Login',
+		'tr_meliscommerce_plugin_logout' => 'Log out',
+		'tr_meliscommerce_plugin_logged_in_as' => 'You are logged in as %s',
 		'tr_meliscommerce_plugin_login_description' => 'The login plugin displays the form for the user to log in',
 		'tr_meliscommerce_plugin_login_email' => 'Email Address',
 		'tr_meliscommerce_plugin_login_password' => 'Password',

@@ -52,6 +52,7 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
 {
     use MelisCommercePluginWidthTrait;
     use MelisCommercePluginLoginGuardTrait;
+    use MelisCommercePluginLogoutTrait;
     public function __construct($updatesPluginConfig = array())
     {
         // the key of the configuration in the app.plugins.php
@@ -66,6 +67,8 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
+        $this->handleFrontLogout(); // "?m_logout=1" (Mantis #0011208)
+
         // anonymous visitor on the front: login page redirect or "please login", never the empty forms (#0011157)
         if ($guard = $this->anonymousGuard()) {
             return $guard;
@@ -138,6 +141,8 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
             'orderHistory' => $clientOrderHistory,
             'contactAssociatedAccounts' => $contactAssociatedAccounts,
             'selectedAccountId' => $selectedAccountId,
+            'loggedInName' => $this->loggedInName(),
+            'logoutLink' => $this->logoutLink(), // Mantis #0011208
         );
         
         // return the variable array and let the view be created

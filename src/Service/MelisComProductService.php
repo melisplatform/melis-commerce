@@ -955,6 +955,24 @@ class MelisComProductService extends MelisComGeneralService
 		$productId = (int) $arrayParameters['prodId'];
 		if($productId) {
 			try {
+				// The product's variants (with their prices, stocks, attributes, documents), its own documents and
+				// the files of both were left behind: variants still returned/sellable, files still served (Mantis #0011185)
+				$db = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
+				$variantIds = [];
+				foreach ($db->query('SELECT var_id FROM melis_ecom_variant WHERE var_prd_id = ?', [$productId]) as $v) {
+					$variantIds[] = (int) $v['var_id'];
+				}
+				$docRows = [];
+				$docSql = 'SELECT DISTINCT d.doc_id, d.doc_path FROM melis_ecom_doc_relations r JOIN melis_ecom_document d ON d.doc_id = r.rdoc_doc_id WHERE r.rdoc_product_id = ?'
+					. ($variantIds ? ' OR r.rdoc_variant_id IN (' . implode(',', $variantIds) . ')' : '');
+				foreach ($db->query($docSql, [$productId]) as $d) {
+					$docRows[(int) $d['doc_id']] = (string) $d['doc_path'];
+				}
+				$variantSrv = $this->getServiceManager()->get('MelisComVariantService');
+				foreach ($variantIds as $variantId) {
+					$variantSrv->deleteVariantById($variantId);
+				}
+
 				$prodAttrTable->deleteByField('patt_product_id', $productId);
 				//$prodCatTable->deleteByField('pcat_prd_id', $productId);
 				$prodDocRelTable->deleteByField('rdoc_product_id', $productId);
@@ -968,6 +986,25 @@ class MelisComProductService extends MelisComGeneralService
 					$melisComCategoryService->deleteCategoryProduct($prd->pcat_id);
 				}
 				
+				// documents no longer linked to anything, then their files (unless another document uses the same file)
+				$docroot = rtrim((string) ($_SERVER['DOCUMENT_ROOT'] ?? ''), '/');
+				foreach ($docRows as $docId => $path) {
+					$stillLinked = $db->query('SELECT COUNT(*) AS n FROM melis_ecom_doc_relations WHERE rdoc_doc_id = ?', [$docId])->current();
+					if ($stillLinked && (int) $stillLinked['n'] > 0) {
+						continue;
+					}
+					$docTable->deleteById($docId);
+					$sameFile = $db->query('SELECT COUNT(*) AS n FROM melis_ecom_document WHERE doc_path = ?', [$path])->current();
+					$file = $docroot . '/' . ltrim($path, '/');
+					if ($path !== '' && $docroot !== '' && (!$sameFile || (int) $sameFile['n'] === 0)
+						&& strpos($path, '/media/commerce/') === 0 && strpos($path, '..') === false && is_file($file)) {
+						@unlink($file);
+					}
+				}
+				if ($docroot !== '' && is_dir($docroot . '/media/commerce/' . $productId)) {
+					@rmdir($docroot . '/media/commerce/' . $productId); // only when empty
+				}
+
 				$data = $prodTable->getEntryById($productId)->current();
 				if(!$data) {
 					$results = true;

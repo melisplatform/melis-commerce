@@ -396,6 +396,35 @@ class MelisComReactApiAttributeController extends MelisAbstractActionController
             $reference = trim((string) ($b['reference'] ?? ''));
             $translations = is_array($b['translations'] ?? null) ? $b['translations'] : [];
 
+            // Validated before anything is written: an empty value was created ("—" in every list), "abc" / ""
+            // became 0 and 2.7 / "1,5" were silently truncated (Mantis #0011177)
+            $filled = 0;
+            foreach ($translations as $i => $t) {
+                $value = $t['value'] ?? null;
+                if (is_string($value)) { $value = trim($value); }
+                if ($value === '' || $value === null || ($column === 'binary' && empty($value))) {
+                    $translations[$i]['value'] = null;
+                    continue;
+                }
+                if ($column === 'int') {
+                    if (filter_var($value, FILTER_VALIDATE_INT) === false) {
+                        return $this->jsonResponse(['success' => false, 'error' => 'La valeur doit être un nombre entier (« ' . $value . ' »).'], 400);
+                    }
+                } elseif ($column === 'float') {
+                    $normalized = is_string($value) ? str_replace(',', '.', $value) : $value;
+                    if (!is_numeric($normalized)) {
+                        return $this->jsonResponse(['success' => false, 'error' => 'La valeur doit être un nombre (« ' . $value . ' »).'], 400);
+                    }
+                    $translations[$i]['value'] = $normalized;
+                } elseif ($column === 'datetime' && strtotime((string) $value) === false) {
+                    return $this->jsonResponse(['success' => false, 'error' => 'La date n\'est pas valide (« ' . $value . ' »).'], 400);
+                }
+                $filled++;
+            }
+            if ($filled === 0) {
+                return $this->jsonResponse(['success' => false, 'error' => 'La valeur est obligatoire.'], 400);
+            }
+
             $attributeSvc = $this->getServiceManager()->get('MelisComAttributeService');
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
 

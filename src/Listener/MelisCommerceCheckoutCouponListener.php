@@ -102,6 +102,26 @@ class MelisCommerceCheckoutCouponListener extends MelisGeneralListener implement
                         }
                     }
 
+                    // Coupons stay in the session once applied: one deactivated, expired, used up or no longer
+                    // matching the cart kept its discount until the order was created (Mantis #0011213) → checked
+                    // again on every computation (cart, summary, order creation), dropped with a message if invalid.
+                    $translator = $sm->get('translator');
+                    foreach (['productCoupons', 'generalCoupons'] as $list) {
+                        foreach (${$list} as $key => $applied) {
+                            $code = is_object($applied) ? ($applied->coup_code ?? '') : '';
+                            if ($code === '' || (!empty($getValues['couponCode']) && $code === $getValues['couponCode'])) {
+                                continue; // just validated above
+                            }
+                            $recheck = $orderCheckoutService->validateCoupon($code, $clientId, $productIds);
+                            if (empty($recheck['success'])) {
+                                unset(${$list}[$key]);
+                                $container['checkout'][$siteId]['coupons']['couponErr'] = is_string($recheck['error'] ?? null) && $recheck['error'] !== ''
+                                    ? $code . ' : ' . $translator->translate('tr_' . $recheck['error'])
+                                    : sprintf($translator->translate('tr_meliscommerce_coupon_invalid'), $code);
+                            }
+                        }
+                    }
+
                     $container['checkout'][$siteId]['coupons']['productCoupons'] = $productCoupons;
                     $container['checkout'][$siteId]['coupons']['generalCoupons'] = $generalCoupons;
                 }

@@ -62,10 +62,27 @@ class MelisComReactApiContactController extends MelisAbstractActionController
         if ($mode === 'company_name') {
             return (string) ($r['dyn_company_name'] ?? '');
         }
-        if ($mode === 'contact_name') {
-            return trim(((string) ($r['dyn_contact_firstname'] ?? '')) . ' ' . ((string) ($r['dyn_contact_name'] ?? '')));
+        $name = $mode === 'contact_name'
+            ? trim(((string) ($r['dyn_contact_firstname'] ?? '')) . ' ' . ((string) ($r['dyn_contact_name'] ?? '')))
+            : (string) ($r['cli_name'] ?? '');
+        if ($name !== '') {
+            return $name;
         }
-        return (string) ($r['cli_name'] ?? '');
+        // computed name empty (e.g. no default contact in "contact name" mode): the stored name, else #id —
+        // the account filter listed such accounts with an empty label (Mantis #0011169)
+        return trim((string) ($r['cli_name'] ?? '')) ?: (!empty($r['cli_id']) ? '#' . (int) $r['cli_id'] : '');
+    }
+
+    /**
+     * The contact's account as the legacy list shows it: its DEFAULT linked account (melis_ecom_client_person_rel),
+     * else the old cper_client_id column. The React list read cper_client_id only, now 0 for most contacts →
+     * "Compte" always "—" and the account filter empty (Mantis #0011169).
+     */
+    private function contactAccountIdSql(string $p = 'p'): string
+    {
+        return "COALESCE((SELECT r.cpr_client_id FROM melis_ecom_client_person_rel r
+                          WHERE r.cpr_client_person_id = $p.cper_id AND r.cpr_default_client = 1 ORDER BY r.cpr_id LIMIT 1),
+                         NULLIF($p.cper_client_id, 0))";
     }
 
     /** SQL snippet joining the tables resolveAccountName()'s dyn_* columns need, aliased for `$as`. */
@@ -100,7 +117,10 @@ class MelisComReactApiContactController extends MelisAbstractActionController
             // « type » (cper_type) était appliqué côté client → déplacé server-side pour le keyset.
             $filterWhere = []; $filterParams = [];
             if ($status !== null)    { $filterWhere[] = 'p.cper_status = ?';    $filterParams[] = $status; }
-            if ($accountId !== null) { $filterWhere[] = 'p.cper_client_id = ?'; $filterParams[] = $accountId; }
+            if ($accountId !== null) { // contacts linked to the account (any link, as the legacy filter), or the old column
+                $filterWhere[] = '(p.cper_client_id = ? OR EXISTS (SELECT 1 FROM melis_ecom_client_person_rel ar WHERE ar.cpr_client_person_id = p.cper_id AND ar.cpr_client_id = ?))';
+                $filterParams[] = $accountId; $filterParams[] = $accountId;
+            }
             if ($type !== '')        { $filterWhere[] = 'p.cper_type = ?';      $filterParams[] = $type; }
             if ($search !== '') {
                 $like = '%' . $search . '%';
@@ -133,7 +153,7 @@ class MelisComReactApiContactController extends MelisAbstractActionController
             $op  = $dir === 'ASC' ? '>' : '<';
 
             // $lang inliné (int) → aucun paramètre dans le SELECT/JOIN, compatible keyset.
-            $joins = "LEFT JOIN melis_ecom_client c ON c.cli_id = p.cper_client_id
+            $joins = "LEFT JOIN melis_ecom_client c ON c.cli_id = " . $this->contactAccountIdSql() . "
                       LEFT JOIN melis_ecom_civility_trans civ ON civ.civt_civ_id = p.cper_civility AND civ.civt_lang_id = $lang
                       " . $this->accountNameJoinSql('c');
 
@@ -150,7 +170,7 @@ class MelisComReactApiContactController extends MelisAbstractActionController
 
             $rows = iterator_to_array($db->query("
                 SELECT p.cper_id, p.cper_status, p.cper_type, p.cper_civility, p.cper_firstname,
-                       p.cper_name, p.cper_email, p.cper_client_id, p.cper_job_title, p.cper_tel_mobile,
+                       p.cper_name, p.cper_email, c.cli_id AS cper_client_id, p.cper_job_title, p.cper_tel_mobile,
                        p.cper_tags, p.cper_date_creation, p.cper_date_edit,
                        c.cli_name, civ.civt_min_name AS civility_name,
                        c_comp.ccomp_name AS dyn_company_name,
@@ -280,14 +300,14 @@ class MelisComReactApiContactController extends MelisAbstractActionController
             $rows = iterator_to_array($db->query(
                 "SELECT p.cper_id, p.cper_status, p.cper_type, p.cper_civility, p.cper_firstname,
                         p.cper_name, p.cper_middle_name, p.cper_lang_id, p.cper_email,
-                        p.cper_client_id, p.cper_job_title, p.cper_job_service,
+                        c.cli_id AS cper_client_id, p.cper_job_title, p.cper_job_service,
                         p.cper_tel_mobile, p.cper_tel_landline,
                         p.cper_tags, p.cper_date_creation, p.cper_date_edit,
                         c.cli_name, civ.civt_min_name AS civility_name,
                         c_comp.ccomp_name AS dyn_company_name,
                         c_dcp.cper_firstname AS dyn_contact_firstname, c_dcp.cper_name AS dyn_contact_name
                  FROM melis_ecom_client_person p
-                 LEFT JOIN melis_ecom_client c ON c.cli_id = p.cper_client_id
+                 LEFT JOIN melis_ecom_client c ON c.cli_id = " . $this->contactAccountIdSql() . "
                  LEFT JOIN melis_ecom_civility_trans civ ON civ.civt_civ_id = p.cper_civility AND civ.civt_lang_id = ?
                  " . $this->accountNameJoinSql('c') . "
                  WHERE p.cper_id = ? LIMIT 1",
@@ -339,9 +359,15 @@ class MelisComReactApiContactController extends MelisAbstractActionController
             $db  = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             $now = date('Y-m-d H:i:s');
 
+            // the e-mail is the front login: one per contact (Mantis #0011168), on create and on edit
+            $same = iterator_to_array($db->query('SELECT cper_id FROM melis_ecom_client_person WHERE cper_email = ? AND cper_id <> ? LIMIT 1', [$email, $id]));
+            if (!empty($same)) {
+                return $this->jsonResponse(['success' => false, 'error' => 'Cet e-mail est déjà utilisé par un autre contact.'], 409);
+            }
+
             if ($id > 0) {
                 $setSql = 'cper_status = ?, cper_type = ?, cper_civility = ?, cper_firstname = ?, cper_name = ?,
-                           cper_middle_name = ?, cper_lang_id = ?, cper_email = ?, cper_client_id = ?,
+                           cper_middle_name = ?, cper_lang_id = COALESCE(?, cper_lang_id), cper_email = ?, cper_client_id = ?,
                            cper_job_title = ?, cper_job_service = ?, cper_tel_mobile = ?, cper_tel_landline = ?,
                            cper_tags = ?, cper_date_edit = ?';
                 $params = [$status, $type, $civility, $firstname, $name,

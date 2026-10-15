@@ -55,7 +55,17 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
             $filterWhere = []; $filterParams = [];
             if ($status !== null)  { $filterWhere[] = 'c.cli_status = ?';   $filterParams[] = $status; }
             if ($groupId !== null) { $filterWhere[] = 'c.cli_group_id = ?'; $filterParams[] = $groupId; }
-            if ($search !== '')    { $like = '%' . $search . '%'; $filterWhere[] = '(c.cli_name LIKE ? OR c.cli_tags LIKE ?)'; $filterParams = array_merge($filterParams, [$like, $like]); }
+            if ($search !== '')    {
+                // also the company name and the linked contacts' name / e-mail: the displayed account name comes
+                // from them in "company name" / "contact name" mode, so such accounts were not findable (Mantis #0011172)
+                $like = '%' . $search . '%';
+                $filterWhere[] = "(c.cli_name LIKE ? OR c.cli_tags LIKE ?
+                    OR EXISTS (SELECT 1 FROM melis_ecom_client_company sc WHERE sc.ccomp_client_id = c.cli_id AND sc.ccomp_name LIKE ?)
+                    OR EXISTS (SELECT 1 FROM melis_ecom_client_account_rel sr JOIN melis_ecom_client_person sp ON sp.cper_id = sr.car_client_person_id
+                               WHERE sr.car_client_id = c.cli_id
+                                 AND (CONCAT(COALESCE(sp.cper_firstname,''),' ',COALESCE(sp.cper_name,'')) LIKE ? OR sp.cper_email LIKE ?)))";
+                $filterParams = array_merge($filterParams, [$like, $like, $like, $like, $like]);
+            }
 
             $countWhere = $filterWhere ? 'WHERE ' . implode(' AND ', $filterWhere) : '';
             $total = (int) (iterator_to_array($db->query("SELECT COUNT(*) AS total FROM melis_ecom_client c $countWhere", $filterParams))[0]['total'] ?? 0);
