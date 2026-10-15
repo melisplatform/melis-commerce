@@ -75,6 +75,27 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
         return $this->getServiceManager()->get('MelisCoreAuth')->hasIdentity();
     }
 
+    // ─── GET /orders/basket-log?lines=50 — super-admins only ────────────────────
+    // Last entries of data/logs/commerce-order-basket.log: why order basket lines failed to be saved
+    // (DB error + the line's columns), see MelisComOrderService::logBasketFailure (Mantis #0011201).
+    public function basketLogAction(): HttpResponse
+    {
+        if ($deny = $this->denyUnlessAccess()) { return $deny; }
+        $identity = $this->getServiceManager()->get('MelisCoreAuth')->getIdentity();
+        if (empty($identity) || empty($identity->usr_admin)) {
+            return $this->jsonResponse(['success' => false, 'error' => 'Forbidden'], 403);
+        }
+        $file  = \MelisCommerce\Service\MelisComOrderService::basketLogFile();
+        $lines = max(1, min(500, (int) $this->params()->fromQuery('lines', 50)));
+        $rows  = is_file($file) ? array_slice(file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [], -$lines) : [];
+        return $this->ok([
+            'file' => 'data/logs/' . basename($file),
+            'exists' => is_file($file),
+            'writable' => is_file($file) ? is_writable($file) : is_writable(dirname($file)),
+            'entries' => array_map(static fn($l) => json_decode($l, true) ?? $l, array_reverse($rows)),
+        ]);
+    }
+
     private function denyUnlessAccess(): ?HttpResponse
     {
         if (!$this->isAuthenticated()) {
@@ -1615,6 +1636,23 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
 
             $orderId = (int) $result['orderId'];
             $db      = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
+            $basketSvc = $this->getServiceManager()->get('MelisComBasketService');
+
+            // A basket line that fails to insert (MelisComOrderService::saveOrderBasket only error_logs it) left an
+            // order with no lines → 0 € payment, while the stock was still deducted and the customer's basket
+            // emptied (Mantis #0011201). Every line must be persisted, else undo the order and keep the basket.
+            $expected  = count($basketSvc->getBasket($clientId) ?: []);
+            $persisted = (int) ((array) (iterator_to_array($db->query('SELECT COUNT(*) AS n FROM melis_ecom_order_basket WHERE obas_order_id = ?', [$orderId]))[0] ?? []))['n'];
+            if ($expected === 0 || $persisted < $expected) {
+                foreach (['melis_ecom_order_basket' => 'obas_order_id', 'melis_ecom_coupon_order' => 'cord_order_id',
+                          'melis_ecom_order_address' => 'oadd_order_id', 'melis_ecom_order' => 'ord_id'] as $table => $col) {
+                    $db->query("DELETE FROM $table WHERE $col = ?", [$orderId]);
+                }
+                error_log("MelisComReactApiOrderController::checkoutConfirm - order $orderId undone: $persisted/$expected basket lines persisted (see saveOrderBasket errors above)");
+                return $this->ok(['success' => false, 'errors' => ['basket' => [
+                    'persist' => "Les lignes du panier n'ont pas pu être enregistrées : la commande n'a pas été créée (le panier, le stock et les coupons sont inchangés).",
+                ]]]);
+            }
 
             // Total cost of the just-created order (basket + shipment), same computation legacy's
             // own checkoutStep2_postPayment uses to sanity-check price-paid vs. total — here there's
@@ -1648,7 +1686,6 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             $countryId  = (int) ($state['countryId'] ?? -1);
             $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
             $stockTable = $this->getServiceManager()->get('MelisEcomVariantStockTable');
-            $basketSvc  = $this->getServiceManager()->get('MelisComBasketService');
             $basket     = $basketSvc->getBasket($clientId);
             if ($basket) {
                 foreach ($basket as $line) {
@@ -1661,10 +1698,20 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                 }
             }
 
-            // Note: legacy's own coupon-order "mark as used" step reads melis_ecom_coupon_order rows
-            // for this order — nothing in checkoutStep1_prePayment ever inserts one (confirmed by
-            // reading the full checkout flow), so there is nothing to mark here either; V1 scope
-            // limits coupons to validation only (see checkoutCouponAction).
+            // Mark the order's coupons as used, as checkoutStep2_postPayment does: the step-1 save_success listener
+            // (MelisCommerceCheckoutCouponListener) inserts the melis_ecom_coupon_order rows, but the use counter was
+            // never incremented here → a 1-use coupon stayed usable forever (Mantis #0011201).
+            $couponOrderTable = $this->getServiceManager()->get('MelisEcomCouponOrderTable');
+            $couponSrv        = $this->getServiceManager()->get('MelisComCouponService');
+            foreach ($couponOrderTable->getEntryByField('cord_order_id', $orderId) as $orderCoupon) {
+                $couponEntity = $couponSrv->getCouponById($orderCoupon->cord_coupon_id);
+                if (!$couponEntity || !$couponEntity->getId()) {
+                    continue;
+                }
+                $used = (int) $couponEntity->getCoupon()->coup_current_use_number + (int) $orderCoupon->cord_quantity_used;
+                $couponSrv->saveCoupon(['coup_current_use_number' => $used], $couponEntity->getId());
+                $couponOrderTable->save(['cord_status' => 1], $orderCoupon->cord_id);
+            }
 
             $basketSvc->emptyBasket($clientId);
 

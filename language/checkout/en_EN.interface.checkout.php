@@ -142,4 +142,5 @@
 
 		//checkout steps
 		'tr_meliscommerce_plugin_checkout_step tooltip' => 'Checkout step by step process',
+		'tr_meliscommerce_plugin_checkout_payment_unavailable' => 'No payment method is available for this site. Your order has been saved; please contact us to complete the payment.',
 	);

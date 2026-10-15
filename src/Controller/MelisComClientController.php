@@ -2038,6 +2038,7 @@ class MelisComClientController extends MelisAbstractActionController
                 }
 
                 $isDefaultAccount = $this->isDefaultAccount($accountId, $val['cper_id']);
+                unset($tableData[$key]['cper_password'], $tableData[$key]['cper_password_recovery_key']); // Mantis #0011167
                 $tableData[$key]['is_default'] = $isDefault;
                 $tableData[$key]['default_account'] = $isDefaultAccount;
                 $tableData[$key]['cper_status'] = $contactStatus;

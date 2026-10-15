@@ -825,6 +825,13 @@ return [
                                     'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutRemoveCoupon'],
                                 ],
                             ],
+                            'orders-basket-log' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/basket-log[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'basketLog'],
+                                ],
+                            ],
                             'orders-checkout-confirm' => [
                                 'type' => 'Segment',
                                 'options' => [

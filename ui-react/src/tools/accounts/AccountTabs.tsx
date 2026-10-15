@@ -346,7 +346,7 @@ export function FilesTab({ accountId, t, can }: { accountId: number; t: T; can?:
   }
   async function confirmDelete() {
     if (!toDelete) return
-    try { await deleteAccountFile(accountId, toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) }
+    try { await deleteAccountFile(accountId, toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) } catch (e) { notify('ko', t('title'), e instanceof Error ? e.message : 'Error'); setToDelete(null) }
   }
 
   return (

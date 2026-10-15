@@ -898,6 +898,9 @@ class MelisComOrderService extends MelisComGeneralService
 		{
 
 			$basketData = $arrayParameters['basket'];
+			if (empty($basketData) && empty($orderId)) { // a NEW order without lines: log it as well (#0011201)
+				self::logBasketFailure(new \RuntimeException('saveOrder() received an empty basket'), ['obas_order_id' => $results['ord_id']]);
+			}
 			if(!empty($basketData)){
 				foreach ($basketData As $key => $val)
 				{
@@ -1078,6 +1081,47 @@ class MelisComOrderService extends MelisComGeneralService
 		*
 		* @return int|null The basket id created or updated, null if an error occured
 		*/
+	/** data/logs/commerce-order-basket.log — readable at GET /melis/react-api/orders/basket-log (admins). */
+	public static function basketLogFile(): string
+	{
+		$docroot = (string) ($_SERVER['DOCUMENT_ROOT'] ?? '');
+		$root = ($docroot !== '' && is_dir($docroot . '/../data')) ? $docroot . '/..' : (getcwd() ?: '.');
+		return rtrim($root, '/') . '/data/logs/commerce-order-basket.log';
+	}
+
+	/**
+	 * Orders were saved without their basket lines on dev6 only, and the reason only went to the pod's stdout
+	 * (Mantis #0011201) → also keep it in a file: the DB error (and its previous exceptions) + the line's columns.
+	 */
+	private static function logBasketFailure(\Throwable $e, array $basket): void
+	{
+		try {
+			$errors = [];
+			for ($x = $e; $x; $x = $x->getPrevious()) {
+				$errors[] = get_class($x) . ': ' . $x->getMessage();
+			}
+			$columns = [];
+			foreach ($basket as $col => $value) {
+				$columns[$col] = is_scalar($value) || $value === null
+					? gettype($value) . ' ' . mb_substr(var_export($value, true), 0, 80)
+					: gettype($value);
+			}
+			$file = self::basketLogFile();
+			if (is_file($file) && filesize($file) > 2 * 1024 * 1024) {
+				@rename($file, $file . '.1'); // keep it small
+			}
+			@file_put_contents($file, json_encode([
+				'date' => date('Y-m-d H:i:s'),
+				'order' => $basket['obas_order_id'] ?? null,
+				'uri' => $_SERVER['REQUEST_URI'] ?? '',
+				'errors' => $errors,
+				'at' => basename($e->getFile()) . ':' . $e->getLine(),
+				'columns' => $columns,
+			], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PARTIAL_OUTPUT_ON_ERROR) . "\n", FILE_APPEND | LOCK_EX);
+		} catch (\Throwable $ignored) {
+		}
+	}
+
 	public function saveOrderBasket($basket, $basketId = null)
 	{
 		// Event parameters prepare
@@ -1094,8 +1138,9 @@ class MelisComOrderService extends MelisComGeneralService
 			$obasId = $melisEcomOrderBasketTable->save($arrayParameters['basket'], $arrayParameters['basketId']);
 			$results = $obasId;
 		}
-		catch(\Exception $e){
+		catch(\Throwable $e){ // \Exception missed PHP errors (TypeError…)
 			error_log('MelisComOrderService::saveOrderBasket() - insert/update failed: ' . $e->getMessage());
+			self::logBasketFailure($e, (array) $arrayParameters['basket']);
 		}
 		// Service implementation end
 		

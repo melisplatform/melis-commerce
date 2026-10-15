@@ -169,7 +169,7 @@ function ProductList({ base }: { base: string }) {
     setItems([])
     setTick((x) => x + 1)
   }
-  async function confirmDelete() { if (!toDelete) return; try { await deleteProduct(toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) } }
+  async function confirmDelete() { if (!toDelete) return; try { await deleteProduct(toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) } catch (e) { notify('ko', t('title'), e instanceof Error ? e.message : 'Error'); setToDelete(null) } }
   // Export : le keyset ne charge qu'une page → on récupère TOUT le jeu filtré via curseur avant d'ouvrir.
   async function openExport() {
     setExporting(true)
@@ -480,6 +480,14 @@ function ProductForm({ id, base }: { id: string; base: string }) {
   function removeExtraText(typeId: number) { setExtraTexts((p) => p.filter((et) => et.typeId !== typeId)) }
   function toggleCategory(cid: number) { setCategoryIds((p) => p.includes(cid) ? p.filter((x) => x !== cid) : [...p, cid]) }
 
+  // The sub-saves (media uploads, prices, attributes…) run in allSettled: a refused upload was swallowed and
+  // "Enregistré ✓" shown anyway (Mantis #0011180) → report the first failure instead.
+  function notifySettled(settled: PromiseSettledResult<unknown>[]) {
+    const ko = settled.find((r): r is PromiseRejectedResult => r.status === 'rejected')
+    if (ko) notify('ko', t('title'), ko.reason instanceof Error ? ko.reason.message : t('err_save'))
+    else notify('ok', t('title'), t('saved'))
+  }
+
   async function submit() {
     const issues: FormIssue[] = []
     if (!reference.trim()) { setErrRef(true); issues.push({ message: t('err_reference') }); setTab('main') } else setErrRef(false)
@@ -498,7 +506,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
       const meaningfulPrices = pendingPrices.filter((p) => p.net !== null || p.gross !== null || p.vatPercent !== null || p.vatPrice !== null || p.otherTax !== null)
       if (!isEdit) {
         const pid = result.id
-        await Promise.allSettled([
+        const settled = await Promise.allSettled([
           ...pendingImages.map((m) => uploadProductMedia(pid, { ...m, kind: 'image' })),
           ...pendingFiles.map((m) => uploadProductMedia(pid, { ...m, kind: 'file' })),
           ...pendingAttrIds.map((aid) => saveProductAttribute(pid, aid)),
@@ -507,7 +515,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
         ])
         setPendingImages([]); setPendingFiles([])
         setMediaTick((x) => x + 1)
-        notify('ok', t('title'), t('saved'))
+        notifySettled(settled)
         closeSubTab(base, `${base}/new`)
         const newPath = `${base}/${pid}`
         openSubTab(base, { id: newPath, label: reference.trim(), path: newPath })
@@ -517,20 +525,26 @@ function ProductForm({ id, base }: { id: string; base: string }) {
         // Unlike the new-product path, every pendingPrices entry here corresponds to an existing
         // DB row the user actively edited (buffered onChange) — send it even when all fields end up
         // null, otherwise clearing every field back to empty silently no-ops and the old values stick.
-        await Promise.allSettled([
+        const imgUploads = pendingImages.map((m) => uploadProductMedia(productId!, { ...m, kind: 'image' }))
+        const fileUploads = pendingFiles.map((m) => uploadProductMedia(productId!, { ...m, kind: 'file' }))
+        const settled = await Promise.allSettled([
           ...pendingPrices.map((p) => saveProductPrice(productId!, { id: p.id ?? null, countryId: p.countryId, currency: p.currency, net: p.net, gross: p.gross, vatPercent: p.vatPercent, vatPrice: p.vatPrice, otherTax: p.otherTax })),
           ...pendingAttrIds.map((aid) => saveProductAttribute(productId!, aid)),
           ...pendingRecipientIds.map((uid) => saveProductRecipient(productId!, { userId: uid }, stockLevelNum)),
-          ...pendingImages.map((m) => uploadProductMedia(productId!, { ...m, kind: 'image' })),
-          ...pendingFiles.map((m) => uploadProductMedia(productId!, { ...m, kind: 'file' })),
+          ...imgUploads,
+          ...fileUploads,
           ...pendingDeleteAttrPattIds.map((pattId) => deleteProductAttribute(productId!, pattId)),
           ...pendingDeleteRecipientSeaIds.map((seaId) => deleteProductRecipient(productId!, seaId)),
           ...pendingDeleteFileIds.map((id) => deleteProductMedia(productId!, id)),
           ...pendingDeleteImageIds.map((id) => deleteProductMedia(productId!, id)),
         ])
-        setPendingImages([]); setPendingFiles([]); setPendingDeleteFileIds([]); setPendingDeleteImageIds([])
+        // keep the images/files whose upload failed, so the user can fix them and save again (#0011180)
+        const failed = async (ps: Promise<unknown>[]) => (await Promise.allSettled(ps)).map((r) => r.status === 'rejected')
+        const [imgFailed, fileFailed] = await Promise.all([failed(imgUploads), failed(fileUploads)])
+        setPendingImages((p) => p.filter((_, i) => imgFailed[i])); setPendingFiles((p) => p.filter((_, i) => fileFailed[i]))
+        setPendingDeleteFileIds([]); setPendingDeleteImageIds([])
         setMediaTick((x) => x + 1)
-        notify('ok', t('title'), t('saved'))
+        notifySettled(settled)
       }
     } catch (e) { const msg = e instanceof Error ? e.message : t('err_save'); notify('ko', t('title'), msg) } finally { setSaving(false) }
   }

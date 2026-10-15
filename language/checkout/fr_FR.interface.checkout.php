@@ -142,4 +142,5 @@
 
 		//checkout steps
 		'tr_meliscommerce_plugin_checkout_step tooltip' => 'Processus étape par étape de la commande',
+		'tr_meliscommerce_plugin_checkout_payment_unavailable' => 'Aucun moyen de paiement n\'est disponible pour ce site. Votre commande a été enregistrée ; contactez-nous pour finaliser le paiement.',
 	);

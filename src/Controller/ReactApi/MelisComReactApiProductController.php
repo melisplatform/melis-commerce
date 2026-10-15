@@ -1076,27 +1076,16 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         $subtypeId = ($body['typeId'] ?? null) !== null ? (int) $body['typeId'] : null;
         $countryId = ($body['countryId'] ?? null) !== null ? (int) $body['countryId'] : -1;
         $data      = (string) ($body['data'] ?? '');
+        $safe      = $this->uploadFileName($body, $name, $kind); // validates the extension (throws)
         if (($p = strpos($data, ',')) !== false && strpos($data, ';base64') !== false) { $data = substr($data, $p + 1); }
         $bytes = base64_decode($data, true);
         if ($bytes === false || $bytes === '') { throw new \InvalidArgumentException('Fichier invalide.'); }
-
-        // Sécurité : le dossier /media/commerce est servi par le serveur web. Sans allow-list
-        // d'extension, un fichier .php (ou .phtml…) y serait exécutable → RCE. On refuse toute
-        // extension hors liste (images + documents), comme le font déjà Account/Order.
-        $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-        $allowedExt = $kind === 'image'
-            ? ['jpg','jpeg','jfif','png','gif','webp','avif','svg','bmp','ico']
-            : ['jpg','jpeg','jfif','png','gif','webp','avif','svg','bmp','ico','pdf','doc','docx','xls','xlsx','ppt','pptx','odt','ods','odp','txt','csv','rtf','zip'];
-        if (!in_array($ext, $allowedExt, true)) {
-            throw new \InvalidArgumentException('Extension de fichier non autorisée (.' . $ext . '). Extensions acceptées : ' . implode(', ', $allowedExt) . '.');
-        }
 
         $docroot = (string) ($_SERVER['DOCUMENT_ROOT'] ?? '');
         if ($docroot === '' || !is_dir($docroot)) { $docroot = getcwd() ?: '/var/www/melis/public'; }
         $dir = rtrim($docroot, '/') . '/media/commerce/' . $prdId;
         if (!is_dir($dir) && !@mkdir($dir, 0775, true) && !is_dir($dir)) { throw new \RuntimeException('Dossier média inaccessible.'); }
 
-        $safe  = preg_replace('/[^A-Za-z0-9._-]/', '_', $name) ?: 'file';
         $fname = substr(md5(uniqid('', true)), 0, 8) . '_' . $safe;
         if (file_put_contents($dir . '/' . $fname, $bytes) === false) { throw new \RuntimeException('Écriture du fichier impossible.'); }
 
@@ -1111,6 +1100,41 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         $docId = (int) iterator_to_array($db->query('SELECT LAST_INSERT_ID() AS id', []))[0]['id'];
         $db->query("INSERT INTO melis_ecom_doc_relations (rdoc_doc_id, $relCol, rdoc_country_id) VALUES (?, ?, ?)", [$docId, $relId, $countryId]);
         return $docId;
+    }
+
+    /**
+     * Stored file name (sanitized) of an upload, with an allowed extension taken from the uploaded file itself:
+     * its original name (body.fileName), else the display name ("Nom"), else the data-URL MIME type. The extension
+     * was read from "Nom" only, which the editor fills WITHOUT the extension → "(.) non autorisée" (Mantis #0011180).
+     *
+     * Sécurité : le dossier /media/commerce est servi par le serveur web. Sans allow-list d'extension, un fichier
+     * .php (ou .phtml…) y serait exécutable → RCE. On refuse toute extension hors liste (images + documents).
+     */
+    private function uploadFileName(array $body, string $name, string $kind): string
+    {
+        $allowedExt = $kind === 'image'
+            ? ['jpg','jpeg','jfif','png','gif','webp','avif','svg','bmp','ico']
+            : ['jpg','jpeg','jfif','png','gif','webp','avif','svg','bmp','ico','pdf','doc','docx','xls','xlsx','ppt','pptx','odt','ods','odp','txt','csv','rtf','zip'];
+        $mimeExt = [
+            'image/jpeg' => 'jpg', 'image/png' => 'png', 'image/gif' => 'gif', 'image/webp' => 'webp', 'image/avif' => 'avif',
+            'image/svg+xml' => 'svg', 'image/bmp' => 'bmp', 'image/x-icon' => 'ico', 'image/vnd.microsoft.icon' => 'ico',
+            'application/pdf' => 'pdf', 'text/plain' => 'txt', 'text/csv' => 'csv', 'application/zip' => 'zip',
+        ];
+        $orig = basename(trim((string) ($body['fileName'] ?? '')));
+        $ext  = strtolower(pathinfo($orig, PATHINFO_EXTENSION));
+        $base = $orig !== '' ? pathinfo($orig, PATHINFO_FILENAME) : '';
+        if ($ext === '') {
+            $ext  = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+            $base = $ext !== '' ? pathinfo($name, PATHINFO_FILENAME) : $name;
+        }
+        if ($ext === '' && preg_match('#^data:([a-z0-9.+/-]+);base64,#i', (string) ($body['data'] ?? ''), $m)) {
+            $ext = $mimeExt[strtolower($m[1])] ?? '';
+        }
+        if (!in_array($ext, $allowedExt, true)) {
+            throw new \InvalidArgumentException('Extension de fichier non autorisée (.' . $ext . '). Extensions acceptées : ' . implode(', ', $allowedExt) . '.');
+        }
+        $base = preg_replace('/[^A-Za-z0-9._-]/', '_', (string) $base) ?: 'file';
+        return $base . '.' . $ext;
     }
 
     /** Trigger meliscommerce_document_save_{image|file}_end, mirroring legacy's docType-based event split. */
@@ -1332,6 +1356,9 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             $name      = trim((string) ($body['name'] ?? ''));
             $typeId    = ($body['typeId'] ?? null) !== null ? (int) $body['typeId'] : null;
             $countryId = ($body['countryId'] ?? null) !== null ? (int) $body['countryId'] : -1;
+            // a replacement file gets the same extension allow-list as a new upload, checked before any change — a "Nom"
+            // of x.php used to be written as-is (Mantis #0011180)
+            $safe = !empty($body['data']) ? $this->uploadFileName($body, $name ?: 'file', $isImage ? 'image' : 'file') : null;
 
             if ($isImage) {
                 $db->query('UPDATE melis_ecom_document SET doc_name = ?, doc_subtype_id = ? WHERE doc_id = ?', [$name, $typeId, $docId]);
@@ -1354,7 +1381,6 @@ class MelisComReactApiProductController extends MelisAbstractActionController
                     if ($docroot === '' || !is_dir($docroot)) { $docroot = getcwd() ?: '/var/www/melis/public'; }
                     $dir = rtrim($docroot, '/') . '/media/commerce/' . $prdId;
                     if (!is_dir($dir) && !@mkdir($dir, 0775, true) && !is_dir($dir)) { /* ignore dir error */ }
-                    $safe  = preg_replace('/[^A-Za-z0-9._-]/', '_', basename($name ?: 'file')) ?: 'file';
                     $fname = substr(md5(uniqid('', true)), 0, 8) . '_' . $safe;
                     if (file_put_contents($dir . '/' . $fname, $bytes) !== false) {
                         $path = '/media/commerce/' . $prdId . '/' . $fname;
@@ -1366,6 +1392,8 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             $this->triggerDocumentSaveEvent(['kind' => $isImage ? 'image' : 'file'], 'ECOM_DOCUMENT', $docId, true);
 
             return $this->jsonResponse(['success' => true, 'data' => null]);
+        } catch (\InvalidArgumentException $e) {
+            return $this->jsonResponse(['success' => false, 'error' => $e->getMessage()], 400);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
 
