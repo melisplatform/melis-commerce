@@ -159,7 +159,7 @@ export default function OrderCheckoutWizard({ base }: { base: string }) {
             onNext={(countryId) => { setState((p) => ({ ...p, countryId })); goNext() }} />
         )}
         {step === 3 && state.clientId && (
-          <WizardAddressesStep clientId={state.clientId} onBack={goBack}
+          <WizardAddressesStep clientId={state.clientId} initialBillingId={state.billingId} initialDeliveryId={state.deliveryId} onBack={goBack}
             onNext={(billingId, deliveryId) => { setState((p) => ({ ...p, billingId, deliveryId })); goNext() }} />
         )}
         {step === 4 && state.clientId && (

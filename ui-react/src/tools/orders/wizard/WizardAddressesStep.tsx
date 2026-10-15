@@ -18,13 +18,25 @@ const createBtnCss = { ...btnGhost, alignSelf: 'flex-end' } as const
 
 type Mode = 'none' | 'existing' | 'new'
 
+// melis_ecom_client_address_type: 1 = BIL (billing), 2 = DEL (delivery)
+const TYPE_BILLING = 1
+const TYPE_DELIVERY = 2
+
+/** Addresses of the wanted type first, each labelled with its type — both selects listed every
+ *  address with nothing telling them apart (Mantis #0011197). */
+function orderedOptions(addresses: Address[], type: number, types: AddressOptions['types']) {
+  const typeName = (a: Address) => a.typeName || types.find((x) => x.id === a.type)?.name || ''
+  return [...addresses.filter((a) => a.type === type), ...addresses.filter((a) => a.type !== type)]
+    .map((a) => ({ id: a.id, label: typeName(a) ? `${a.addressName} (${typeName(a)})` : a.addressName }))
+}
+
 /** Carte "sélection" : titre + (contenu additionnel, ex. la case "même adresse") + dropdown
  *  d'adresses existantes + bouton "créer une nouvelle adresse". Reproduit le zonage legacy. */
 function PickerCard({
   title, extra, hideSelector, selectLabel, choosePh, createLabel, addresses, mode, selectedId, onSelect, onClear, onCreateNew,
 }: {
   title: string; extra?: ReactNode; hideSelector?: boolean; selectLabel: string; choosePh: string; createLabel: string
-  addresses: Address[]; mode: Mode; selectedId: number | null
+  addresses: { id: number; label: string }[]; mode: Mode; selectedId: number | null
   onSelect: (id: number) => void; onClear: () => void; onCreateNew: () => void
 }) {
   const narrow = useIsNarrow()
@@ -40,7 +52,7 @@ function PickerCard({
               <select style={inputCss} value={mode === 'existing' ? (selectedId ?? '') : ''}
                 onChange={(e) => (e.target.value ? onSelect(Number(e.target.value)) : onClear())}>
                 <option value="">{choosePh}</option>
-                {addresses.map((a) => <option key={a.id} value={a.id}>{a.addressName}</option>)}
+                {addresses.map((a) => <option key={a.id} value={a.id}>{a.label}</option>)}
               </select>
             </div>
             <button style={{ ...createBtnCss, whiteSpace: narrow ? 'normal' : 'nowrap', alignSelf: narrow ? 'stretch' : 'flex-end', justifyContent: narrow ? 'center' : undefined, textAlign: narrow ? 'center' : undefined }} onClick={onCreateNew}><PlusIcon />{createLabel}</button>
@@ -73,8 +85,9 @@ function AddressFormCard({ mode, draft, options, saving, t, onDraftChange, onSav
   )
 }
 
-export function WizardAddressesStep({ clientId, onBack, onNext }: {
-  clientId: number; onBack: () => void; onNext: (billingId: number, deliveryId: number) => void
+export function WizardAddressesStep({ clientId, initialBillingId, initialDeliveryId, onBack, onNext }: {
+  clientId: number; initialBillingId?: number | null; initialDeliveryId?: number | null
+  onBack: () => void; onNext: (billingId: number, deliveryId: number) => void
 }) {
   const t = makeT(DICT)
   const narrow = useIsNarrow()
@@ -97,9 +110,17 @@ export function WizardAddressesStep({ clientId, onBack, onNext }: {
   useEffect(() => {
     setLoading(true)
     Promise.all([fetchAccountAddresses(clientId), fetchAddressOptions()])
-      .then(([a, o]) => { setAddresses(a.items); setOptions(o) })
+      .then(([a, o]) => {
+        setAddresses(a.items); setOptions(o)
+        // Back from the Summary step: restore the saved selection — it showed "Choisir" again (Mantis #0011197)
+        const del = a.items.find((x) => x.id === initialDeliveryId)
+        const bil = a.items.find((x) => x.id === initialBillingId)
+        if (del) { setDeliveryId(del.id); setDeliveryDraft(del); setDeliveryMode('existing') }
+        if (bil && bil.id !== del?.id) { setSameAsDelivery(false); setBillingId(bil.id); setBillingDraft(bil); setBillingMode('existing') }
+      })
       .catch(() => null)
       .finally(() => setLoading(false))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clientId])
 
   const savedAddresses = addresses.filter((a) => a.id > 0)
@@ -144,7 +165,8 @@ export function WizardAddressesStep({ clientId, onBack, onNext }: {
   }
 
   function createNew(which: 'delivery' | 'billing') {
-    const draft = newAddress(options.types[0]?.id ?? 1)
+    const wanted = which === 'delivery' ? TYPE_DELIVERY : TYPE_BILLING
+    const draft = newAddress(options.types.some((x) => x.id === wanted) ? wanted : (options.types[0]?.id ?? 1))
     if (which === 'delivery') { setDeliveryId(null); setDeliveryDraft(draft); setDeliveryMode('new') }
     else { setBillingId(null); setBillingDraft(draft); setBillingMode('new') }
   }
@@ -180,7 +202,7 @@ export function WizardAddressesStep({ clientId, onBack, onNext }: {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <PickerCard
               title={t('checkout_delivery_address')} selectLabel={t('checkout_delivery_select')} choosePh={t('checkout_choose_ph')}
-              createLabel={t('checkout_create_delivery_btn')} addresses={savedAddresses}
+              createLabel={t('checkout_create_delivery_btn')} addresses={orderedOptions(savedAddresses, TYPE_DELIVERY, options.types)}
               mode={deliveryMode} selectedId={deliveryId}
               onSelect={(id) => selectExisting(id, 'delivery')} onClear={() => clearSelection('delivery')} onCreateNew={() => createNew('delivery')}
             />
@@ -199,7 +221,7 @@ export function WizardAddressesStep({ clientId, onBack, onNext }: {
               }
               hideSelector={sameAsDelivery}
               selectLabel={t('checkout_billing_select')} choosePh={t('checkout_choose_ph')} createLabel={t('checkout_create_billing_btn')}
-              addresses={savedAddresses} mode={billingMode} selectedId={billingId}
+              addresses={orderedOptions(savedAddresses, TYPE_BILLING, options.types)} mode={billingMode} selectedId={billingId}
               onSelect={(id) => selectExisting(id, 'billing')} onClear={() => clearSelection('billing')} onCreateNew={() => createNew('billing')}
             />
             {!sameAsDelivery && (

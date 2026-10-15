@@ -427,7 +427,9 @@ function OrderStatusForm({ id, base }: { id: string; base: string }) {
 
   async function submit() {
     const issues: FormIssue[] = []
-    if (!colorCode.trim()) { setErrColor(true); issues.push({ message: t('err_color_required') }) } else setErrColor(false)
+    if (!colorCode.trim()) { setErrColor(true); issues.push({ message: t('err_color_required') }) }
+    else if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(colorCode.trim())) { setErrColor(true); issues.push({ message: t('err_color_format') }) } // Mantis #0011191
+    else setErrColor(false)
     if (!translations.some((tr) => tr.name.trim())) { setErrName(true); issues.push({ message: t('err_name_required') }) } else setErrName(false)
     if (issues.length) { setFormIssues(issues); setFormError(true); return }
     setFormError(false); setFormIssues([])

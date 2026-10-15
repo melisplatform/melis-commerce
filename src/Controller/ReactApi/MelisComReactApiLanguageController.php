@@ -154,6 +154,10 @@ class MelisComReactApiLanguageController extends MelisAbstractActionController
 
             $locale = trim((string) ($b['locale'] ?? ''));
             if ($locale === '') { return $this->jsonResponse(['success' => false, 'error' => 'Locale is empty'], 400); }
+            // Format xx_XX (or just xx, e.g. "zh"): "zz zz!" was accepted (Mantis #0011190)
+            if (!preg_match('/^[a-z]{2,3}(_[A-Z]{2})?$/', $locale)) {
+                return $this->jsonResponse(['success' => false, 'error' => 'Invalid locale format'], 400);
+            }
 
             /** @var \MelisCommerce\Model\Tables\MelisEcomLangTable $langTable */
             $langTable = $this->getServiceManager()->get('MelisEcomLangTable');

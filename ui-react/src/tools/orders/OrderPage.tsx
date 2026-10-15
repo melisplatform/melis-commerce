@@ -399,6 +399,9 @@ function OrderForm({ id, base }: { id: string; base: string }) {
     setSaving(true)
     try {
       if (isEdit && orderId) {
+        // The toast says what changed — it always said "Statut mis à jour." (Mantis #0011202)
+        const statusChanged = localStatus !== order?.status
+        const refChanged = localReference.trim() !== (order?.reference ?? '')
         await saveOrderInfo(orderId, { status: localStatus, reference: localReference.trim() })
         setOrder((o) => o ? {
           ...o, status: localStatus, reference: localReference.trim(),
@@ -406,7 +409,7 @@ function OrderForm({ id, base }: { id: string; base: string }) {
           statusColor: statuses.find((s) => s.id === localStatus)?.color ?? o.statusColor,
         } : o)
         updateSubLabel(base, subTabPath, localReference.trim())
-        notify('ok', t('title'), t('status_changed'))
+        notify('ok', t('title'), t(statusChanged && refChanged ? 'info_saved' : refChanged ? 'reference_changed' : statusChanged ? 'status_changed' : 'info_saved'))
       } else {
         const r = await createOrder({ reference: localReference.trim(), status: localStatus })
         navigate(`${base}/${r.id}`)

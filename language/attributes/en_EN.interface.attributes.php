@@ -56,6 +56,7 @@
 	    
 	    // Form Validation Messages
 	    'tr_meliscommerce_attribute_save_failed' => 'Unable to save attribute',
+	    'tr_meliscommerce_attribute_reference_exists' => 'This reference is already used by another attribute',
 	    'tr_meliscommerce_attribute_value_save_failed' => 'Unable to save attribute value',
 	    
 	    //flash message

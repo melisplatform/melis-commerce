@@ -56,7 +56,9 @@ export function BasketTab({ basket, t }: { basket: OrderBasketItem[]; t: T }) {
   function toggleExpand(id: number) {
     setExpanded((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
   }
-  const total = basket.reduce((s, i) => s + i.qty * i.priceGross, 0)
+  // Sum of the stored line totals (HT, discounts included) — what the order price is made of. It summed the
+  // TTC column, which is the price row's raw gross price (often empty) and never matched the order (Mantis #0011200).
+  const total = basket.reduce((s, i) => s + (i.lineTotal ?? i.qty * i.priceNet), 0)
   const BASKET_COLS: { id: string; label: string; render: (row: OrderBasketItem) => import('react').ReactNode; style?: import('react').CSSProperties }[] = [
     { id: 'sku', label: t('basket_col_sku'), render: (row) => <code style={{ fontSize: 12 }}>{row.sku}</code> },
     { id: 'name', label: t('basket_col_name'), render: (row) => row.productId ? <ProductLink navigate={navigate} productId={row.productId} label={row.name || row.sku} style={{ fontWeight: 500 }}>{row.name}</ProductLink> : row.name },
@@ -101,7 +103,7 @@ export function BasketTab({ basket, t }: { basket: OrderBasketItem[]; t: T }) {
       </div>
       {basket.length > 0 && (
         <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end', fontSize: 15, fontWeight: 700 }}>
-          Total: {fmtMoney(total, basket[0]?.currency)}
+          {t('basket_total_net')}: {fmtMoney(total, basket[0]?.currency)}
         </div>
       )}
     </div>
@@ -184,13 +186,13 @@ export function AddressesTab({ orderId, billing, delivery, locked, t, onSaved, c
         saveOrderAddress(orderId, { ...dAddr, type: 2 }),
       ])
       setNotice(t('address_saved')); onSaved?.()
-    } catch { setNotice('Error saving.') }
+    } catch (e) { setNotice(e instanceof Error && e.message ? e.message : t('err_address_save')) }
     finally { setSaving(false) }
   }
 
   const items: { key: 'billing' | 'delivery'; label: string }[] = [
-    { key: 'billing',  label: 'Billing' },
-    { key: 'delivery', label: 'Delivery' },
+    { key: 'billing',  label: t('checkout_billing_address') },
+    { key: 'delivery', label: t('checkout_delivery_address') },
   ]
   const addr    = active === 'billing' ? bAddr : dAddr
   const setAddr = active === 'billing' ? setBAddr : setDAddr

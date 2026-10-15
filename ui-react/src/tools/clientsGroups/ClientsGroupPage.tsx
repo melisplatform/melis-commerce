@@ -344,7 +344,9 @@ function ClientsGroupFormModal({ t, initial, onClose, onSaved }: {
       notify('ok', t('title'), t('saved'))
       onSaved()
     } catch (e) {
-      notify('ko', t('title'), e instanceof Error ? e.message : 'Error')
+      const msg = e instanceof Error ? e.message : 'Error'
+      if (msg === 'Group name already exists') { setErrName(true); setFormIssues([{ message: t('err_name_exists') }]); setFormError(true) } // Mantis #0011192
+      notify('ko', t('title'), msg === 'Group name already exists' ? t('err_name_exists') : msg)
     } finally {
       setSaving(false)
     }

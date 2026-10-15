@@ -210,7 +210,7 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             $lang = $this->langId();
             $categories = [];
-            foreach ($db->query('SELECT c.cat_id, t.catt_name FROM melis_ecom_category c LEFT JOIN melis_ecom_category_trans t ON t.catt_category_id = c.cat_id AND t.catt_lang_id = ? WHERE c.cat_father_cat_id <> -1 ORDER BY t.catt_name', [$lang]) as $r) {
+            foreach ($db->query('SELECT c.cat_id, ' . $this->categoryNameSql('c.cat_id', (int) $lang) . ' AS catt_name FROM melis_ecom_category c WHERE c.cat_father_cat_id <> -1 ORDER BY catt_name', []) as $r) {
                 $r = (array) $r; $categories[] = ['id' => (int) $r['cat_id'], 'name' => (string) ($r['catt_name'] ?? ('#' . $r['cat_id']))];
             }
             $languages = [];
@@ -462,8 +462,14 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             if ($sku === '') { return $this->jsonResponse(['success' => false, 'error' => 'Le SKU est obligatoire.'], 400); }
 
             $db  = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
+            if ($this->skuTaken($db, $sku, $varId)) { return $this->jsonResponse(['success' => false, 'error' => 'Ce SKU est déjà utilisé.'], 409); }
             $now = date('Y-m-d H:i:s');
             $uid = $this->currentUserId();
+
+            // Un produit sans variante principale : la variante créée le devient (Mantis #0011184).
+            if (!$isMain && $varId <= 0 && !iterator_to_array($db->query('SELECT var_id FROM melis_ecom_variant WHERE var_prd_id = ? AND var_main_variant = 1 LIMIT 1', [$prdId]))) {
+                $isMain = 1;
+            }
 
             // Une seule variante principale par produit.
             if ($isMain) { $db->query('UPDATE melis_ecom_variant SET var_main_variant = 0 WHERE var_prd_id = ?', [$prdId]); }
@@ -960,7 +966,8 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
         $prdId = (int) $this->params()->fromRoute('id', 0);
         $varId = (int) $this->params()->fromRoute('variantId', 0);
-        if ($prdId <= 0 || $varId <= 0) { return $this->jsonResponse(['success' => false, 'error' => 'Invalid variant'], 400); }
+        // variantId 0 = variant not created yet: the product's attributes, nothing selected (Mantis #0011184)
+        if ($prdId <= 0 || $varId < 0) { return $this->jsonResponse(['success' => false, 'error' => 'Invalid variant'], 400); }
         try {
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             $lang = $this->langId();
@@ -1282,7 +1289,11 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             $rows = iterator_to_array($db->query('SELECT var_sku FROM melis_ecom_variant WHERE var_id = ? LIMIT 1', [$varId]));
             if (empty($rows)) { return $this->jsonResponse(['success' => false, 'error' => 'Not found'], 404); }
-            if ($sku === '') { $sku = ((string) ((array) $rows[0])['var_sku']) . '-copy'; }
+            if ($sku === '') {
+                $sku = $this->freeValue(fn($v) => $this->skuTaken($db, $v), ((string) ((array) $rows[0])['var_sku']) . '-copy');
+            } elseif ($this->skuTaken($db, $sku)) {
+                return $this->jsonResponse(['success' => false, 'error' => 'Ce SKU est déjà utilisé.'], 409);
+            }
 
             // Duplicate without images/docs — service's duplicateDocuments has a broken dir path
             $variant = [['var_id' => $varId, 'var_sku' => $sku, 'var_main_variant' => 0]];
@@ -1520,6 +1531,7 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             if ($reference === '') { return $this->jsonResponse(['success' => false, 'error' => 'La référence est obligatoire.'], 400); }
 
             $db   = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
+            if ($this->referenceTaken($db, $reference, $id)) { return $this->jsonResponse(['success' => false, 'error' => 'Cette référence est déjà utilisée par un autre produit.'], 409); }
             $ttId = $this->titleTypeId($db);
             $now  = date('Y-m-d H:i:s');
             $uid  = $this->currentUserId();
@@ -1632,12 +1644,23 @@ class MelisComReactApiProductController extends MelisAbstractActionController
 
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
 
+            // Référence unique (Mantis #0011183) ; vide → « <référence>-copy » libre plutôt que la même
+            // référence que l'original (Mantis #0011184).
+            if ($ref !== '' && $this->referenceTaken($db, $ref)) {
+                return $this->jsonResponse(['success' => false, 'error' => 'Cette référence est déjà utilisée par un autre produit.'], 409);
+            }
+            if ($ref === '') {
+                $src = iterator_to_array($db->query('SELECT prd_reference FROM melis_ecom_product WHERE prd_id = ? LIMIT 1', [$id]));
+                if (empty($src)) { return $this->jsonResponse(['success' => false, 'error' => 'Not found'], 404); }
+                $ref = $this->freeValue(fn($v) => $this->referenceTaken($db, $v), ((string) ((array) $src[0])['prd_reference']) . '-copy');
+            }
+
             // Duplicate without images/docs — service's duplicateDocuments has a broken dir path
             ob_start();
             $newId = $this->getServiceManager()->get('MelisComDuplicationService')->duplicateProduct($id, $status, false, false);
             ob_end_clean();
             if (!is_numeric($newId) || (int) $newId <= 0) { return $this->jsonResponse(['success' => false, 'error' => 'Échec de la duplication.'], 500); }
-            if ($ref !== '') { $db->query('UPDATE melis_ecom_product SET prd_reference = ? WHERE prd_id = ?', [$ref, (int) $newId]); }
+            $db->query('UPDATE melis_ecom_product SET prd_reference = ? WHERE prd_id = ?', [$ref, (int) $newId]);
 
             // Manually copy product media (images and/or files)
             if ($dupImages || $dupDocs) {
@@ -1654,7 +1677,7 @@ class MelisComReactApiProductController extends MelisAbstractActionController
                 foreach ($srcVariants as $sv) {
                     $sv = (array) $sv;
                     $origSku = (string) ($sv['var_sku'] ?? '');
-                    $varEntry = [['var_id' => (int) $sv['var_id'], 'var_sku' => $origSku !== '' ? $origSku . '-' . (int) $newId : '', 'var_main_variant' => (int) $sv['var_main_variant']]];
+                    $varEntry = [['var_id' => (int) $sv['var_id'], 'var_sku' => $origSku !== '' ? $this->freeValue(fn($v) => $this->skuTaken($db, $v), $origSku . '-' . (int) $newId) : '', 'var_main_variant' => (int) $sv['var_main_variant']]];
                     ob_start();
                     $newVarId = $dupSrv->duplicateVariant($varEntry, $status, false, false, (int) $newId);
                     ob_end_clean();
@@ -1694,12 +1717,43 @@ class MelisComReactApiProductController extends MelisAbstractActionController
     }
 
     // ─── Helpers ───────────────────────────────────────────────────────────────
+    /** SKU identifies the variant in carts, orders and stock: unique across variants (Mantis #0011183). */
+    private function skuTaken($db, string $sku, int $exceptVarId = 0): bool
+    {
+        return (bool) iterator_to_array($db->query('SELECT var_id FROM melis_ecom_variant WHERE var_sku = ? AND var_id <> ? LIMIT 1', [$sku, $exceptVarId]));
+    }
+
+    private function referenceTaken($db, string $reference, int $exceptPrdId = 0): bool
+    {
+        return (bool) iterator_to_array($db->query('SELECT prd_id FROM melis_ecom_product WHERE prd_reference = ? AND prd_id <> ? LIMIT 1', [$reference, $exceptPrdId]));
+    }
+
+    /** $base, or $base-2, $base-3… : the first value $taken() refuses not. */
+    private function freeValue(callable $taken, string $base): string
+    {
+        for ($v = $base, $n = 2; $taken($v) && $n < 1000; $n++) { $v = $base . '-' . $n; }
+        return $v;
+    }
+
+    /**
+     * Category label: BO language, else any non-empty label, else "#id". Only the BO language was read,
+     * so the list column was empty and the filter had nameless categories (Mantis #0011182).
+     * $catCol is a trusted column name, $lang a validated integer (both inlined).
+     */
+    private function categoryNameSql(string $catCol, int $lang): string
+    {
+        return "COALESCE("
+             . "NULLIF((SELECT ct.catt_name FROM melis_ecom_category_trans ct WHERE ct.catt_category_id = $catCol AND ct.catt_lang_id = $lang LIMIT 1), ''),"
+             . "(SELECT ct2.catt_name FROM melis_ecom_category_trans ct2 WHERE ct2.catt_category_id = $catCol AND ct2.catt_name <> '' ORDER BY ct2.catt_id LIMIT 1),"
+             . "CONCAT('#', $catCol))";
+    }
+
     private function formatProduct(array $r, $db, int $lang): array
     {
         $id   = (int) $r['prd_id'];
         $name = trim((string) ($r['name_cur'] ?? '')) ?: trim((string) ($r['name_any'] ?? '')) ?: trim((string) ($r['prd_reference'] ?? '')) ?: ('#' . $id);
         $categories = [];
-        foreach ($db->query('SELECT t.catt_name FROM melis_ecom_product_category pc JOIN melis_ecom_category c ON c.cat_id = pc.pcat_cat_id LEFT JOIN melis_ecom_category_trans t ON t.catt_category_id = c.cat_id AND t.catt_lang_id = ? WHERE pc.pcat_prd_id = ? ORDER BY pc.pcat_order', [$lang, $id]) as $cr) {
+        foreach ($db->query('SELECT ' . $this->categoryNameSql('c.cat_id', $lang) . ' AS catt_name FROM melis_ecom_product_category pc JOIN melis_ecom_category c ON c.cat_id = pc.pcat_cat_id WHERE pc.pcat_prd_id = ? ORDER BY pc.pcat_order', [$id]) as $cr) {
             $cr = (array) $cr; if (!empty($cr['catt_name'])) { $categories[] = (string) $cr['catt_name']; }
         }
         return [

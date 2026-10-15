@@ -280,7 +280,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
 
             $basketRows = iterator_to_array($db->query(
                 "SELECT b.obas_id, b.obas_sku, b.obas_product_name, b.obas_category_name, b.obas_variant_id,
-                        b.obas_quantity, b.obas_price_net, b.obas_price_gross, b.obas_attributes,
+                        b.obas_quantity, b.obas_price_net, b.obas_price_gross, b.obas_attributes, b.obas_total_price,
                         cu.cur_symbol AS currency_symbol,
                         p.prd_id AS product_id
                  FROM melis_ecom_order_basket b
@@ -303,6 +303,8 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                     'qty'        => (int) ($r['obas_quantity'] ?? 0),
                     'priceNet'   => (float) ($r['obas_price_net'] ?? 0),
                     'priceGross' => (float) ($r['obas_price_gross'] ?? 0),
+                    // Montant réel de la ligne (remises comprises), celui qui compose le prix de la commande (Mantis #0011200)
+                    'lineTotal'  => $r['obas_total_price'] !== null ? (float) $r['obas_total_price'] : null,
                     'attributes' => $r['obas_attributes'] ?? '',
                     'currency'   => $r['currency_symbol'] ?? '',
                 ];
@@ -662,6 +664,9 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             if ($reference === '') return $this->jsonResponse(['success' => false, 'error' => 'Reference is required'], 400);
 
             $db       = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
+            if (iterator_to_array($db->query('SELECT ord_id FROM melis_ecom_order WHERE ord_reference = ? LIMIT 1', [$reference]))) { // Mantis #0011202
+                return $this->jsonResponse(['success' => false, 'error' => 'Cette référence est déjà utilisée par une autre commande.'], 409);
+            }
             $status   = (int) ($b['status'] ?? 1);
             $clientId = (int) ($b['clientId'] ?? 0);
             $now      = date('Y-m-d H:i:s');
@@ -703,6 +708,10 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                 $params[] = (int) $b['status'];
             }
             if (isset($b['reference']) && trim($b['reference']) !== '') {
+                // Une référence déjà portée par une autre commande est refusée (Mantis #0011202)
+                if (iterator_to_array($db->query('SELECT ord_id FROM melis_ecom_order WHERE ord_reference = ? AND ord_id <> ? LIMIT 1', [trim($b['reference']), $id]))) {
+                    return $this->jsonResponse(['success' => false, 'error' => 'Cette référence est déjà utilisée par une autre commande.'], 409);
+                }
                 $fields[] = 'ord_reference = ?';
                 $params[] = trim($b['reference']);
             }

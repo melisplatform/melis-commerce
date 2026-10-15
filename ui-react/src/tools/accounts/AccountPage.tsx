@@ -4,7 +4,7 @@ import {
   deleteAccount, fetchAccountById, fetchAccountOptions, fetchAccounts, fetchAllAccounts, fetchAccountStats,
   saveAccount, fetchCompany, saveCompany, fetchAccountAddresses, saveAccountAddresses,
   fetchAccountContacts, linkAccountContact, testImportAccounts, importAccounts, ACCOUNT_IMPORT_TEMPLATE_URL,
-  type AccountItem, type AccountStats, type CompanyData, type AccountAddress, type AccountContact, type AccountNameMode, type CountryOption, type AccountSortKey,
+  type AccountItem, type AccountStats, type CompanyData, type AccountAddress, type AccountContact, type AccountNameMode, type CountryOption, type AccountSortKey, type GroupOption,
 } from './api'
 import { useKeysetList } from '../../shared/use-keyset-list'
 import { SearchableSelect } from '../../shared/SearchableSelect'
@@ -184,7 +184,7 @@ function AccountList({ base }: { base: string }) {
   const [search, setSearch] = useState(cached?.search ?? '')
   const [status, setStatus] = useState<number | null>(cached?.status ?? null)
   const [filterGroupId, setFilterGroupId] = useState(cached?.filterGroupId ?? 0)
-  const [groups, setGroups] = useState<{ id: number; name: string }[]>([])
+  const [groups, setGroups] = useState<GroupOption[]>([])
   const [toDelete, setToDelete] = useState<AccountItem | null>(null)
   const [tick, setTick] = useState(0)
   const [cols, setCols] = useState<ColDef[]>(cols$.load)
@@ -295,7 +295,7 @@ function AccountList({ base }: { base: string }) {
           </div>
           <select style={{ ...inputCss, height: 36, width: narrow ? '100%' : 'auto', minWidth: 150, flexBasis: narrow ? '100%' : undefined }} value={filterGroupId} onChange={(e) => setFilterGroupId(Number(e.target.value))}>
             <option value={0}>{t('filter_group')}</option>
-            {groups.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
+            {groups.filter((g) => g.status !== 0).map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
           </select>
           <div style={{ marginLeft: narrow ? 0 : 'auto', display: 'flex', flexWrap: narrow ? 'wrap' : 'nowrap', gap: 8, flexBasis: narrow ? '100%' : undefined }}>
             <button style={{ ...btnGhost, height: narrow ? 'auto' : 36, minHeight: narrow ? 36 : undefined, flex: narrow ? '1 1 calc(50% - 4px)' : undefined, minWidth: narrow ? 0 : undefined, justifyContent: narrow ? 'center' : undefined, whiteSpace: narrow ? 'normal' : 'nowrap', textAlign: narrow ? 'center' : undefined, padding: narrow ? '6px 8px' : '0 12px' }} onClick={resetFilters}><ResetIcon />{t('reset_filters')}</button>
@@ -393,7 +393,7 @@ function AccountForm({ id, base }: { id: string; base: string }) {
   const accountId = isEdit ? parseInt(id) : null
   const subTabPath = `${base}/${id}`
 
-  const [groups, setGroups] = useState<AccountOptionT[]>([])
+  const [groups, setGroups] = useState<GroupOption[]>([])
   const [countries, setCountries] = useState<CountryOption[]>([])
   const [accountNameMode, setAccountNameMode] = useState<AccountNameMode>('manual_input')
   const [name, setName] = useState('')
@@ -494,6 +494,14 @@ function AccountForm({ id, base }: { id: string; base: string }) {
       if (!isEdit && accountNameMode === 'contact_name' && !pendingContacts.length) { fail(t('err_contact_required')); setTab('contacts') }
     }
     if (!countryId) setCountryError(fail(t('err_country'))); else setCountryError('')
+    // Company checks (Mantis #0011175), same patterns as companySaveAction() — checked before the account
+    // is saved so an invalid Société tab never leaves a half-saved account.
+    const coIssues = [
+      !/^\d*$/.test(String(company.employees ?? '').trim()) && t('err_company_employees'),
+      company.phone.trim() !== '' && !/^\+?[0-9 ().\/-]{3,}$/.test(company.phone.trim()) && t('err_company_phone'),
+      company.website.trim() !== '' && !/^(https?:\/\/)?[\w-]+(\.[\w-]+)+(:\d+)?([/?#]\S*)?$/i.test(company.website.trim()) && t('err_company_website'),
+    ].filter(Boolean) as string[]
+    if (coIssues.length) { coIssues.forEach(fail); setTab('company') }
     setFormError(issues.length > 0); setFormIssues(issues)
     if (issues.length) return
     setSaving(true)
@@ -511,8 +519,15 @@ function AccountForm({ id, base }: { id: string; base: string }) {
       if (savedId) {
         // company_name mode : la société pilote le nom du compte affiché partout → toujours sauvée,
         // même si l'onglet Société n'a jamais été ouvert (sinon la validation serveur ne se déclenche jamais).
-        if (companyLoaded || visitedTabs.has('company') || accountNameMode === 'company_name') { try { await saveCompany(savedId, company) } catch { /* */ } }
-        if (addressesLoaded || visitedTabs.has('addresses')) { try { await saveAccountAddresses(savedId, addresses) } catch { /* */ } }
+        // A refused Société / Adresses save used to be swallowed behind a "saved" toast.
+        const partErrors: string[] = []
+        if (companyLoaded || visitedTabs.has('company') || accountNameMode === 'company_name') { try { await saveCompany(savedId, company) } catch (e) { partErrors.push(e instanceof Error ? e.message : t('err_save')) } }
+        if (addressesLoaded || visitedTabs.has('addresses')) { try { await saveAccountAddresses(savedId, addresses) } catch (e) { partErrors.push(e instanceof Error ? e.message : t('err_save')) } }
+        if (partErrors.length) {
+          notify('ko', t('title'), partErrors.join(' '))
+          if (!isEdit) { closeSubTab(base, `${base}/new`); setTimeout(() => navigate(base), 500) } // account itself exists
+          return
+        }
         if (!isEdit && pendingContacts.length) {
           const rest = pendingContacts.filter((c) => c.id !== defaultContact?.id)
           await Promise.all(rest.map((c) => linkAccountContact(savedId, c.id).catch(() => null)))
@@ -575,7 +590,7 @@ function AccountForm({ id, base }: { id: string; base: string }) {
                 </label>
                 <select style={inputCss} value={groupId} onChange={(e) => setGroupId(Number(e.target.value))}>
                   <option value={0}>{t('f_group_none')}</option>
-                  {groups.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
+                  {groups.filter((g) => g.status !== 0 || g.id === groupId).map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
                 </select>
               </div>
               <div>
