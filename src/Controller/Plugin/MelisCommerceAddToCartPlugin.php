@@ -81,7 +81,8 @@ class MelisCommerceAddToCartPlugin extends MelisTemplatingPlugin
         // in-stock product unless the URL carried ?m_variant_id (Mantis #0011159).
         if (!$variantId) {
             $productId = $this->commerceRouteParam('productId')
-                ?: (!empty($this->pluginFrontConfig['m_product_id']) ? (int) $this->pluginFrontConfig['m_product_id'] : null);
+                ?: (!empty($this->pluginFrontConfig['m_product_id']) ? (int) $this->pluginFrontConfig['m_product_id'] : null)
+                ?: $this->productShownOnPage(); // the product page's ProductShow (no /pid/N in the URL)
             if ($productId) {
                 $variantId = $this->defaultVariantId($productId, $countryId);
             }
