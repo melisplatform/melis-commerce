@@ -107,7 +107,7 @@
 		'tr_meliscommerce_order_checkout_save_unable' => 'Impossible de sauvegarder La commande, veuillez réessayer',
 		
 		// Plugins
-		'tr_meliscommerce_car_Cart' => 'Cart',
+		'tr_meliscommerce_car_Cart' => 'Panier', // was 'Cart' (untranslated plugin group in the FR palette — Mantis #0011161)
 
 		'tr_meliscommerce_add_to_cart_variant_id_empty' => 'L\'identifiant du variant ne peut être vide',
 		'tr_meliscommerce_add_to_cart_variant_country_empty' => 'Le pays du variant ne peut être vide',
