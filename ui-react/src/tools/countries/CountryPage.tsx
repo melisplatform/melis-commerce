@@ -194,7 +194,7 @@ function CountryList({ base }: { base: string }) {
 
   async function confirmDelete() {
     if (!toDelete) return
-    try { await deleteCountry(toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) }
+    try { await deleteCountry(toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) } catch (e) { notify('ko', t('title'), e instanceof Error ? e.message : 'Error'); setToDelete(null) }
   }
 
 

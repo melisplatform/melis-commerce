@@ -346,6 +346,14 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                          */
                         $checkoutPaymentEvent = $melisGeneralService->sendEvent('meliscommerce_checkout_plugin_payment', $param, $this);
                         $checkout = $checkoutPaymentEvent['checkout'];
+
+                        // No site listener (no payment gateway integrated): the step was blank, no form, no message,
+                        // the checkout could not be completed (Mantis #0011212) → tell the visitor and the integrator.
+                        if (empty($checkout))
+                        {
+                            error_log('MelisCommerceCheckoutPlugin: no listener of "meliscommerce_checkout_plugin_payment" returned a payment view (site ' . $siteId . ', order ' . $orderId . ') — integrate a payment method for this site.');
+                            $checkout = '<div class="alert alert-warning">' . $this->getServiceManager()->get('ViewHelperManager')->get('escapeHtml')($translator->translate('tr_meliscommerce_plugin_checkout_payment_unavailable')) . '</div>';
+                        }
                     }
                 }
                 

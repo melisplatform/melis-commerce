@@ -62,6 +62,36 @@ class MelisCommerceCheckoutConfirmSummaryPlugin extends MelisTemplatingPlugin
      * This function gets the datas and create an array of variables
      * that will be associated with the child view generated.
      */
+    /**
+     * Every visit of this step (refresh, Previous/Next) created a new Temporary order, so one checkout left
+     * several (Mantis #0011212). The id of the order a previous visit created for this checkout, if it is still
+     * Temporary (-1), of the same account and never paid — it is removed once the new order exists; 0 otherwise.
+     */
+    private function checkoutTemporaryOrderId($siteId, $clientId): int
+    {
+        $container = new Container('meliscommerce');
+        $previousId = (int) ($container['checkout'][$siteId]['orderId'] ?? 0);
+        if ($previousId <= 0 || !$clientId) {
+            return 0;
+        }
+        $order = $this->getServiceManager()->get('MelisEcomOrderTable')->getEntryById($previousId)->current();
+        if (empty($order) || (int) $order->ord_status !== -1 || (int) $order->ord_client_id !== (int) $clientId) {
+            return 0;
+        }
+        $paid = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter')
+            ->query('SELECT COUNT(*) AS n FROM melis_ecom_order_payment WHERE opay_order_id = ?', [$previousId])->current();
+        return ($paid && (int) $paid['n'] > 0) ? 0 : $previousId;
+    }
+
+    private function deleteTemporaryOrder(int $orderId): void
+    {
+        $db = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
+        foreach (['melis_ecom_order_basket' => 'obas_order_id', 'melis_ecom_coupon_order' => 'cord_order_id',
+                  'melis_ecom_order_address' => 'oadd_order_id', 'melis_ecom_order' => 'ord_id'] as $table => $col) {
+            $db->query("DELETE FROM $table WHERE $col = ?", [$orderId]);
+        }
+    }
+
     public function front()
     {
         $success = 0;
@@ -100,12 +130,17 @@ class MelisCommerceCheckoutConfirmSummaryPlugin extends MelisTemplatingPlugin
          */
         $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
         $melisComOrderCheckoutService->setSiteId($siteId);
+        $previousTemporaryId = $this->checkoutTemporaryOrderId($siteId, $clientId);
         $checkoutAddOrderValidation = $melisComOrderCheckoutService->checkoutStep1_prePayment($clientId);
-        
+
         if ($checkoutAddOrderValidation['success'])
         {
             $success = 1;
-            $orderId = $checkoutAddOrderValidation['clientId'];
+            $orderId = $checkoutAddOrderValidation['orderId']; // was ['clientId']
+            // only once the new order exists: drop the one a previous visit of this step created (#0011212)
+            if ($previousTemporaryId && $previousTemporaryId !== (int) $orderId) {
+                $this->deleteTemporaryOrder($previousTemporaryId);
+            }
         }
         else
         {

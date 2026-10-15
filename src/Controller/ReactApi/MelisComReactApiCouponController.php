@@ -183,11 +183,38 @@ class MelisComReactApiCouponController extends MelisAbstractActionController
             if ($percentage === null && $discount === null) {
                 return $this->jsonResponse(['success' => false, 'error' => 'Renseignez un pourcentage ou un montant de réduction.'], 400);
             }
+            // 150 %, a negative amount, both at once, a limit < 1 or an end before the start were saved (Mantis #0011193)
+            if ($percentage !== null && $discount !== null) {
+                return $this->jsonResponse(['success' => false, 'error' => 'Renseignez un pourcentage OU un montant de réduction, pas les deux.'], 400);
+            }
+            if ($percentage !== null && ($percentage <= 0 || $percentage > 100)) {
+                return $this->jsonResponse(['success' => false, 'error' => 'Le pourcentage doit être compris entre 0 et 100.'], 400);
+            }
+            if ($discount !== null && $discount <= 0) {
+                return $this->jsonResponse(['success' => false, 'error' => 'Le montant de réduction doit être supérieur à 0.'], 400);
+            }
+            $maxUse = $b['maxUseNumber'] ?? null;
+            if ($maxUse !== null && $maxUse !== '' && (filter_var($maxUse, FILTER_VALIDATE_INT) === false || (int) $maxUse < 1)) {
+                return $this->jsonResponse(['success' => false, 'error' => "La limite d'utilisation doit être un entier supérieur ou égal à 1 (vide = illimitée)."], 400);
+            }
 
             $toDatetime = static function ($v) {
                 $v = trim((string) ($v ?? ''));
                 return $v !== '' && strtotime($v) ? date('Y-m-d H:i:s', strtotime($v)) : null;
             };
+            $start = $toDatetime($b['dateValidStart'] ?? null);
+            $end   = $toDatetime($b['dateValidEnd'] ?? null);
+            if ($start !== null && $end !== null && strtotime($end) < strtotime($start)) {
+                return $this->jsonResponse(['success' => false, 'error' => 'La date de fin doit être postérieure à la date de début.'], 400);
+            }
+
+            // the code is what the customer types at checkout: it must be unique (Mantis #0011194)
+            $dup = $this->getServiceManager()->get('MelisEcomCouponTable')->getEntryByField('coup_code', $code);
+            foreach ($dup as $row) {
+                if ((int) $row->coup_id !== $id) {
+                    return $this->jsonResponse(['success' => false, 'error' => 'Ce code de coupon existe déjà.'], 409);
+                }
+            }
 
             $coupon = [
                 'coup_code' => $code,

@@ -400,7 +400,8 @@ export function RecipientsSection({ productId, users, t, pendingRecipientIds = [
 }
 
 // ── Types médias en attente (nouveau produit non encore sauvegardé) ─────────────
-export interface PendingMedia { name: string; data: string; typeId?: number | null; countryId?: number }
+// fileName = the chosen file's real name: the server takes the extension from it, "Nom" is shown without it (Mantis #0011180)
+export interface PendingMedia { name: string; data: string; fileName?: string; typeId?: number | null; countryId?: number }
 
 // ── Modal ajout / édition d'un média (image ou fichier) ────────────────────────
 export function MediaModal({ kind, doc, pendingDoc, countries, t, onClose, onSaved, onAddPending, onUpdate, onUpdatePending }: {
@@ -411,7 +412,7 @@ export function MediaModal({ kind, doc, pendingDoc, countries, t, onClose, onSav
   countries: CountryOption[]; t: TFn
   onClose: () => void; onSaved?: () => void
   onAddPending?: (m: PendingMedia) => Promise<void> | void
-  onUpdate?: (docId: number, m: { name: string; typeId?: number | null; countryId?: number; data?: string }) => Promise<void>
+  onUpdate?: (docId: number, m: { name: string; typeId?: number | null; countryId?: number; data?: string; fileName?: string }) => Promise<void>
   onUpdatePending?: (m: PendingMedia) => void
 }) {
   const isEdit = !!doc
@@ -422,6 +423,7 @@ export function MediaModal({ kind, doc, pendingDoc, countries, t, onClose, onSav
   const [typeId, setTypeId] = useState<number | null>(doc?.typeId ?? pendingDoc?.typeId ?? null)
   const [countryId, setCountryId] = useState<number | null>(doc?.countryId ?? pendingDoc?.countryId ?? null)
   const [fileData, setFileData] = useState<string | null>(null)
+  const [fileName, setFileName] = useState<string | undefined>(pendingDoc?.fileName)
   const [preview, setPreview] = useState<string | null>(kind === 'image' ? (doc?.path ?? pendingDoc?.data ?? null) : null)
   const [saving, setSaving] = useState(false)
   const [showAddType, setShowAddType] = useState(false)
@@ -443,6 +445,7 @@ export function MediaModal({ kind, doc, pendingDoc, countries, t, onClose, onSav
     const file = e.target.files?.[0]; if (!file) return
     const data = await readFileDataUrl(file)
     setFileData(data)
+    setFileName(file.name)
     setName(file.name.replace(/\.[^.]+$/, ''))
     if (kind === 'image') setPreview(data)
   }
@@ -457,16 +460,16 @@ export function MediaModal({ kind, doc, pendingDoc, countries, t, onClose, onSav
     setSaving(true)
     try {
       if (isEdit && doc) {
-        if (onUpdate) await onUpdate(doc.id, { name, typeId, countryId: countryId ?? undefined, ...(fileData ? { data: fileData } : {}) })
+        if (onUpdate) await onUpdate(doc.id, { name, typeId, countryId: countryId ?? undefined, ...(fileData ? { data: fileData, fileName } : {}) })
         onSaved?.(); onClose()
       } else if (isEditPending && pendingDoc) {
-        onUpdatePending?.({ name: name || 'file', data: fileData ?? pendingDoc.data, typeId, countryId: countryId ?? undefined })
+        onUpdatePending?.({ name: name || 'file', data: fileData ?? pendingDoc.data, fileName, typeId, countryId: countryId ?? undefined })
         onClose()
       } else if (fileData) {
-        await onAddPending?.({ name: name || 'file', data: fileData, typeId, countryId: countryId ?? undefined })
+        await onAddPending?.({ name: name || 'file', data: fileData, fileName, typeId, countryId: countryId ?? undefined })
         onClose()
       }
-    } catch { /* */ } finally { setSaving(false) }
+    } catch (e) { notify('ko', t('title'), e instanceof Error ? e.message : 'Error') } finally { setSaving(false) } // was silent (#0011180)
   }
 
   async function doAddType() {
@@ -1000,7 +1003,7 @@ export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: n
     defaultSort: 'main',
     defaultDir: 'desc',
   })
-  async function confirmDelete() { if (!toDelete || !productId) return; try { await deleteProductVariant(productId, toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) } }
+  async function confirmDelete() { if (!toDelete || !productId) return; try { await deleteProductVariant(productId, toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) } catch (e) { notify('ko', t('title'), e instanceof Error ? e.message : 'Error'); setToDelete(null) } }
   async function toggleStatus(v: ProductVariant) { if (!productId) return; try { await saveProductVariant(productId, { variantId: v.id, sku: v.sku, status: v.status !== 1, isMain: v.isMain === 1 }); setTick((x) => x + 1) } catch { /* */ } }
 
   const eCols = effectiveCols(cols, VARIANT_ESSENTIAL_COLS, narrow)

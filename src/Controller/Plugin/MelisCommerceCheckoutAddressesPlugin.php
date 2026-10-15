@@ -477,14 +477,18 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
 
                         $addId  = null;
 
-                        if (!empty($val['address']['cadd_id']) && $val['address']['cadd_id'] != 'new_address' && $overrideData)
+                        $selectedId = (!empty($val['address']['cadd_id']) && $val['address']['cadd_id'] != 'new_address') ? (int) $val['address']['cadd_id'] : 0;
+                        if ($selectedId && $overrideData)
                         {
-                            $addId = $val['address']['cadd_id'];
+                            $addId = $selectedId;
                         }
+                        // Without m_add_override_data an existing address must not be modified, but a selected address
+                        // submitted unchanged was saved again as a NEW copy on every Next (Mantis #0011210) → reuse it.
+                        $reuseId = ($selectedId && !$overrideData) ? $this->unchangedPersonAddressId($clientSrv, $personId, $selectedId, $val['address']) : 0;
 
                         if ($key == 'delivery')
                         {
-                            $addId = $clientSrv->saveClientAddress($val['address'], $addId);
+                            $addId = $reuseId ?: $clientSrv->saveClientAddress($val['address'], $addId);
                             $deliveryAddId = $addId;
                         }
                         else
@@ -495,7 +499,7 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                             }
                             else
                             {
-                                $addId = $clientSrv->saveClientAddress($val['address'], $addId);
+                                $addId = $reuseId ?: $clientSrv->saveClientAddress($val['address'], $addId);
                             }
                         }
 
@@ -528,6 +532,29 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
     /**
      * This function generates the form displayed when editing the parameters of the plugin
      */
+    /**
+     * The id of the person's stored address $addressId when the submitted fields equal it, else 0 (then a new address
+     * is saved, the stored one is never modified without m_add_override_data). Mantis #0011210.
+     */
+    private function unchangedPersonAddressId($clientSrv, $personId, int $addressId, array $submitted): int
+    {
+        $stored = $clientSrv->getClientPersonAddressByAddressId($personId, $addressId); // only the person's own addresses
+        if (empty($stored)) {
+            return 0;
+        }
+        $stored = (array) $stored;
+        $ignore = ['cadd_id', 'cadd_client_id', 'cadd_client_person', 'cadd_type', 'cadd_creation_date'];
+        foreach ($submitted as $col => $value) {
+            if (strpos($col, 'cadd_') !== 0 || in_array($col, $ignore, true) || !array_key_exists($col, $stored)) {
+                continue;
+            }
+            if (trim((string) $value) !== trim((string) $stored[$col])) {
+                return 0;
+            }
+        }
+        return $addressId;
+    }
+
     public function createOptionsForms()
     {
         // construct form

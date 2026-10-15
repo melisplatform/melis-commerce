@@ -56,10 +56,12 @@
     				<?php 
                 	    echo $this->checkoutCartDiscount;
                 	   
-                	    if (!empty($this->checkoutCartDiscountInfo))
+                	    // "translage" (no such view helper) threw as soon as a coupon was applied → the whole Checkout plugin
+                	    // rendered nothing (Mantis #0011211); the coupons are a list, one line each
+                	    foreach ((array) $this->checkoutCartDiscountInfo as $couponInfo)
                 	    {
-                	       echo '<div>'.$this->translage("tr_meliscommerce_plugin_checkout_coupon_code").': '.$this->escapeHtml($this->checkoutCartCouponCode).'</div>';
-                	       echo '<div>'.$this->translage("tr_meliscommerce_plugin_checkout_coupon_value").': '.$this->checkoutCartDiscountInfo.'</div>';
+                	       echo '<div>'.$this->translate("tr_meliscommerce_plugin_checkout_coupon_code").': '.$this->escapeHtml($couponInfo['code'] ?? '').'</div>';
+                	       echo '<div>'.$this->translate("tr_meliscommerce_plugin_checkout_coupon_value").': '.$this->escapeHtml((string) ($couponInfo['details'] ?? '')).'</div>';
                 	    }
                 	    
                 	    if (!empty($this->checkoutCartCouponErrMsg))

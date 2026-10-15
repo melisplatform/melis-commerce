@@ -336,7 +336,7 @@ function VarImages({ productId, variantId, t, countries }: { productId: number; 
     if (variantId == null || pendingImages.length === 0) return
     let cancelled = false
     ;(async () => {
-      for (const m of pendingImages) { try { await uploadVariantMedia(productId, variantId, { ...m, kind: 'image' }) } catch { /* */ } }
+      for (const m of pendingImages) { try { await uploadVariantMedia(productId, variantId, { ...m, kind: 'image' }) } catch (e) { notify('ko', t('title'), e instanceof Error ? e.message : 'Error') } } // was silent (#0011180)
       if (!cancelled) { setPendingImages([]); setTick((x) => x + 1) }
     })()
     return () => { cancelled = true }
@@ -393,7 +393,7 @@ function VarImages({ productId, variantId, t, countries }: { productId: number; 
           onSaved={() => setTick(x => x + 1)}
           onUpdate={variantId != null ? async (docId, m) => { await updateVariantMedia(productId, variantId, docId, m) } : undefined}
           onAddPending={async (m) => {
-            if (variantId != null) { try { await uploadVariantMedia(productId, variantId, { ...m, kind: 'image' }) } catch { /* */ } setTick((x) => x + 1); return }
+            if (variantId != null) { await uploadVariantMedia(productId, variantId, { ...m, kind: 'image' }); setTick((x) => x + 1); return } // a failure is reported by the modal (#0011180)
             setPendingImages((p) => [...p, m])
           }}
           onUpdatePending={(m) => { if (modal.pendingIdx !== undefined) setPendingImages((p) => p.map((x, i) => i === modal.pendingIdx ? m : x)) }} />

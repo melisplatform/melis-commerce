@@ -157,6 +157,10 @@ class MelisComReactApiCurrencyController extends MelisAbstractActionController
             if ($name === '')   { return $this->jsonResponse(['success' => false, 'error' => 'Veuillez saisir le nom de la devise.'], 400); }
             if ($code === '')   { return $this->jsonResponse(['success' => false, 'error' => 'Veuillez saisir le code de la devise.'], 400); }
             if ($symbol === '') { return $this->jsonResponse(['success' => false, 'error' => 'Veuillez saisir le symbole de la devise.'], 400); }
+            // column lengths (cur_name 45, cur_code 8, cur_symbol 8): longer values were a MySQL "Data too long" → 500 (Mantis #0011189)
+            if (mb_strlen($name) > 45)  { return $this->jsonResponse(['success' => false, 'error' => 'Le nom de la devise ne doit pas dépasser 45 caractères.'], 400); }
+            if (mb_strlen($code) > 8)   { return $this->jsonResponse(['success' => false, 'error' => 'Le code de la devise ne doit pas dépasser 8 caractères.'], 400); }
+            if (mb_strlen($symbol) > 8) { return $this->jsonResponse(['success' => false, 'error' => 'Le symbole de la devise ne doit pas dépasser 8 caractères.'], 400); }
 
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
 

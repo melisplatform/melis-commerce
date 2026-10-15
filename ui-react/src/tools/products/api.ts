@@ -113,9 +113,9 @@ export const deleteProductAttribute = (id: number, pattId: number) =>
 
 // ── Médias (images + fichiers) — lecture + upload + suppression ─────────────────
 export const fetchProductMedia = (id: number) => apiFetch<{ images: MediaItem[]; files: MediaItem[] }>(`/melis/react-api/products/${id}/media`)
-export const uploadProductMedia = (id: number, m: { name: string; data: string; kind: 'image' | 'file'; typeId?: number | null; countryId?: number }) =>
+export const uploadProductMedia = (id: number, m: { name: string; data: string; fileName?: string; kind: 'image' | 'file'; typeId?: number | null; countryId?: number }) =>
   apiFetch<null>(`/melis/react-api/products/${id}/media/upload`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(m) })
-export const updateProductMedia = (id: number, docId: number, m: { name: string; typeId?: number | null; countryId?: number; data?: string }) =>
+export const updateProductMedia = (id: number, docId: number, m: { name: string; typeId?: number | null; countryId?: number; data?: string; fileName?: string }) =>
   apiFetch<null>(`/melis/react-api/products/${id}/media/${docId}/update`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(m) })
 export const deleteProductMedia = (id: number, docId: number) =>
   apiFetch<null>(`/melis/react-api/products/${id}/media/${docId}`, { method: 'DELETE' })
@@ -142,9 +142,9 @@ export interface VariantPrice { id: number; countryId: number; currency: number;
 export interface VariantStock { id: number; countryId: number; quantity: number; low: number | null; nextFillUp: string | null }
 export const fetchVariant = (prdId: number, varId: number) => apiFetch<VariantDetail>(`/melis/react-api/products/${prdId}/variants/${varId}/detail`)
 export const fetchVariantMedia = (prdId: number, varId: number) => apiFetch<{ images: MediaItem[]; files: MediaItem[] }>(`/melis/react-api/products/${prdId}/variants/${varId}/media`)
-export const uploadVariantMedia = (prdId: number, varId: number, m: { name: string; data: string; kind: 'image' | 'file' }) =>
+export const uploadVariantMedia = (prdId: number, varId: number, m: { name: string; data: string; fileName?: string; kind: 'image' | 'file' }) =>
   apiFetch<null>(`/melis/react-api/products/${prdId}/variants/${varId}/media/upload`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(m) })
-export const updateVariantMedia = (prdId: number, varId: number, docId: number, m: { name: string; typeId?: number | null; countryId?: number; data?: string }) =>
+export const updateVariantMedia = (prdId: number, varId: number, docId: number, m: { name: string; typeId?: number | null; countryId?: number; data?: string; fileName?: string }) =>
   apiFetch<null>(`/melis/react-api/products/${prdId}/variants/${varId}/media/${docId}/update`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(m) })
 export const deleteVariantMedia = (prdId: number, varId: number, docId: number) =>
   apiFetch<null>(`/melis/react-api/products/${prdId}/variants/${varId}/media/${docId}`, { method: 'DELETE' })

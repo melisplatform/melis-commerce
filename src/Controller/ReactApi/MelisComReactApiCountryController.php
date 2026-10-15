@@ -236,7 +236,7 @@ class MelisComReactApiCountryController extends MelisAbstractActionController
         try {
             $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
             ob_start();
-            $countryTable->delete($id);
+            $countryTable->deleteById($id); // the table has no delete() → 500 (Mantis #0011188)
             ob_end_clean();
 
             $this->getEventManager()->trigger('meliscommerce_country_delete_end', $this, [

@@ -311,6 +311,9 @@ class MelisComContactController extends MelisAbstractActionController
 
             foreach ($tableData as $key => $val)
             {
+                // never send the password hash / recovery key to the browser (Mantis #0011167)
+                unset($tableData[$key]['cper_password'], $tableData[$key]['cper_password_recovery_key']);
+
                 $contactStatus = '<i class="fa fa-circle text-danger"></i>';
                 // Generating contact status html form
                 if ($val['cper_status'])
@@ -1438,6 +1441,7 @@ class MelisComContactController extends MelisAbstractActionController
              */
             foreach ($data as $key => $val) {
                 if (!in_array($val['cper_id'], $ids)) {
+                    unset($val['cper_password'], $val['cper_password_recovery_key']); // Mantis #0011167
                     $lists[] = $val;
                 }
             }
