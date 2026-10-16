@@ -40,9 +40,13 @@ trait MelisCommercePluginLoginGuardTrait
             $this->getController()->redirect()->toUrl($loginUrl . $sep . http_build_query(['m_redirection_link_ok' => $back]));
         }
 
+        // One message per page: Order detail holds 5 account plugins, each printed it (Mantis #0011157)
+        $shown = (bool) $request->getMetadata('meliscommerceLoginMessageShown', false);
+        $request->setMetadata('meliscommerceLoginMessageShown', true);
+
         return [
             'notLoggedIn'  => true,
-            'loginMessage' => $this->getServiceManager()->get('translator')->translate('tr_meliscommerce_client_Checkout_no_identity'),
+            'loginMessage' => $shown ? '' : $this->getServiceManager()->get('translator')->translate('tr_meliscommerce_client_Checkout_no_identity'),
         ];
     }
 

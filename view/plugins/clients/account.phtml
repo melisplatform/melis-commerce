@@ -1,5 +1,5 @@
 <?php // anonymous visitor (no login page set): the login message instead of empty editable forms (Mantis #0011157)
-if (!empty($this->notLoggedIn)) { echo '<label class="alert alert-danger">'.$this->escapeHtml($this->loginMessage).'</label>'; return; } ?>
+if (!empty($this->notLoggedIn)) { if ((string) $this->loginMessage !== '') { echo '<label class="alert alert-danger">'.$this->escapeHtml($this->loginMessage).'</label>'; } return; } ?>
 <?php if (!empty($this->logoutLink)): // a way to end the session (Mantis #0011208) ?>
 <div class="text-right" style="margin-bottom:10px">
     <?php if (!empty($this->loggedInName)) echo $this->escapeHtml(sprintf($this->translate('tr_meliscommerce_plugin_logged_in_as'), $this->loggedInName)); ?>

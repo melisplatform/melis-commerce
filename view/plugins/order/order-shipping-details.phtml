@@ -1,5 +1,5 @@
 <?php // anonymous visitor: the login message only (Mantis #0011157)
-if (!empty($this->notLoggedIn)) { echo '<label class="alert alert-danger">'.$this->escapeHtml($this->loginMessage).'</label>'; return; } ?>
+if (!empty($this->notLoggedIn)) { if ((string) $this->loginMessage !== '') { echo '<label class="alert alert-danger">'.$this->escapeHtml($this->loginMessage).'</label>'; } return; } ?>
 <div>
 	<div>
 		<h3><?= $this->translate('tr_meliscommerce_orders_tracking_details'); ?></h3>

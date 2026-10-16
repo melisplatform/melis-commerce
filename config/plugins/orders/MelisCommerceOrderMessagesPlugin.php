@@ -14,6 +14,7 @@ return [
                 'MelisCommerceOrderMessagesPlugin' => [
                     'front' => [
                         'template_path' => ['MelisCommerceOrder/order-messages'],
+                        'm_login_page_link' => '', // login page for anonymous visitors (Mantis #0011157)
                         'id' => 'orderMessages',
                         // Order Id
                         'm_om_order_id' => null,

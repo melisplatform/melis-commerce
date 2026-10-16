@@ -489,6 +489,7 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
 //            }
         }
         
+        $configValues = array_merge($configValues, $this->loginPageLinkFromXml($xml)); // Mantis #0011157
         return $configValues;
     }
     
@@ -511,6 +512,8 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
 //            $xmlValueFormatted .= "\t\t" . '<m_rp_order_id><![CDATA[' . $parameters['m_rp_order_id'] . ']]></m_rp_order_id>';
 //        }
         
+        $xmlValueFormatted .= $this->loginPageLinkToXml($parameters); // Mantis #0011157
+
         // Something has been saved, let's generate an XML for DB
         if (!empty($xmlValueFormatted))
         {

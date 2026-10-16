@@ -14,6 +14,7 @@ return [
                 'MelisCommerceOrderShippingDetailsPlugin' => [
                     'front' => [
                         'template_path' => ['MelisCommerceOrder/order-shipping-details'],
+                        'm_login_page_link' => '', // login page for anonymous visitors (Mantis #0011157)
                         'id' => 'orderShippingDetails',
                         // Order id
                         'm_sd_order_id' => null

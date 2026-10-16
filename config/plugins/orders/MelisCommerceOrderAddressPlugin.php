@@ -14,6 +14,7 @@ return [
                 'MelisCommerceOrderAddressPlugin' => [
                     'front' => [
                         'template_path' => ['MelisCommerceOrder/order-addresses'],
+                        'm_login_page_link' => '', // login page for anonymous visitors (Mantis #0011157)
                         'id' => 'orderAddresses',
                         
                         // order id
