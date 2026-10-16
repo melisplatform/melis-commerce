@@ -423,7 +423,8 @@ function AttributeForm({ id, base }: { id: string; base: string }) {
     fetchAttributeOptions().then((o) => {
       setOptions(o)
       setLang((v) => v || o.languages[0]?.id || 0)
-      setTranslations((prev) => prev.length ? prev : o.languages.map((l) => ({ langId: l.id, name: '', description: '' })))
+      // one row per language, keeping any label already loaded with the attribute (the two requests race)
+      setTranslations((prev) => o.languages.map((l) => prev.find((tr) => tr.langId === l.id) ?? { langId: l.id, name: '', description: '' }))
     }).catch(() => null)
   }, [])
 
@@ -433,9 +434,12 @@ function AttributeForm({ id, base }: { id: string; base: string }) {
       setAttribute(a)
       setReference(a.reference); setTypeId(a.typeId)
       setStatus(a.status === 1); setVisible(a.visible === 1); setSearchable(a.searchable === 1)
+      // When the attribute answered before the languages, prev was still empty and the labels were dropped:
+      // the page title then showed the reference instead of the label (Mantis #0011179). Keep both.
       setTranslations((prev) => {
         const byLang = new Map(a.translations.map((tr) => [tr.langId, tr]))
-        return prev.map((tr) => byLang.get(tr.langId) ?? tr)
+        const merged = prev.map((tr) => byLang.get(tr.langId) ?? tr)
+        return [...merged, ...a.translations.filter((tr) => !prev.some((p) => p.langId === tr.langId))]
       })
       updateSubLabel(base, subTabPath, displayName(a.translations, a.reference, a.boLangId))
     }).catch(() => null)

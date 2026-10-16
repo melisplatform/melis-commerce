@@ -116,7 +116,12 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
     {
         $select = $this->getTableGateway()->getSql()->select();
 
-        $slct = ['*', new Expression('client.cli_id As DT_RowId')];
+        // Every contact column EXCEPT cper_password / cper_password_recovery_key: '*' sent them to the browser
+        // through the legacy contact "Accounts" tab and the legacy order checkout account list (Mantis #0011167).
+        $slct = ['cper_id', 'cper_client_id', 'cper_lang_id', 'cper_type', 'cper_status', 'cper_is_main_person', 'cper_email',
+            'cper_civility', 'cper_name', 'cper_middle_name', 'cper_firstname', 'cper_job_title', 'cper_job_service',
+            'cper_tel_mobile', 'cper_tel_landline', 'cper_tags', 'cper_date_creation', 'cper_date_edit',
+            'DT_RowId' => new Expression('client.cli_id')]; // keyed: after plain names an unkeyed Expression gets the previous alias
         if ($count) {
             $slct = [new Expression('COUNT(' . $this->getTableGateway()->getTable() . '.' . $this->idField . ') As totalRecords')];
         }

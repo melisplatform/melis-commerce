@@ -292,14 +292,16 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                 $checkOutCart[] = $data;
             }
 
+            // the coupon percentage applies after the product discounts, as computed and saved (Mantis #0011201)
             $subTotal = $clientOrderCost['costs']['order']['subTotal'];
-            
+            $couponBase = $subTotal - (float) ($clientOrderCost['costs']['order']['totalProductDiscount'] ?? 0);
+
             foreach($generalCoupons as $generalCoupon)
             {
                 $hasDiscount = true;
                 if(!empty($generalCoupon->coup_percentage))
                 {
-                    $totalDiscount = ($generalCoupon->coup_percentage / 100) * $subTotal;
+                    $totalDiscount = ($generalCoupon->coup_percentage / 100) * $couponBase;
                     $discountInfo[] = array(
                         'details' => $generalCoupon->coup_percentage.'%',
                         'amount' => number_format($totalDiscount, 2),
