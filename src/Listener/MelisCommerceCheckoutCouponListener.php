@@ -194,7 +194,11 @@ class MelisCommerceCheckoutCouponListener extends MelisGeneralListener implement
 
                         $orderDiscount = 0;
                         // process general coupons to affect order prices
-                        $subTotal = $params['results']['costs']['order']['subTotal'];
+                        // A percentage applies to the amount AFTER the product discounts — the "total" at this point.
+                        // "subTotal" is the undiscounted amount in computeAllCosts (Summary: 10% of 70 = 7.00, total
+                        // 62.00) but already discounted when the order is saved (10% of 69 = 6.90, total 62.10), so the
+                        // amount shown before payment differed from the amount saved (Mantis #0011201).
+                        $subTotal = $params['results']['costs']['order']['total'] ?? $params['results']['costs']['order']['subTotal'];
 
                         foreach ($generalCoupons as $key => $val) {
                             // Checking first if coupon percentage has value,

@@ -1634,7 +1634,17 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             if (!$clientId) return $this->jsonResponse(['success' => false, 'error' => 'No account selected'], 400);
 
             $svc    = $this->checkoutSvc();
-            $result = $svc->checkoutStep1_prePayment($clientId);
+            // The order lines (product / category / attribute texts) are written in the "front plugin" language
+            // of the session, which the BO never sets: a French BO saved them in English (Mantis #0011201).
+            // Use the BO language for this call only, then give the front its value back.
+            $pluginLang = new \Laminas\Session\Container('melisplugins');
+            $frontLangId = $pluginLang['melis-plugins-lang-id'] ?? null;
+            $pluginLang['melis-plugins-lang-id'] = $this->langId();
+            try {
+                $result = $svc->checkoutStep1_prePayment($clientId);
+            } finally {
+                $pluginLang['melis-plugins-lang-id'] = $frontLangId;
+            }
 
             if (empty($result['success'])) {
                 // Business-rule failure (stock/price/address issue) — 200 + success:false INSIDE
