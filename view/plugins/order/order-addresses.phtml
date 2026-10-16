@@ -1,5 +1,6 @@
-<?php 
-    use Doctrine\DBAL\Tools\Console\Command\ImportCommand;
+<?php
+    // anonymous visitor: the login message only (Mantis #0011157)
+    if (!empty($this->notLoggedIn)) { echo '<label class="alert alert-danger">'.$this->escapeHtml($this->loginMessage).'</label>'; return; }
 
     $delivery = $this->deliveryAddress;
     $billing = $this->billingAddress;
@@ -8,16 +9,17 @@
     
     $deliveryData = array();
     $billingyData = array();
-    foreach ($addressIndex As $key => $val)
+    // by field name: indexing with the loop counter (0, 1…) never matched, so the street/city were never shown
+    foreach ($addressIndex As $field)
     {
-        if (!empty($delivery[$key]))
+        if (!empty($delivery[$field]))
         {
-            array_push($deliveryData, $delivery[$key]);
+            array_push($deliveryData, $delivery[$field]);
         }
-        
-        if (!empty($billing[$key]))
+
+        if (!empty($billing[$field]))
         {
-            array_push($billingyData, $billing[$key]);
+            array_push($billingyData, $billing[$field]);
         }
     }
     

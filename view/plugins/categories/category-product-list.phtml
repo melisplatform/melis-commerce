@@ -50,14 +50,11 @@
 										<div class="caption">
 											<h4>
 												<?php 
-													// Getting Product Price
-													$prdPriceStr = null;
-													foreach ($product->getPrice() As $pKey => $pVal)
-													{
-														$prdPriceStr = ' ('.number_format($pVal->price_net).')';
-													}
+													// Same price/format as ProductList (Mantis #0011160)
+													$prdPrice = isset($product->display_price) ? (array) $product->display_price : [];
+													$prdPriceStr = ' (' . $this->MelisCommercePrice($prdPrice['prd_price_net'] ?? null, $prdPrice['prd_currency_symbol'] ?? '') . ')';
 												?>
-												<a href="<?php echo $this->escapeHtmlAttr($this->MelisCommerceLink('product', $product->getId(), $this->langId, true))?>"><?php echo $this->escapeHtml($productName .$prdPriceStr) ?></a>
+												<a href="<?php echo $this->escapeHtmlAttr($this->MelisCommerceLink('product', $product->getId(), $this->langId, true))?>"><?php echo $this->escapeHtml($productName) . $prdPriceStr ?></a>
 											</h4>
 											<?php foreach ($product->getCategories() As $cKey => $cVal){?>
 												<p class="label label-primary"><?php echo $this->escapeHtml($cVal->catt_name) ?></p>

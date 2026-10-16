@@ -1,4 +1,6 @@
 <?php
+// anonymous visitor: the login message only (Mantis #0011157)
+if (!empty($this->notLoggedIn)) { echo '<label class="alert alert-danger">'.$this->escapeHtml($this->loginMessage).'</label>'; return; }
 $order = $this->returnProducts;
 if (!empty($order)){?>
     <h3><?= $this->translate('tr_meliscommerce_plugin_order_return_product_name');?></h3>

@@ -1,3 +1,5 @@
+<?php // anonymous visitor: the login message only (Mantis #0011157 #0011216)
+if (!empty($this->notLoggedIn)) { echo '<label class="alert alert-danger">'.$this->escapeHtml($this->loginMessage).'</label>'; return; } ?>
 <style>
 .default-form-err-msg-plugin li{
     display: inherit;
@@ -15,6 +17,8 @@
     <?php } ?>
 <?php }?>
 <?php
+    // no order of the logged-in client on this page: no message form (Mantis #0011157)
+    if (isset($this->hasOrder) && !$this->hasOrder) { return; }
     $form = $this->addMessageForm;
 	$form->prepare();
 	echo $this->form()->openTag($form); 

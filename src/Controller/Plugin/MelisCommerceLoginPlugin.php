@@ -14,6 +14,7 @@ use MelisFront\Navigation\MelisFrontNavigation;
 
 use Laminas\Mvc\Controller\Plugin\Redirect;
 use Laminas\View\Model\ViewModel;
+use Laminas\Session\Container;
 /**
  * This plugin implements the business logic of the
  * "Login" plugin.
@@ -90,7 +91,25 @@ class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
         $errors = array();
         
         $loginForm->setData($this->pluginFrontConfig);
-        
+
+        // Post/Redirect/Get (Mantis #0011215): the result page of the login POST was the POST response,
+        // so a reload re-sent the e-mail and password. A front, non-AJAX POST now stores its result in
+        // the session and redirects to the same URL; that GET shows it once.
+        $request = $this->getController()->getRequest();
+        $prg = $this->renderMode !== 'melis' && $request->isPost() && !$request->isXmlHttpRequest();
+        $prgSession = new Container('meliscommerce');
+        if (!$request->isPost() && !empty($prgSession['login-prg'])) {
+            $flash = $prgSession['login-prg'];
+            unset($prgSession['login-prg']);
+            $success = (int) ($flash['success'] ?? 0);
+            $message = $flash['message'] ?? null;
+            $errors = $flash['errors'] ?? [];
+            $loginForm->get('m_login')->setValue((string) ($flash['login'] ?? ''));
+            if ($errors) {
+                $loginForm->setMessages($errors);
+            }
+        }
+
         if ($is_submit)
         {
             if($loginForm->isValid())
@@ -128,6 +147,11 @@ class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
             {
                 // Retrieving the errors occured on form validation
                 $errors = $loginForm->getMessages();
+            }
+
+            if ($prg && $this->getController()->getResponse()->getStatusCode() < 300) {
+                $prgSession['login-prg'] = ['success' => $success, 'message' => $message, 'errors' => $errors, 'login' => (string) $m_login];
+                $this->getController()->redirect()->toUrl($request->getUriString());
             }
         }
         

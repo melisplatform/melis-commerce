@@ -51,6 +51,7 @@ use Laminas\View\Model\ViewModel;
 class MelisCommerceOrderAddressPlugin extends MelisTemplatingPlugin
 {
     use MelisCommercePluginWidthTrait;
+    use MelisCommercePluginLoginGuardTrait;
     public function __construct($updatesPluginConfig = array())
     {
         // the key of the configuration in the app.plugins.php
@@ -65,12 +66,18 @@ class MelisCommerceOrderAddressPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
+        // anonymous visitor: the login message, not empty blocks (Mantis #0011157)
+        if ($guard = $this->anonymousGuard()) {
+            return $guard;
+        }
+
         $clientId = null;
         $billing = array();
         $delivery = array();
         $addresses = array();
-        
-        $orderId = !empty($this->pluginFrontConfig['m_add_order_id'])? $this->pluginFrontConfig['m_add_order_id'] : null;
+
+        // only an order of the logged-in client (Mantis #0011216)
+        $orderId = $this->ownedOrderId($this->pluginFrontConfig['m_add_order_id'] ?? null);
         $container = new Container('melisplugins');
         $lang = $container['melis-plugins-lang-id'];
         
