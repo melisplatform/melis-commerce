@@ -238,6 +238,7 @@ class MelisCommerceOrderAddressPlugin extends MelisTemplatingPlugin
             }
         }
         
+        $configValues = array_merge($configValues, $this->loginPageLinkFromXml($xml)); // Mantis #0011157
         return $configValues;
     }
     
@@ -255,6 +256,8 @@ class MelisCommerceOrderAddressPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
         }
         
+        $xmlValueFormatted .= $this->loginPageLinkToXml($parameters); // Mantis #0011157
+
         // Something has been saved, let's generate an XML for DB
         if (!empty($xmlValueFormatted))
         {

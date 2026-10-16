@@ -14,6 +14,7 @@ return [
                 'MelisCommerceOrderReturnProductPlugin' => [
                     'front' => [
                         'template_path' => ['MelisCommerceOrder/order-return-product'],
+                        'm_login_page_link' => '', // login page for anonymous visitors (Mantis #0011157)
                         'id' => 'orderProductReturn',
                         // Order id
                         'm_rp_order_id' => null,

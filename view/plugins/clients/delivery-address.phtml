@@ -1,5 +1,5 @@
 <?php // anonymous visitor (no login page set): the login message instead of empty editable forms (Mantis #0011157)
-if (!empty($this->notLoggedIn)) { echo '<label class="alert alert-danger">'.$this->escapeHtml($this->loginMessage).'</label>'; return; } ?>
+if (!empty($this->notLoggedIn)) { if ((string) $this->loginMessage !== '') { echo '<label class="alert alert-danger">'.$this->escapeHtml($this->loginMessage).'</label>'; } return; } ?>
 <style>
 .default-form-err-msg-plugin li{
     display: inherit;

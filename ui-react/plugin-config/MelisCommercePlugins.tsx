@@ -545,10 +545,10 @@ const PLUGINS: Record<string, TabDef[]> = {
 
   /* ── Orders ── */
   MelisCommerceOrderPlugin: [properties(loginPage)],
-  MelisCommerceOrderAddressPlugin: [properties()],
-  MelisCommerceOrderMessagesPlugin: [properties()],
-  MelisCommerceOrderReturnProductPlugin: [properties()],
-  MelisCommerceOrderShippingDetailsPlugin: [properties()],
+  MelisCommerceOrderAddressPlugin: [properties(loginPage)],
+  MelisCommerceOrderMessagesPlugin: [properties(loginPage)],
+  MelisCommerceOrderReturnProductPlugin: [properties(loginPage)],
+  MelisCommerceOrderShippingDetailsPlugin: [properties(loginPage)],
   MelisCommerceOrderHistoryPlugin: [
     configuration(select('m_order_sort', L.labelOrder, L.hintOrderHistory), loginPage),
     paginationTab('order_history_per_page', 'order_history_page_before_after'),
