@@ -51,6 +51,7 @@ use Laminas\View\Model\ViewModel;
 class MelisCommerceOrderMessagesPlugin extends MelisTemplatingPlugin
 {
     use MelisCommercePluginWidthTrait;
+    use MelisCommercePluginLoginGuardTrait;
     public function __construct($updatesPluginConfig = array())
     {
         // the key of the configuration in the app.plugins.php
@@ -65,17 +66,27 @@ class MelisCommerceOrderMessagesPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
+        // anonymous visitor: the login message, never another order's thread (Mantis #0011157 #0011216)
+        if ($guard = $this->anonymousGuard()) {
+            return $guard;
+        }
+
         $clientId = null;
         $messages = array();
         $errors = array();
         $success = 0;
-        
+
         $translator = $this->getServiceManager()->get('translator');
         $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
         $clientSvc = $this->getServiceManager()->get('MelisComClientService');
         $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
-        
-        $orderId        = !empty($this->pluginFrontConfig['m_om_order_id'])           ? $this->pluginFrontConfig['m_om_order_id'] : null;
+
+        // only an order of the logged-in client: any POSTed m_om_order_id showed that order's messages (Mantis #0011216)
+        $orderId        = $this->ownedOrderId($this->pluginFrontConfig['m_om_order_id'] ?? null);
+        // This plugin's own form: the Order plugin embeds a second message form, so one submit was
+        // saved by both (Mantis #0011214). Each instance handles only the POST carrying its own id.
+        $pluginId       = (string) ($this->pluginFrontConfig['id'] ?? '');
+        $ownSubmit      = $pluginId !== '' && (string) ($this->pluginFrontConfig['m_om_plugin_id'] ?? '') === $pluginId;
         $message        = !empty($this->pluginFrontConfig['m_om_message'])            ? $this->pluginFrontConfig['m_om_message'] : '';
         $returnId       = !empty($this->pluginFrontConfig['m_om_pret_id'])            ? $this->pluginFrontConfig['m_om_pret_id'] : null;
         $msgType        = !empty($this->pluginFrontConfig['m_om_message_type'])       ? $this->pluginFrontConfig['m_om_message_type'] : 'MSG';
@@ -87,10 +98,11 @@ class MelisCommerceOrderMessagesPlugin extends MelisTemplatingPlugin
         $factory->setFormElementManager($formElements);
         $addMessageForm = $factory->createForm($appConfigForm);
         
-        $addMessageForm->setData(array('m_om_order_id' => $orderId));        
-        if ($isSubmit) 
+        $addMessageForm->add(['type' => 'hidden', 'name' => 'm_om_plugin_id']);
+        $addMessageForm->setData(array('m_om_order_id' => $orderId));
+        if ($isSubmit && $ownSubmit && !empty($orderId))
         {
-            if ($ecomAuthSrv->hasIdentity()) 
+            if ($ecomAuthSrv->hasIdentity())
             {
                 $addMessageForm->setData(array('m_om_order_id' => $orderId, 'm_om_message' => $message, 'm_om_pret_id' => $returnId));
                 
@@ -164,10 +176,13 @@ class MelisCommerceOrderMessagesPlugin extends MelisTemplatingPlugin
          * after submission of the form proivided of this plugin
          */
         $addMessageForm->get('m_om_message_is_submit')->setValue(true);
+        $addMessageForm->get('m_om_plugin_id')->setValue($pluginId);
+        $addMessageForm->get('m_om_order_id')->setValue($orderId);
         
         $viewVariables = array(
             'orderMessages' => $messages,
             'addMessageForm' => $addMessageForm,
+            'hasOrder' => !empty($orderId) || $this->renderMode === 'melis', // BO page edition keeps the form visible
             'success' => $success,
             'errors' => $errors,
         );

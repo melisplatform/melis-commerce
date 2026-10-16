@@ -25,7 +25,9 @@ return [
                         'm_om_message_type' => 'MSG',
                         // flag true if form is submitted
                         'm_om_message_is_submit' => 0,
-                        
+                        // id of the plugin whose form was submitted: only that instance saves (Mantis #0011214)
+                        'm_om_plugin_id' => '',
+
                         'forms' => [
                             'meliscommerce_order_add_message_form' => [
                                 'attributes' => [

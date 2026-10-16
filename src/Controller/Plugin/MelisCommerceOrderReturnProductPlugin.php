@@ -52,6 +52,7 @@ use Laminas\Session\Container;
 class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
 {
     use MelisCommercePluginWidthTrait;
+    use MelisCommercePluginLoginGuardTrait;
     public function __construct($updatesPluginConfig = array())
     {
         // the key of the configuration in the app.plugins.php
@@ -66,6 +67,11 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
+        // anonymous visitor: the login message, not empty blocks (Mantis #0011157)
+        if ($guard = $this->anonymousGuard()) {
+            return $guard;
+        }
+
         $returnProducts = [];
         $success = 0;
         
@@ -83,7 +89,8 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
 
         $formData = $this->getFormData();
 
-        $orderId  = !empty($formData['m_rp_order_id']) ? $formData['m_rp_order_id'] : null;
+        // only an order of the logged-in client: returns could be shown/created on any order (Mantis #0011216)
+        $orderId  = $this->ownedOrderId($formData['m_rp_order_id'] ?? null);
         $isSubmit  = !empty($formData['m_rp_is_submit']) ? $formData['m_rp_is_submit'] : 0;
         $orderReturnStatus  = !empty($formData['m_rp_status']) ? $formData['m_rp_status'] : 4;
         //consist of variant id ang quantity to return
@@ -253,8 +260,8 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
 
                     $orderCoupons = $tmp;
 
-                    if (!empty($data->getClient()) || $this->renderMode = 'melis') {
-                        if (($data->getClient()->cli_id == $clientId) || $this->renderMode = 'melis') {
+                    if (!empty($data->getClient()) || $this->renderMode == 'melis') {
+                        if (($data->getClient()->cli_id == $clientId) || $this->renderMode == 'melis') {
                             $currencies = $currencySvc->getCurrencies();
 
                             $status = '';

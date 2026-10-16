@@ -107,6 +107,15 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
                 }
                 
                 $val->products = $prdSrv->getProductList($langId, $categoryIds, $countryId, $onlyValid, null, $prdLimit, $prdOrderColumn, $prdOrder);
+
+                // Same price and format as ProductList / RelatedProducts / the cart (Mantis #0011160): the
+                // template printed the last raw price row with no currency and no decimals.
+                $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
+                $clientGroupId = $ecomAuthSrv->hasIdentity() ? $ecomAuthSrv->getClientGroup() : 1;
+                foreach ($val->products as $product) {
+                    $basic = $prdSrv->getProductBasicDetails($product->getId(), $countryId, $clientGroupId, $langId);
+                    $product->display_price = $basic['prd_price_details'] ?? [];
+                }
             }
         }
         

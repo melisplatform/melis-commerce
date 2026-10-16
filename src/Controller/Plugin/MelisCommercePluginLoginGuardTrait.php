@@ -46,6 +46,33 @@ trait MelisCommercePluginLoginGuardTrait
         ];
     }
 
+    /**
+     * The order id this plugin may show/act on: in the BO page edition any order; on the front only an
+     * order of the logged-in client, else null. The order sub-plugins (addresses, shipping, messages,
+     * returns) took any id from GET/POST and showed that order's data to anyone (Mantis #0011216).
+     * $orderId empty → falls back to the page's ?m_order_id (the Order detail page link), so the
+     * standalone plugins show the same order as the Order plugin on that page.
+     */
+    protected function ownedOrderId($orderId): ?int
+    {
+        $orderId = (int) $orderId;
+        if ($orderId <= 0 && $this->renderMode !== 'melis') {
+            $orderId = (int) $this->getController()->getRequest()->getQuery('m_order_id', 0);
+        }
+        if ($orderId <= 0) {
+            return null;
+        }
+        if ($this->renderMode === 'melis') {
+            return $orderId;
+        }
+        $auth = $this->getServiceManager()->get('MelisComAuthenticationService');
+        if (!$auth->hasIdentity()) {
+            return null;
+        }
+        $row = $this->getServiceManager()->get('MelisEcomOrderTable')->getEntryById($orderId)->current();
+        return ($row && (int) $row->ord_client_id === (int) $auth->getClientId()) ? $orderId : null;
+    }
+
     /** A page id (React/legacy page picker) or an internal/external URL → URL ('' when unset/unknown). */
     protected function loginPageUrl(string $link): string
     {
