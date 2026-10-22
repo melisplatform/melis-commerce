@@ -94,7 +94,8 @@ class MelisCommerceRelatedProductsPlugin extends MelisTemplatingPlugin
         $viewVariables = array(
             'relatedProducts' => $data,
             'isInFront' => $this->isInFront(),
-            'langId' => $langId
+            'langId' => $langId,
+            'productPageId' => $this->commerceTargetPageId((string) ($this->pluginFrontConfig['m_product_page_link'] ?? '')), // page of the links when the item's SEO sets none (Mantis #0011156)
         );
         
         // return the variable array and let the view be created
@@ -237,6 +238,7 @@ class MelisCommerceRelatedProductsPlugin extends MelisTemplatingPlugin
             }
         }
 
+        $configValues = array_merge($configValues, $this->commercePageLinkFromXml($xml ?? null, 'm_product_page_link'));
         return $configValues;
     }
 
@@ -258,6 +260,8 @@ class MelisCommerceRelatedProductsPlugin extends MelisTemplatingPlugin
         {
             $xmlValueFormatted .= "\t\t" . '<m_product_id><![CDATA[' . $parameters['m_product_id'] . ']]></m_product_id>';
         }
+
+        $xmlValueFormatted .= $this->commercePageLinkToXml($parameters, 'm_product_page_link');
 
         // Something has been saved, let's generate an XML for DB
         //if (!empty($xmlValueFormatted))

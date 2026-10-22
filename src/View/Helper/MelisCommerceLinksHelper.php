@@ -43,13 +43,14 @@ class MelisCommerceLinksHelper extends AbstractHelper
 	 * @param int $typeLink category/product/variant
 	 * @param int $id id of the item
 	 * @param int $langId lang id of the item
-	 * 
+	 * @param int|null $pageId page used when the item's SEO sets none (the plugin's page setting, Mantis #0011156)
+	 *
 	 */
-	public function __invoke($typeLink, $id, $langId, $absolute)
+	public function __invoke($typeLink, $id, $langId, $absolute, $pageId = null)
 	{
 		$melisTree = $this->getServiceManager()->get('MelisComLinksService');
-		
-		$link = $melisTree->getPageLink($typeLink, $id, $langId, $absolute);
+
+		$link = $melisTree->getPageLink($typeLink, $id, $langId, $absolute, $pageId ?: null);
 		
 		return $link;
 	}

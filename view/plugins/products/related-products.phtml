@@ -9,7 +9,7 @@
                 $mainImage = '';
                 $hoverImage = '';
 
-                $productPageLink = $this->MelisCommerceLink('product', $product->getId(), $this->langId, true);
+                $productPageLink = $this->MelisCommerceLink('product', $product->getId(), $this->langId, true, $this->productPageId);
 
                 if(!empty($product->getTexts())){
                     foreach($product->getTexts() as $text){

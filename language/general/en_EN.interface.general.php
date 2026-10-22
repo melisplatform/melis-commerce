@@ -51,6 +51,11 @@
 	    'tr_meliscommerce_general_common_order tooltip' => 'This filter allows to set the default order (ex: for a title, &#34;Ascending&#34; sort from A to Z, &#34;Descending&#34; sort from Z to A)',
 	    'tr_meliscommerce_general_common_limit tooltip' => 'This filter allows to set the number displayed',
 	    'tr_meliscommerce_general_common_destination_page_link tooltip' => 'Enter the url of the destination page in which the user will be redirected. It can be an internal or external url',
+	    // product / category list plugins: page of the links (Mantis #0011156)
+	    'tr_meliscommerce_plugin_product_page_link' => 'Product page',
+	    'tr_meliscommerce_plugin_product_page_link tooltip' => 'Page the product links lead to (a page holding the « Product show » plugin), used when the product SEO sets no page. Empty: the default commerce page',
+	    'tr_meliscommerce_plugin_category_page_link' => 'Category page',
+	    'tr_meliscommerce_plugin_category_page_link tooltip' => 'Page the category links lead to (a page holding the « Category product list » plugin), used when the category SEO sets no page. Empty: the default commerce page',
 	    'tr_meliscommerce_general_common_autologin tooltip' => 'Connect the user directly after validation of the form',
 	    'tr_meliscommerce_general_common_show_select_addresses tooltip' => 'Display a field in the form to select a registered address',
 	    'tr_meliscommerce_general_common_per_page tooltip' => 'Number of results displayed on a single page',

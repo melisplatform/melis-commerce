@@ -50,6 +50,7 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
 {
     use MelisCommercePluginWidthTrait;
     use MelisCommercePluginListParamsTrait;
+    use MelisCommercePluginRouteTrait;
 
     public function __construct($updatesPluginConfig = array())
     {
@@ -93,6 +94,7 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
             'categoryList' => $categoryList,
             'selectedCategories' => $selectedCategories,
             'langId' => $langId, // category links in the tree (Mantis #0011156)
+            'categoryPageId' => $this->commerceTargetPageId((string) ($this->pluginFrontConfig['m_category_page_link'] ?? '')), // page of the links when the item's SEO sets none (Mantis #0011156)
         );
         
         // return the variable array and let the view be created
@@ -388,6 +390,7 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
             }
         }
 
+        $configValues = array_merge($configValues, $this->commercePageLinkFromXml($xml ?? null, 'm_category_page_link'));
         return $configValues;
     }
     
@@ -422,6 +425,8 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<m_box_include_root_category_tree><![CDATA[' . $parameters['m_box_include_root_category_tree'] . ']]></m_box_include_root_category_tree>';
         }
     
+        $xmlValueFormatted .= $this->commercePageLinkToXml($parameters, 'm_category_page_link');
+
         // Something has been saved, let's generate an XML for DB
         //if (!empty($xmlValueFormatted))
         //{
