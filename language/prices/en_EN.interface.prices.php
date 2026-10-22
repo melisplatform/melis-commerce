@@ -35,4 +35,8 @@
         'tr_meliscommerce_price_variant_price:' => 'Variant price:',
         'tr_meliscommerce_price_common_discount_computation:' => 'Discount computation:',
         'tr_meliscommerce_price_common_price_change' => 'Price change to',
+        // keys used by the commerce logs, shown raw until now (Mantis #0011225)
+        'tr_meliscommerce_prices' => 'Prices',
+        'tr_meliscommerce_price_save_success' => 'Price saved successfully',
+        'tr_meliscommerce_price_delete_success' => 'Price deleted successfully',
     );

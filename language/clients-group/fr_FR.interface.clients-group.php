@@ -16,4 +16,6 @@ return [
     'tr_meliscommerce_clients_group_tool_header_container' => 'Header',
     'tr_meliscommerce_clients_group_tool_content' => 'Contenu',
     'tr_meliscommerce_clients_group_tool_content_modal' => 'Contenu modal',
+    // keys used by the commerce logs, shown raw until now (Mantis #0011225)
+    'tr_meliscommerce_clients_group_save_success' => 'Groupe de clients enregistré avec succès',
 ];

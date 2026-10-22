@@ -164,5 +164,7 @@ return array(
     'tr_meliscommerce_products_page_page_association_3' => 'Associated page 3',
     'tr_meliscommerce_products_page_page_association_tooltip' => 'Either type in the ID of the page to associate or select the page in the treeview. For an external page just type in the URL of the page.',
     'tr_meliscommerce_products_table_select' => 'Select',
-    'tr_meliscommerce_products_text_filter' => 'Filter'
+    'tr_meliscommerce_products_text_filter' => 'Filter',
+    // keys used by the commerce logs, shown raw until now (Mantis #0011225)
+    'tr_meliscommerce_product_attr_remove_success' => 'Attribute removed from the product',
 );
