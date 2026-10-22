@@ -25,8 +25,8 @@ if (!empty($this->notLoggedIn)) { if ((string) $this->loginMessage !== '') { ech
         			<td><?php echo $this->escapeHtml($val['productName'].' ('.$val['sku'].')') ?></td>
         			<td align="right"><?php echo $val['quantity']?></td>
         			<td align="right"><?php echo $val['currency'].number_format($val['price'], 2) ?></td>
-        			<td align="right"><?php echo $val['currency'].$val['discount'] ?></td>
-        			<td align="right"><?php echo $val['currency'].$val['total'] ?></td>
+        			<td align="right"><?php echo $val['currency'].number_format((float) $val['discount'], 2) ?></td>
+        			<td align="right"><?php echo $val['currency'].number_format((float) $val['total'], 2) ?></td>
         		</tr>
     		<?php } ?>
     	</tbody>

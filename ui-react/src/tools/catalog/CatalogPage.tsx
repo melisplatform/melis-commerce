@@ -188,7 +188,7 @@ export default function CatalogPage() {
 
       {toDelete && (
         <ConfirmModal title={t('del_title')} message={t('del_confirm', { u: `${toDelete.id} - ${toDelete.name}` })}
-          extra={toDelete.type === 'catalog' && toDelete.children.length > 0 && <p style={{ fontSize: 13, color: '#b45309', marginTop: 6 }}>{t('del_catalog_warn')}</p>}
+          extra={toDelete.children.length > 0 && <p style={{ fontSize: 13, color: '#b45309', marginTop: 6 }}>{t(toDelete.type === 'catalog' ? 'del_catalog_warn' : 'del_category_warn')}</p>}
           onConfirm={confirmDelete} onCancel={() => setToDelete(null)} t={t} />
       )}
     </div>

@@ -164,7 +164,8 @@ class MelisCommerceCartPlugin extends MelisTemplatingPlugin
         
         $viewVariables = array(
             'cartList' => $paginator,
-            'currency' => $totalCurrency,
+            // Empty cart: the shop's default currency, the total showed « 0.00 » without « € » (Mantis #0011298)
+            'currency' => $totalCurrency !== '' ? $totalCurrency : (string) ($this->getServiceManager()->get('MelisComCurrencyService')->getDefaultCurrency()->cur_symbol ?? ''),
             'total' => $total,
             'nbPageBeforeAfter' => $nbPageBeforeAfter,
         );

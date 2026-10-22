@@ -15,6 +15,17 @@ import type { CSSProperties } from 'react'
 
 const qtyBtn: CSSProperties = { ...btnGhost, width: 24, height: 24, padding: 0, justifyContent: 'center' }
 
+/** Variant rows by price line: the standard rows (no extraLabel) first, then one section per label */
+function variantSections(variants: CheckoutVariant[]): { label: string; rows: CheckoutVariant[] }[] {
+  const sections = new Map<string, CheckoutVariant[]>([['', []]])
+  for (const v of variants) {
+    const key = v.extraLabel ?? ''
+    if (!sections.has(key)) sections.set(key, [])
+    sections.get(key)!.push(v)
+  }
+  return [...sections].filter(([, rows]) => rows.length > 0).map(([label, rows]) => ({ label, rows }))
+}
+
 export function WizardProductsStep({ countryId, onBack, onNext }: {
   countryId: number | null; onBack: () => void; onNext: (countryId: number) => void
 }) {
@@ -178,7 +189,16 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
                               <div style={{ padding: 8, color: 'var(--color-muted-foreground)' }}>{t('checkout_no_variants')}</div>
                             ) : (
                               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                                {variants.map((v) => (
+                                {/* A module may add alternate rows (category discounts): one section per price line,
+                                    each listing the variants once, so rows no longer look duplicated (Mantis #0011196) */}
+                                {variantSections(variants).map(({ label, rows }, si, all) => (
+                                  <Fragment key={label}>
+                                  {all.length > 1 && (
+                                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.03em', color: label ? 'var(--color-primary)' : 'var(--color-muted-foreground)', paddingTop: si ? 8 : 0, borderTop: si ? '1px solid var(--color-border,rgba(0,0,0,.08))' : undefined }}>
+                                      {label || t('checkout_variants_standard')}
+                                    </div>
+                                  )}
+                                {rows.map((v) => (
                                   <div key={`${v.id}-${v.extra ?? ''}`} style={{ display: 'flex', flexWrap: narrow ? 'wrap' : 'nowrap', alignItems: 'center', gap: 10, padding: '6px 0' }}>
                                     <code style={{ fontSize: 12, minWidth: narrow ? undefined : 90 }}>{v.sku}</code>
                                     {/* Colonne attributs : vide plutôt qu'un « — » (une variante sans
@@ -193,6 +213,8 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
                                       {adding === v.id ? '…' : t('checkout_add')}
                                     </button>
                                   </div>
+                                ))}
+                                  </Fragment>
                                 ))}
                               </div>
                             )}

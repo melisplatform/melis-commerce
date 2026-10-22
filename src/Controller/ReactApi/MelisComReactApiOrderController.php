@@ -21,9 +21,16 @@ use MelisCore\Controller\MelisReactKeysetListTrait;
  */
 class MelisComReactApiOrderController extends MelisAbstractActionController
 {
+    use MelisComReactApiAccountNameTrait;
     use MelisReactKeysetListTrait;
 
     private const MELIS_KEY = 'meliscommerce_order_list_page';
+
+    /** « Société » of an order: company of the account, else its name as shown in « Comptes clients » (Mantis #0011199). */
+    private function orderCompanySql(string $alias = 'c'): string
+    {
+        return "COALESCE(NULLIF((SELECT oc_comp.ccomp_name FROM melis_ecom_client_company oc_comp WHERE oc_comp.ccomp_client_id = $alias.cli_id LIMIT 1), ''), " . $this->accountDisplayNameSql($alias) . ")";
+    }
 
     private function langId(): int
     {
@@ -124,6 +131,10 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
 
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
 
+            // « Société » : company of the account, else its name as shown in « Comptes clients » (setting « Nom de compte »)
+            // — the stored cli_name was shown and searched whatever the setting (Mantis #0011199)
+            $companyExpr = $this->orderCompanySql('c');
+
             $where  = [];
             $params = [];
             if ($status !== null)    { $where[] = 'o.ord_status = ?';                            $params[] = $status; }
@@ -131,8 +142,8 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             if ($dateEnd !== '')     { $where[] = 'DATE(o.ord_date_creation) <= ?';              $params[] = $dateEnd; }
             if ($search !== '') {
                 $like    = '%' . $search . '%';
-                $where[] = '(o.ord_reference LIKE ? OR p.cper_firstname LIKE ? OR p.cper_name LIKE ? OR c.cli_name LIKE ?)';
-                $params  = array_merge($params, [$like, $like, $like, $like]);
+                $where[] = "(o.ord_reference LIKE ? OR p.cper_firstname LIKE ? OR p.cper_name LIKE ? OR c.cli_name LIKE ? OR $companyExpr LIKE ?)";
+                $params  = array_merge($params, [$like, $like, $like, $like, $like]);
             }
 
             // $lang inliné en littéral (int validé) → aucun paramètre dans le SELECT/JOIN, compatible
@@ -149,7 +160,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                 'status'    => "COALESCE(ostt.ostt_status_name,'')",
                 'firstname' => "COALESCE(p.cper_firstname,'')",
                 'name'      => "COALESCE(p.cper_name,'')",
-                'company'   => "COALESCE(c.cli_name,'')",
+                'company'   => $companyExpr,
                 'date'      => "COALESCE(o.ord_date_creation,'1000-01-01 00:00:00')",
             ];
 
@@ -158,7 +169,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                 'from'         => 'melis_ecom_order o',
                 'joins'        => $joins,
                 'selectCols'   => "o.ord_id, o.ord_reference, o.ord_status, o.ord_client_id, o.ord_client_person_id, o.ord_date_creation,
-                                   c.cli_name AS company, p.cper_firstname, p.cper_name,
+                                   $companyExpr AS company, p.cper_firstname, p.cper_name,
                                    ostt.ostt_status_name AS status_name, osta.osta_color_code AS status_color,
                                    (SELECT COALESCE(SUM(obas_quantity), 0) FROM melis_ecom_order_basket WHERE obas_order_id = o.ord_id) AS product_count,
                                    (SELECT COALESCE(SUM(opay_price_total), 0) FROM melis_ecom_order_payment WHERE opay_order_id = o.ord_id) AS total_amount,
@@ -265,7 +276,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             $lang = $this->langId();
 
             $orderRows = iterator_to_array($db->query(
-                "SELECT o.*, c.cli_name AS company, p.cper_firstname, p.cper_name,
+                "SELECT o.*, " . $this->orderCompanySql('c') . " AS company, p.cper_firstname, p.cper_name,
                         ostt.ostt_status_name AS status_name, osta.osta_color_code AS status_color
                  FROM melis_ecom_order o
                  LEFT JOIN melis_ecom_client c ON c.cli_id = o.ord_client_id

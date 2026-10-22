@@ -20,6 +20,8 @@ export const DICT = mergeDict({
     checkout_country_general: 'General', checkout_country_required: 'Please choose a country first.',
     checkout_col_product: 'Product', checkout_col_variants: 'Variants',
     checkout_no_products: 'No product found.', checkout_no_variants: 'No variant for this product.',
+    // Variant rows grouped by price line when a module adds category-discount rows (Mantis #0011196)
+    checkout_variants_standard: 'Standard price (no category discount)',
     checkout_in_stock: 'in stock', checkout_add: 'Add', checkout_prev: 'Previous', checkout_next: 'Next',
     checkout_qty_capped: 'Only {n} in stock — quantity capped.',
     checkout_added_to_basket: '{sku} added to basket',
@@ -203,6 +205,7 @@ export const DICT = mergeDict({
     checkout_country_general: 'Général', checkout_country_required: 'Veuillez d\'abord choisir un pays.',
     checkout_col_product: 'Produit', checkout_col_variants: 'Variants',
     checkout_no_products: 'Aucun produit trouvé.', checkout_no_variants: 'Aucun variant pour ce produit.',
+    checkout_variants_standard: 'Prix standard (sans remise de catégorie)',
     checkout_in_stock: 'en stock', checkout_add: 'Ajouter', checkout_prev: 'Précédent', checkout_next: 'Suivant',
     checkout_qty_capped: 'Seulement {n} en stock — quantité limitée.',
     checkout_added_to_basket: '{sku} ajouté au panier',

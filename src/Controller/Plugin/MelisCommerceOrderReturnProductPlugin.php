@@ -92,6 +92,11 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
         // only an order of the logged-in client: returns could be shown/created on any order (Mantis #0011216)
         $orderId  = $this->ownedOrderId($formData['m_rp_order_id'] ?? null);
         $isSubmit  = !empty($formData['m_rp_is_submit']) ? $formData['m_rp_is_submit'] : 0;
+        // This instance's own form: the Order plugin embeds a second return plugin, so one submit was saved
+        // twice (Mantis #0011296, same as #0011214 for the messages). Only the instance whose id is posted saves.
+        $pluginId  = (string) ($this->pluginFrontConfig['id'] ?? '');
+        $ownSubmit = $pluginId !== '' && (string) ($formData['m_rp_plugin_id'] ?? '') === $pluginId;
+        $errorMessage = '';
         $orderReturnStatus  = !empty($formData['m_rp_status']) ? $formData['m_rp_status'] : 4;
         //consist of variant id ang quantity to return
         /**
@@ -127,6 +132,7 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
         $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $addMessageForm = $factory->createForm($appConfigForm);
+        $addMessageForm->add(['type' => 'hidden', 'name' => 'm_rp_plugin_id']);
 
         //set order id to the form
         $addMessageForm->get('m_rp_order_id')->setValue($orderId);
@@ -144,13 +150,27 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
                 //check if order is already delivered to the customer
                 if ($data->getOrder()->ord_status == $orderReturnStatus || $this->renderMode == 'melis') {//order delivered
                     //check if form is submitted
-                    if ($isSubmit) {
+                    if ($isSubmit && $ownSubmit) {
                         if (!empty($returnVariantData)) {
                             //get all return product to get the quantity
                             $returnProduct = $productReturn->getOrderProductReturnList($orderId);
                             $isQtyOk = true;
                             //re check returned quantity
                             foreach ($returnVariantData as $variantId => $returnQty) {
+                                // A whole quantity of at least 1, for a variant of this order: 0 was saved as a return
+                                // line, and an unknown variant skipped the check (Mantis #0011297)
+                                if (!ctype_digit((string) $returnQty) || (int) $returnQty < 1) {
+                                    $isQtyOk = false;
+                                    break;
+                                }
+                                $inOrder = false;
+                                foreach ($data->getBasket() as $bas) {
+                                    if ($variantId == $bas->obas_variant_id) { $inOrder = true; }
+                                }
+                                if (!$inOrder) {
+                                    $isQtyOk = false;
+                                    break;
+                                }
                                 $returnProd = 0;
                                 //count already returned product
                                 foreach ($returnProduct as $key => $rProduct) {
@@ -174,6 +194,10 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
                             /**
                              * Check if return quantity is not greater that the ordered quantity
                              */
+                            if (!$isQtyOk) {
+                                // A refused request showed no message at all (Mantis #0011297)
+                                $errorMessage = $trans->translate('tr_melis_commerce_orders_return_qty_invalid');
+                            }
                             if ($isQtyOk) {
                                 $postValues = $formData;
 
@@ -345,11 +369,13 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
          * after submission of the form proivided of this plugin
          */
         $addMessageForm->get('m_rp_is_submit')->setValue(true);
+        $addMessageForm->get('m_rp_plugin_id')->setValue($pluginId);
 
         $viewVariables = array(
             'returnProducts' => $returnProducts,
             'addMessageForm' => $addMessageForm,
-            'success' => $success
+            'success' => $success,
+            'errorMessage' => $errorMessage,
         );
         
         // return the variable array and let the view be created

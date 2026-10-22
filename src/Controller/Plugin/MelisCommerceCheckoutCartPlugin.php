@@ -337,7 +337,8 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
             'checkOutCartDiscountInfo' => $discountInfo,
             'checkoutShipping' => number_format($shippingTotal, 2),
             'checkOutCartTotal' => number_format($total, 2),
-            'checkOutCurrency' => $currency,
+            // Empty cart: the shop's default currency, totals showed « 0.00 » without « € » (Mantis #0011298)
+            'checkOutCurrency' => !empty($currency) ? $currency : (string) ($this->getServiceManager()->get('MelisComCurrencyService')->getDefaultCurrency()->cur_symbol ?? ''),
             'checkoutErrors' => $errors,
             'checkoutCoupon' => $couponView,
             'checkoutHasCoupon' => $hasDiscount,

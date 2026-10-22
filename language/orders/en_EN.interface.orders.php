@@ -262,4 +262,5 @@
         'tr_melis_commerce_orders_return_product_form_header' => 'You wish to return this product, please fill the form:',
         'tr_melis_commerce_orders_return_product_placed_on' => 'Placed On:',
         'tr_melis_commerce_orders_return_details' => 'Details: ',
+        'tr_melis_commerce_orders_return_qty_invalid' => 'The quantity must be at least 1 and cannot exceed the quantity that can still be returned.',
 	);
