@@ -33,6 +33,55 @@ trait MelisCommercePluginRouteTrait
     }
 
     /**
+     * Page id of a page-link plugin parameter (m_product_page_link / m_category_page_link): the page the product
+     * or category links of a list lead to when the item's SEO sets no page. Without it the links fell back to
+     * the config default page 1, the home page (Mantis #0011156). The value is a page id, a Melis link
+     * (…/id/<pageId>) or the SEO URL of a page (the page pickers fill the link); null when empty or unknown.
+     */
+    protected function commerceTargetPageId(string $link): ?int
+    {
+        $link = trim($link);
+        if ($link === '') {
+            return null;
+        }
+        if (ctype_digit($link)) {
+            return (int) $link > 0 ? (int) $link : null;
+        }
+        if (preg_match('#/id/(\d+)#', $link, $m)) {
+            return (int) $m[1];
+        }
+        $path = trim((string) parse_url($link, PHP_URL_PATH), '/');
+        if ($path === '') {
+            return null;
+        }
+        try {
+            $seoTable = $this->getServiceManager()->get('MelisEngineTablePageSeo');
+            foreach ([$path, '/' . $path] as $url) {
+                $seo = $seoTable->getEntryByField('pseo_url', $url)->current();
+                if ($seo) {
+                    return (int) $seo->pseo_id;
+                }
+            }
+        } catch (\Throwable $e) {
+        }
+        return null;
+    }
+
+    /** A page-link parameter read from this plugin's XML node (loadDbXmlToPluginConfig). */
+    protected function commercePageLinkFromXml($xml, string $param): array
+    {
+        return ($xml && isset($xml->$param) && (string) $xml->$param !== '') ? [$param => (string) $xml->$param] : [];
+    }
+
+    /** A page-link parameter as XML for savePluginConfigToXml ('' when unset). */
+    protected function commercePageLinkToXml(array $parameters, string $param): string
+    {
+        return !empty($parameters[$param])
+            ? "\t\t" . '<' . $param . '><![CDATA[' . $parameters[$param] . ']]></' . $param . '>'
+            : '';
+    }
+
+    /**
      * The product displayed by the ProductShow plugin of the SAME page (its m_product_id in the page content),
      * or null. A product page = ProductShow (set to a product) + AddToCart (no product setting of its own): opened
      * without /pid/N, AddToCart didn't know the product and said "Product is not available" (Mantis #0011159).

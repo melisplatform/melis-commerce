@@ -51,6 +51,11 @@
 	    'tr_meliscommerce_general_common_order tooltip' => 'Ce filtre permet de régler l&#39;ordre par défaut (ex: pour un titre, &#34;Ascendant&#34; trie de A à Z, &#34;Descendant&#34; trie de Z à A)',
 	    'tr_meliscommerce_general_common_limit tooltip' => 'Ce filtre permet de régler le nombre listées',
 	    'tr_meliscommerce_general_common_destination_page_link tooltip' => 'Saisissez l\'url de la page de destination sur laquelle l\'utilisateur sera redirigé. Ce peut être une url interne ou externe',
+	    // product / category list plugins: page of the links (Mantis #0011156)
+	    'tr_meliscommerce_plugin_product_page_link' => 'Page produit',
+	    'tr_meliscommerce_plugin_product_page_link tooltip' => 'Page vers laquelle mènent les liens des produits (une page contenant le plugin « Affichage produit »), utilisée quand le SEO du produit ne définit pas de page. Vide : la page commerce par défaut',
+	    'tr_meliscommerce_plugin_category_page_link' => 'Page catégorie',
+	    'tr_meliscommerce_plugin_category_page_link tooltip' => 'Page vers laquelle mènent les liens des catégories (une page contenant le plugin « Liste des produits d’une catégorie »), utilisée quand le SEO de la catégorie ne définit pas de page. Vide : la page commerce par défaut',
 	    'tr_meliscommerce_general_common_autologin tooltip' => 'Connecte l\'utilisateur directement après la validation du formulaire',
 	    'tr_meliscommerce_general_common_show_select_addresses tooltip' => 'Affiche un champ dans le formulaire pour sélectionner une adresse enregistrée',
 	    'tr_meliscommerce_general_common_per_page tooltip' => 'Nombre de résultats s&#39;affichant sur une même page',

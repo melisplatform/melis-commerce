@@ -51,6 +51,7 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
 {
     use MelisCommercePluginWidthTrait;
     use MelisCommercePluginListParamsTrait;
+    use MelisCommercePluginRouteTrait;
 
     /** Multi-value config fields (category tree, text types, attribute values), see the trait */
     const LIST_PARAMS = ['m_box_category_tree_ids_selected', 'm_box_product_field_type', 'm_box_product_attribute_values_ids_selected'];
@@ -140,6 +141,7 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
             'categoryListProducts' => $paginator,
             'nbPageBeforeAfter' => $pageNbBeforeAfter,
             'langId' => $lang,
+            'productPageId' => $this->commerceTargetPageId((string) ($this->pluginFrontConfig['m_product_page_link'] ?? '')), // page of the links when the item's SEO sets none (Mantis #0011156)
             'template' => $this->pluginFrontConfig['template_path'],
             'hasData' => (sizeof($categoryProductList) > 0) ? true : false,
             'sort_config' => $sort,
@@ -310,6 +312,7 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
         if(isset($this->pluginFrontConfig['m_col_name'])){
             $data['m_col_name'] = $this->pluginFrontConfig['m_col_name'];
         }
+        $data['m_product_page_link'] = $this->pluginFrontConfig['m_product_page_link'] ?? '';
         return $data;
     }
     
@@ -406,6 +409,7 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
                 $configValues['pagination']['m_page_nb_page_before_after'] = (string)$xml->m_page_nb_page_before_after;
             }
         }
+        $configValues = array_merge($configValues, $this->commercePageLinkFromXml($xml ?? null, 'm_product_page_link'));
         return $configValues;
     }
     
@@ -500,6 +504,8 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
         }
     
         // Something has been saved, let's generate an XML for DB
+        $xmlValueFormatted .= $this->commercePageLinkToXml($parameters, 'm_product_page_link');
+
         if (!empty($xmlValueFormatted))
         {
             $xmlValueFormatted = "\t".'<'.$this->pluginXmlDbKey.' id="'.$parameters['melisPluginId'].'">'.$xmlValueFormatted."\t".'</'.$this->pluginXmlDbKey.'>'."\n";

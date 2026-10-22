@@ -14,6 +14,8 @@ return [
                 'MelisCommerceCategoryProductListPlugin' => [
                     'front' => [
                         'template_path' => ['MelisCommerceCategory/category-product-list'],
+                        // page the product/category links lead to when the item's SEO sets none (Mantis #0011156)
+                        'm_product_page_link' => '',
                         'id' => 'categoryProductList',
                         // Category option
                         'm_category_option' => [
@@ -99,6 +101,23 @@ return [
                                                 'id' => 'id_page_tpl_id',
                                                 'class' => 'form-control',
                                                 'required' => 'required',
+                                            ],
+                                        ],
+                                    ],
+                                    [
+                                        'spec' => [
+                                            'name' => 'm_product_page_link',
+                                            'type' => 'MelisText',
+                                            'options' => [
+                                                'label' => 'tr_meliscommerce_plugin_product_page_link',
+                                                'tooltip' => 'tr_meliscommerce_plugin_product_page_link tooltip',
+                                            ],
+                                            'attributes' => [
+                                                'id' => 'm_product_page_link',
+                                                'class' => 'melis-input-group-button',
+                                                'data-button-icon' => 'fa fa-sitemap',
+                                                'data-button-id' => 'meliscms-site-selector',
+                                                'data-callback' => '',
                                             ],
                                         ],
                                     ],

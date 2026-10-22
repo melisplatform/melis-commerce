@@ -156,6 +156,15 @@ class MelisCommerceSEODispatchRouterCommerceUrlListener
             	                   else
             	                       $fullUrl = $uri->getPath();
     	                           
+    	                           // The link a list plugin built for THIS page (its product/category page setting, used when
+    	                           // the item's SEO sets no page) is valid: it was redirected to the default page (Mantis #0011156)
+    	                           if ($fullUrl != $pageLink
+    	                               && $fullUrl == $melisComLinksService->getPageLink($routeItemConf['type'],
+    	                                   $params[$routeItemConf['routeInternalParamName']],
+    	                                   $params['datasPage']->getMelisPageTree()->plang_lang_id, true, $params['idpage'])) {
+    	                               $pageLink = $fullUrl;
+    	                           }
+
     	                           if ($fullUrl != $pageLink) {
     	                               $request = $this->serviceManager->get('request');;
     	                               if (!$request->isPost())

@@ -31,6 +31,10 @@ const L = ({
     labelDestinationPage: 'Page de destination',
     labelLoginPage: 'Page de connexion',
     hintLoginPage: "Page de login vers laquelle un visiteur non connecté est redirigé (puis renvoyé ici après connexion). Vide : un message lui demande de se connecter.",
+    labelProductPage: 'Page produit',
+    hintProductPage: 'Page vers laquelle mènent les liens des produits (une page contenant le plugin « Affichage produit »), quand le SEO du produit ne définit pas de page. Vide : la page commerce par défaut.',
+    labelCategoryPage: 'Page catégorie',
+    hintCategoryPage: 'Page vers laquelle mènent les liens des catégories (une page contenant le plugin « Liste des produits d’une catégorie »), quand le SEO de la catégorie ne définit pas de page. Vide : la page commerce par défaut.',
     hintDestinationPage: "Saisissez l'url de la page de destination sur laquelle l'utilisateur sera redirigé. Ce peut être une url interne ou externe.",
     labelResetPage: 'Page de réinitialisation du mot de passe',
     hintResetPage: "Page sur laquelle sera redirigé l'utilisateur pour réinitialiser son mot de passe.",
@@ -113,6 +117,10 @@ const L = ({
     labelDestinationPage: 'Destination page',
     labelLoginPage: 'Login page',
     hintLoginPage: 'Login page a visitor who is not logged in is redirected to (and sent back here after login). Empty: a message asks them to log in.',
+    labelProductPage: 'Product page',
+    hintProductPage: 'Page the product links lead to (a page holding the « Product show » plugin), when the product SEO sets no page. Empty: the default commerce page.',
+    labelCategoryPage: 'Category page',
+    hintCategoryPage: 'Page the category links lead to (a page holding the « Category product list » plugin), when the category SEO sets no page. Empty: the default commerce page.',
     hintDestinationPage: 'Enter the url of the destination page the user will be redirected to. It can be an internal or external url.',
     labelResetPage: 'Password reset page',
     hintResetPage: 'The page where the user will be redirected to reset the password.',
@@ -490,6 +498,9 @@ const pageLink = (name: string, label: string, hint?: string): FieldSpec => ({ k
 const destinationPage = (name: string) => pageLink(name, L.labelDestinationPage, L.hintDestinationPage)
 // where an anonymous visitor is sent by the account-area / checkout plugins (Mantis #0011157)
 const loginPage = pageLink('m_login_page_link', L.labelLoginPage, L.hintLoginPage)
+// page of the product / category links of the list plugins, when the item's SEO sets none (Mantis #0011156)
+const productPage = pageLink('m_product_page_link', L.labelProductPage, L.hintProductPage)
+const categoryPage = pageLink('m_category_page_link', L.labelCategoryPage, L.hintCategoryPage)
 const order = (name: string) => select(name, L.labelOrder, L.hintOrder)
 const pagination = (perPage: string, beforeAfter: string) => [
   number(perPage, L.labelPerPage, L.hintPerPage),
@@ -556,7 +567,7 @@ const PLUGINS: Record<string, TabDef[]> = {
 
   /* ── Categories ── */
   MelisCommerceCategoryProductListPlugin: [
-    tab('template', L.tabTemplate, COG, [template]),
+    tab('template', L.tabTemplate, COG, [template, productPage]),
     tab('categories', L.tabCategories, BOOK, [
       { kind: 'categories', name: 'm_category_ids', label: L.labelCategories, hint: L.hintCategories },
       toggle('m_include_sub_category_products', L.labelIncludeSub, L.hintIncludeSub),
@@ -571,7 +582,7 @@ const PLUGINS: Record<string, TabDef[]> = {
     ]),
   ],
   MelisCommerceCategoryTreePlugin: [
-    tab('template', L.tabTemplate, COG, [template]),
+    tab('template', L.tabTemplate, COG, [template, categoryPage]),
     tab('categories', L.tabCategories, BOOK, [
       { kind: 'categories', name: 'm_box_category_tree_ids_selected', rootName: 'm_box_root_category_tree_id', label: L.labelCategories, hint: L.hintTreeCategories },
       toggle('m_box_include_root_category_tree', L.labelIncludeRoot, L.hintIncludeRoot),
@@ -584,6 +595,7 @@ const PLUGINS: Record<string, TabDef[]> = {
       select('m_col_name', L.labelSortBy, L.hintPrdSort),
       order('m_order'),
       select('m_box_product_country', L.labelCountry, L.hintStockCountry),
+      productPage,
     ),
     tab('price', L.tabPrice, MONEY, [
       select('m_box_filter_price_column', L.labelPriceColumn, L.hintPriceColumn),
@@ -612,7 +624,7 @@ const PLUGINS: Record<string, TabDef[]> = {
   )],
   MelisCommerceAttributesShowPlugin: [properties(number('m_product_id', L.labelProductId, L.hintProductId))],
   MelisCommerceProductAttributePlugin: [properties(select('attribute_id', L.labelAttribute, L.hintAttribute))],
-  MelisCommerceRelatedProductsPlugin: [configuration(select('m_product_id', L.labelDefaultProduct, L.hintDefaultProduct))],
+  MelisCommerceRelatedProductsPlugin: [configuration(select('m_product_id', L.labelDefaultProduct, L.hintDefaultProduct), productPage)],
   MelisCommerceProductPriceRangePlugin: [configuration(select('m_box_product_price_column', L.labelPriceColumn, L.hintPriceColumn))],
   MelisCommerceProductSearchPlugin: [configuration()],
 }

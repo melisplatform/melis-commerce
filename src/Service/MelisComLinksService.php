@@ -26,10 +26,10 @@ class MelisComLinksService extends MelisComGeneralService
      * @param int $langId lang id of the item
      * @return string the link
      */
-    public function getPageLink($typeLink, $id, $langId, $absolute = false)
+    public function getPageLink($typeLink, $id, $langId, $absolute = false, $defaultPageId = null)
     {
         // Retrieve cache version if front mode to avoid multiple calls
-        $cacheKey = 'getPageLink_' . $typeLink . '_' . $id . '_' . $langId . '_' . $absolute;
+        $cacheKey = 'getPageLink_' . $typeLink . '_' . $id . '_' . $langId . '_' . $absolute . '_' . $defaultPageId;
         $cacheConfig = 'commerce_memory_services';
         $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
@@ -48,9 +48,9 @@ class MelisComLinksService extends MelisComGeneralService
         
         switch ($typeLink)
         {
-            case 'category': $results = $this->getPageLinkCategory($id, $langId, $absolute); break;
-            case 'product': $results = $this->getPageLinkProduct($id, $langId, $absolute); break;
-            case 'variant': $results = $this->getPageLinkVariant($id, $langId, $absolute); break;
+            case 'category': $results = $this->getPageLinkCategory($id, $langId, $absolute, false, $defaultPageId); break;
+            case 'product': $results = $this->getPageLinkProduct($id, $langId, $absolute, false, $defaultPageId); break;
+            case 'variant': $results = $this->getPageLinkVariant($id, $langId, $absolute, false, $defaultPageId); break;
             default: $results = '';
         }
         
@@ -111,10 +111,10 @@ class MelisComLinksService extends MelisComGeneralService
      * @param int $langId lang id of the item
      * @return string the link
      */
-    public function getPageLinkCategory($id, $langId, $absolute = false, $onlyPageId = false)
+    public function getPageLinkCategory($id, $langId, $absolute = false, $onlyPageId = false, $defaultPageId = null)
     {
         // Retrieve cache version if front mode to avoid multiple calls
-        $cacheKey = 'category-getPageLinkCategory_' . $id . '_' . $langId . '_' . $absolute;
+        $cacheKey = 'category-getPageLinkCategory_' . $id . '_' . $langId . '_' . $absolute . '_' . $onlyPageId . '_' . $defaultPageId;
         $cacheConfig = 'commerce_memory_services';
         $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
@@ -159,6 +159,10 @@ class MelisComLinksService extends MelisComGeneralService
                     $pageId = $seoObj['eseo_page_id'];
             }
             
+            // no page on the category SEO: the page set in the plugin generating the link (Mantis #0011156)
+            if (empty($pageId) && !empty($defaultPageId))
+                $pageId = $defaultPageId;
+
             if (empty($pageId))
             {
                 // default one
@@ -193,10 +197,10 @@ class MelisComLinksService extends MelisComGeneralService
      * @param int $langId lang id of the item
      * @return string the link
      */
-    public function getPageLinkProduct($id, $langId, $absolute = false, $onlyPageId = false)
+    public function getPageLinkProduct($id, $langId, $absolute = false, $onlyPageId = false, $defaultPageId = null)
     {
         // Retrieve cache version if front mode to avoid multiple calls
-        $cacheKey = 'product-getPageLinkProduct_' . $id . '_' . $langId . '_' . $absolute;
+        $cacheKey = 'product-getPageLinkProduct_' . $id . '_' . $langId . '_' . $absolute . '_' . $onlyPageId . '_' . $defaultPageId;
         $cacheConfig = 'commerce_memory_services';
         $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
@@ -225,6 +229,9 @@ class MelisComLinksService extends MelisComGeneralService
         {
             if (!empty($productDatas->eseo_page_id))
                 $pageId = $productDatas->eseo_page_id;
+            elseif (!empty($defaultPageId))
+                // no page on the product SEO: the page set in the plugin generating the link (Mantis #0011156)
+                $pageId = $defaultPageId;
             else
             {
                 $commerceConfig = $this->getServiceManager()->get('config');
@@ -271,10 +278,10 @@ class MelisComLinksService extends MelisComGeneralService
      * @param int $langId lang id of the item
      * @return string the link
      */
-    public function getPageLinkVariant($id, $langId, $absolute = false, $onlyPageId = false)
+    public function getPageLinkVariant($id, $langId, $absolute = false, $onlyPageId = false, $defaultPageId = null)
     {
         // Retrieve cache version if front mode to avoid multiple calls
-        $cacheKey = 'variant-getPageLinkVariant_' . $id . '_' . $langId . '_' . $absolute;
+        $cacheKey = 'variant-getPageLinkVariant_' . $id . '_' . $langId . '_' . $absolute . '_' . $onlyPageId . '_' . $defaultPageId;
         $cacheConfig = 'commerce_memory_services';
         $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
@@ -303,6 +310,8 @@ class MelisComLinksService extends MelisComGeneralService
         {
             if (!empty($variantDatas->eseo_page_id))
                 $pageId = $variantDatas->eseo_page_id;
+            elseif (!empty($defaultPageId))
+                $pageId = $defaultPageId;
             else
             {
                 $commerceConfig = $this->getServiceManager()->get('config');

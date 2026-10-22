@@ -49,6 +49,7 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
 {
     use MelisCommercePluginWidthTrait;
     use MelisCommercePluginListParamsTrait;
+    use MelisCommercePluginRouteTrait;
 
     public function __construct($updatesPluginConfig = array())
     {
@@ -71,6 +72,10 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
         
         $categoryIds    =   !empty($data['m_category_ids'])                 ? $data['m_category_ids'] : array();
         $includeSubCats =   !empty($data['m_include_sub_category_products']) ? true : false;
+        // A category link (…/cid/N, from the CategoryTree) shows that category, not the ones set in the plugin (Mantis #0011156)
+        if ($routeCategoryId = $this->commerceRouteParam('categoryId')) {
+            $categoryIds = [$routeCategoryId];
+        }
 
         $onlyValid = true;
         
@@ -123,6 +128,7 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
         $viewVariables = array(
             'categoryProducts' => $cats,
             'langId' => $langId,
+            'productPageId' => $this->commerceTargetPageId((string) ($this->pluginFrontConfig['m_product_page_link'] ?? '')), // page of the links when the item's SEO sets none (Mantis #0011156)
             'pluginId' => $data['id'],
         );
        
@@ -384,6 +390,7 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
             }
         }
        
+        $configValues = array_merge($configValues, $this->commercePageLinkFromXml($xml ?? null, 'm_product_page_link'));
         return $configValues;
     }
     
@@ -443,6 +450,8 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
         }
         
         // Something has been saved, let's generate an XML for DB
+        $xmlValueFormatted .= $this->commercePageLinkToXml($parameters, 'm_product_page_link');
+
         if (!empty($xmlValueFormatted))
         {
             $xmlValueFormatted = "\t".'<'.$this->pluginXmlDbKey.' id="'.$parameters['melisPluginId'].'">'.$xmlValueFormatted."\t".'</'.$this->pluginXmlDbKey.'>'."\n";
