@@ -174,7 +174,7 @@ class MelisComReactApiClientsGroupController extends MelisAbstractActionControll
             ob_end_clean();
 
             $this->getEventManager()->trigger('meliscommerce_clients_group_flash_messenger', $this, [
-                'success' => true, 'textTitle' => 'Client Group', 'textMessage' => 'tr_meliscommerce_clients_group_save_success',
+                'success' => true, 'textTitle' => 'tr_meliscommerce_clients_group', 'textMessage' => 'tr_meliscommerce_clients_group_save_ok', // keys, translated by the Logs tool (Mantis #0011225)
                 'typeCode' => $id ? 'UPDATE_CLIENTS_GROUP' : 'ADD_CLIENTS_GROUP', 'itemId' => (int) $newId,
             ]);
 
@@ -197,7 +197,7 @@ class MelisComReactApiClientsGroupController extends MelisAbstractActionControll
             ob_end_clean();
 
             $this->getEventManager()->trigger('meliscommerce_clients_group_flash_messenger', $this, [
-                'success' => true, 'textTitle' => 'Client Group', 'textMessage' => 'tr_meliscommerce_clients_group_delete_ok',
+                'success' => true, 'textTitle' => 'tr_meliscommerce_clients_group', 'textMessage' => 'tr_meliscommerce_clients_group_delete_ok',
                 'typeCode' => 'DELETE_CLIENTS_GROUP', 'itemId' => $id,
             ]);
 

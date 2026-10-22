@@ -490,4 +490,7 @@
 
         'tr_client_accounts_contact_lists_add_contact' => 'Créer un contact',
         'tr_meliscommerce_client_contact_list_add_contact_button' => 'Créer un contact',
+        // keys used by the commerce logs, shown raw until now (Mantis #0011225)
+        'tr_meliscommerce_client_file_save_success' => 'Fichier ajouté au compte',
+        'tr_meliscommerce_client_file_delete_success' => 'Fichier supprimé du compte',
     );

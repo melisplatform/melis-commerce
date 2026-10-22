@@ -35,4 +35,8 @@
         'tr_meliscommerce_price_variant_price:' => 'Prix variant:',
         'tr_meliscommerce_price_common_discount_computation:' => 'Calcul de la réduction:',
         'tr_meliscommerce_price_common_price_change' => 'Calcul prix final',
+        // keys used by the commerce logs, shown raw until now (Mantis #0011225)
+        'tr_meliscommerce_prices' => 'Prix',
+        'tr_meliscommerce_price_save_success' => 'Prix enregistré avec succès',
+        'tr_meliscommerce_price_delete_success' => 'Prix supprimé avec succès',
     );

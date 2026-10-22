@@ -207,4 +207,7 @@
 		'tr_meliscommerce_plugin_category_product_list_product' => 'Products',
 		
 		'tr_MelisCommerceFilterMenuCategoryListPlugin_Title' => 'Categories',
+		// keys used by the commerce logs, shown raw until now (Mantis #0011225)
+		'tr_meliscommerce_categories_category_reorder' => 'Category order',
+		'tr_meliscommerce_categories_category_reorder_success' => 'Categories reordered successfully',
 	);
