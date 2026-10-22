@@ -30,6 +30,8 @@ return [
 
                         'omsg_message' => null,
                         'm_rp_is_submit' => 0,
+                        // id of the plugin whose form was submitted: only that instance saves (Mantis #0011296)
+                        'm_rp_plugin_id' => '',
                         //Determine what status of the order that can be return
                         'm_rp_status' => '4',
 

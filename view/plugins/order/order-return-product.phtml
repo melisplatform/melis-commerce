@@ -28,13 +28,16 @@ if (!empty($order)){?>
         			<td><?php echo $this->escapeHtml($val['productName'].' ('.$val['sku'].')') ?></td>
         			<td align="right"><?php echo $val['quantity']?></td>
         			<td align="right"><?php echo $val['currency'].number_format($val['price'], 2) ?></td>
-        			<td align="right"><?php echo $val['currency'].$val['discount'] ?></td>
+        			<td align="right"><?php echo $val['currency'].number_format((float) $val['discount'], 2) ?></td>
                     <td class="ctg-type text-center"><p>Returned: <?= $this->escapeHtml($val['returnedProduct']); ?><br><?= ($val['returnedProduct'] >= $val['quantity']) ? '' : '<span data-variantid="'.$this->escapeHtmlAttr($val['variant_id']).'" data-rm-pr="'.$this->escapeHtmlAttr($val['remainingQtyToReturn']).'" data-sku="'.$this->escapeHtmlAttr($val['sku']).'" class="return-product-show-form">Return product</span>';?></p></td>
-        			<td align="right"><?php echo $val['currency'].$val['total'] ?></td>
+        			<td align="right"><?php echo $val['currency'].number_format((float) $val['total'], 2) ?></td>
         		</tr>
     		<?php } ?>
     	</tbody>
     </table>
+    <?php if (!empty($this->errorMessage)) { // refused request (Mantis #0011297) ?>
+        <div class="alert alert-danger"><?= $this->escapeHtml($this->errorMessage) ?></div>
+    <?php } ?>
     <div class="def-order-return-product-msg-form">
         <div class="rp-msg-form-cont hidden">
             <div class="row">

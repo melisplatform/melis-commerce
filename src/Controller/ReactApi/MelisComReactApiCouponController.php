@@ -32,6 +32,8 @@ use MelisCore\Controller\MelisAbstractActionController;
  */
 class MelisComReactApiCouponController extends MelisAbstractActionController
 {
+    use MelisComReactApiAccountNameTrait;
+
     private const MELIS_KEY = 'meliscommerce_coupon_list_page';
 
     private function langId(): int
@@ -266,10 +268,13 @@ class MelisComReactApiCouponController extends MelisAbstractActionController
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
 
-    /** Nom lisible d'un client : cli_name, repli sur l'email de la personne principale. */
+    /**
+     * Nom lisible d'un client : le nom affiché dans « Comptes clients » (réglage « Nom de compte »), repli
+     * sur l'email de la personne principale. Le cli_name stocké était affiché quel que soit le réglage (Mantis #0011195).
+     */
     private function clientLabelSql(string $alias = 'c'): string
     {
-        return "COALESCE(NULLIF($alias.cli_name,''), (SELECT cp.cper_email FROM melis_ecom_client_person cp WHERE cp.cper_client_id = $alias.cli_id AND cp.cper_is_main_person = 1 LIMIT 1), CONCAT('#', $alias.cli_id))";
+        return "COALESCE(NULLIF(" . $this->accountDisplayNameSql($alias) . ",''), (SELECT cp.cper_email FROM melis_ecom_client_person cp WHERE cp.cper_client_id = $alias.cli_id AND cp.cper_is_main_person = 1 LIMIT 1), CONCAT('#', $alias.cli_id))";
     }
 
     // ─── GET /coupons/clients-directory ────────────────────────────────────────

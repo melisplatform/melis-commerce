@@ -347,6 +347,16 @@ class MelisComReactApiCatalogController extends MelisAbstractActionController
             $fatherRow = iterator_to_array($db->query('SELECT cat_father_cat_id FROM melis_ecom_category WHERE cat_id = ? LIMIT 1', [$id]));
             $fatherId  = $fatherRow ? (int) ((array) $fatherRow[0])['cat_father_cat_id'] : -1;
 
+            // As the legacy tool (MelisComCategoryController::deleteCategoryAction): nothing with sub-categories
+            // is deleted. They stayed in the database, out of the tree but still offered in the product
+            // filters (Mantis #0011187).
+            $children = iterator_to_array($db->query('SELECT cat_id FROM melis_ecom_category WHERE cat_father_cat_id = ? LIMIT 1', [$id]));
+            if ($children) {
+                $type = ($fatherId === -1) ? 'catalog' : 'category';
+                $msg  = $this->getServiceManager()->get('translator')->translate('tr_meliscommerce_categories_err_' . $type . '_delete_has_children');
+                return $this->jsonResponse(['success' => false, 'error' => $msg], 422);
+            }
+
             // Réutilise la suppression métier existante (cascade trans/pays/produits/seo + réordonnancement).
             ob_start();
             $ok = $this->getServiceManager()->get('MelisComCategoryService')->deleteCategoryById($id, (string) $fatherId);
