@@ -112,9 +112,17 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
                     $clientPerson = $clientSrv->getClientPersonByEmail($data['m_email']);
                     if (empty($clientPerson))
                     {
-                        $message = $translator->translate('tr_meliscommerce_client_email_not_exist');
+                        /**
+                         * SECURITY (audit CM-M2) : la réponse « cet email n'existe pas »
+                         * permettait d'énumérer la base clients depuis le front anonyme.
+                         * Réponse désormais IDENTIQUE à un envoi réussi (aucun email n'est
+                         * envoyé, mais rien ne distingue un compte connu d'un inconnu).
+                         */
+                        $message = $translator->translate('tr_meliscommerce_general_send_email_success');
+                        $success = 1;
+                        $lostPassword->get('m_email')->setValue('');
                     }
-                    else 
+                    else
                     {
                         $personId = $clientPerson->cper_id;
                         $recoveryKey = $clientSrv->generatePsswordRecoveryKey($personId);
@@ -338,7 +346,7 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
         // Something has been saved, let's generate an XML for DB
         if (!empty($xmlValueFormatted))
         {
-            $xmlValueFormatted = "\t".'<'.$this->pluginXmlDbKey.' id="'.$parameters['melisPluginId'].'">'.$xmlValueFormatted."\t".'</'.$this->pluginXmlDbKey.'>'."\n";
+            $xmlValueFormatted = "\t".'<'.$this->pluginXmlDbKey.' id="'.preg_replace('/[^A-Za-z0-9_-]/', '', (string) ($parameters['melisPluginId'] ?? '')).'">'.$xmlValueFormatted."\t".'</'.$this->pluginXmlDbKey.'>'."\n";
         }
         
         return $xmlValueFormatted;

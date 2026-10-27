@@ -240,6 +240,8 @@ class MelisComReactApiLanguageController extends MelisAbstractActionController
 
     private function errorResponse(\Throwable $e, int $status = 500): HttpResponse
     {
-        return $this->jsonResponse(['success' => false, 'error' => $e->getMessage(), 'file' => basename($e->getFile()) . ':' . $e->getLine()], $status);
+        // SECURITY (audit CM-M1) : détail au log serveur, message générique au client.
+        error_log('MelisCommerce ReactApi: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
+        return $this->jsonResponse(['success' => false, 'error' => 'Internal error'], $status);
     }
 }

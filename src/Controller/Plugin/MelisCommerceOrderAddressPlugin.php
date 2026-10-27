@@ -250,7 +250,7 @@ class MelisCommerceOrderAddressPlugin extends MelisTemplatingPlugin
         // Something has been saved, let's generate an XML for DB
         if (!empty($xmlValueFormatted))
         {
-            $xmlValueFormatted = "\t".'<'.$this->pluginXmlDbKey.' id="'.$parameters['melisPluginId'].'">'.$xmlValueFormatted."\t".'</'.$this->pluginXmlDbKey.'>'."\n";
+            $xmlValueFormatted = "\t".'<'.$this->pluginXmlDbKey.' id="'.preg_replace('/[^A-Za-z0-9_-]/', '', (string) ($parameters['melisPluginId'] ?? '')).'">'.$xmlValueFormatted."\t".'</'.$this->pluginXmlDbKey.'>'."\n";
         }
         
         var_dump($xmlValueFormatted);

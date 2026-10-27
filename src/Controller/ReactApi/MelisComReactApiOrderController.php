@@ -63,11 +63,9 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
 
     private function err(\Throwable $e): HttpResponse
     {
-        return $this->jsonResponse([
-            'success' => false,
-            'error'   => $e->getMessage(),
-            'file'    => basename($e->getFile()) . ':' . $e->getLine(),
-        ], 500);
+        // SECURITY (audit CM-M1) : détail au log serveur, message générique au client.
+        error_log('MelisCommerce ReactApi: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
+        return $this->jsonResponse(['success' => false, 'error' => 'Internal error'], 500);
     }
 
     private function isAuthenticated(): bool

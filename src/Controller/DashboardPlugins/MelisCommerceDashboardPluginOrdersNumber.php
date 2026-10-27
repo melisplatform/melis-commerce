@@ -35,6 +35,19 @@ class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplat
         $className = array_pop($path);
         $isAccessable = $dashboardPluginsService->canAccess($className);
 
+        /**
+         * SECURITY (audit CM-M4) : le flag n'était appliqué que par le template — les 5
+         * dernières commandes étaient chargées et transmises au ViewModel même sans accès.
+         * Court-circuit : sans accès, on rend le même template (qui gère isAccessable=false)
+         * sans charger aucune donnée commerce.
+         */
+        if (empty($isAccessable)) {
+            $view = new ViewModel();
+            $view->setTemplate('MelisCommerceDashboardPluginOrdersNumber/dashboard/commerce-orders');
+            $view->isAccessable = false;
+            return $view;
+        }
+
         $melisOrdersService = $this->getServiceManager()->get('MelisComOrderService');
         $melisTranslation = $this->getServiceManager()->get('MelisCoreTranslation');
         $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');

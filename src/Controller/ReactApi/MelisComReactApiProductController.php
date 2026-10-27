@@ -1197,7 +1197,7 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             $this->triggerDocumentSaveEvent($body, 'ECOM_PRODUCT', $docId);
             return $this->jsonResponse(['success' => true, 'data' => null], 201);
         } catch (\InvalidArgumentException $e) {
-            return $this->jsonResponse(['success' => false, 'error' => $e->getMessage()], 400);
+            return $this->errorResponse($e, 400);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
     // ─── DELETE /products/:id/media/:docId ────────────────────────────────────
@@ -1235,7 +1235,7 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             $this->triggerDocumentSaveEvent($body, 'ECOM_VARIANT', $docId);
             return $this->jsonResponse(['success' => true, 'data' => null], 201);
         } catch (\InvalidArgumentException $e) {
-            return $this->jsonResponse(['success' => false, 'error' => $e->getMessage()], 400);
+            return $this->errorResponse($e, 400);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
     public function variantMediaUpdateAction(): HttpResponse { return $this->mediaUpdateAction(); }
@@ -1702,6 +1702,8 @@ class MelisComReactApiProductController extends MelisAbstractActionController
 
     private function errorResponse(\Throwable $e, int $status = 500): HttpResponse
     {
-        return $this->jsonResponse(['success' => false, 'error' => $e->getMessage(), 'file' => basename($e->getFile()) . ':' . $e->getLine()], $status);
+        // SECURITY (audit CM-M1) : détail au log serveur, message générique au client.
+        error_log('MelisCommerce ReactApi: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
+        return $this->jsonResponse(['success' => false, 'error' => 'Internal error'], $status);
     }
 }

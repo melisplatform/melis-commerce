@@ -16,6 +16,31 @@ use MelisCore\Controller\MelisAbstractActionController;
 
 class TesterController extends MelisAbstractActionController
 {
+    /**
+     * SECURITY (audit CM-H2) : ce harnais de debug n'a aucune clé d'outil (MELIS_KEY) — avec
+     * `access_gate_strict=0`, le listener d'autorisation laisse passer tout contrôleur « nu »,
+     * donc TOUT compte BO connecté pouvait exécuter recherches produits, envois d'email de
+     * test, lecture de la config mail, checkStockLevelByOrderId sur un id arbitraire…
+     * Une seule garde couvre toutes les actions : admin plateforme uniquement.
+     */
+    public function onDispatch(\Laminas\Mvc\MvcEvent $e)
+    {
+        try {
+            $identity = $this->getServiceManager()->get('MelisCoreAuth')->getIdentity();
+        } catch (\Throwable $ex) {
+            $identity = null;
+        }
+        if (empty($identity) || empty($identity->usr_admin)) {
+            $response = $e->getResponse();
+            $response->setStatusCode(403);
+            $response->setContent('Forbidden');
+            $e->setResult($response);
+            return $response;
+        }
+
+        return parent::onDispatch($e);
+    }
+
     public function displayTestAction()
     {
         $request = $this->getRequest();
