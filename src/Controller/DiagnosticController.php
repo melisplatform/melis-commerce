@@ -23,6 +23,30 @@ class DiagnosticController extends MelisAbstractActionController
 {
     private $odbAdapter;
 
+    /**
+     * SECURITY (audit CM-H2) : pas de clé d'outil (MELIS_KEY) — avec `access_gate_strict=0`
+     * le listener d'autorisation laisse passer les contrôleurs « nus » : tout compte BO
+     * connecté pouvait lire la config DB de la plateforme (include du platforms/<env>.php)
+     * et lancer les requêtes de diagnostic. Garde unique : admin plateforme uniquement.
+     */
+    public function onDispatch(\Laminas\Mvc\MvcEvent $e)
+    {
+        try {
+            $identity = $this->getServiceManager()->get('MelisCoreAuth')->getIdentity();
+        } catch (\Throwable $ex) {
+            $identity = null;
+        }
+        if (empty($identity) || empty($identity->usr_admin)) {
+            $response = $e->getResponse();
+            $response->setStatusCode(403);
+            $response->setContent('Forbidden');
+            $e->setResult($response);
+            return $response;
+        }
+
+        return parent::onDispatch($e);
+    }
+
     public function testCommerceMediaAction()
     {
         $request = $this->params()->fromRoute('payload', $this->params()->fromQuery('payload', null));

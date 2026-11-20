@@ -19,6 +19,68 @@ use MelisCommerce\Entity\MelisDocument;
  */
 class MelisComDocumentService extends MelisComGeneralService
 {
+    /**
+     * SECURITY (audit CM-H1) : garde d'upload — résout une extension sûre et allow-listée,
+     * ou null si refusé. Impose À LA FOIS l'allow-list d'extensions ET le type réel du
+     * contenu (MIME finfo) : les extensions exécutables/actives (php/phtml/phar/pht/svg/
+     * svgz/html/xhtml/xml/…) ne sont jamais acceptées, quel que soit le nom fourni par le
+     * client — le fichier atterrit sous public/media/commerce/, servi par le serveur.
+     * (Même logique que MelisCmsCategory2MediaService::validatedExtension.)
+     *
+     * @param string $clientName nom de fichier fourni par le client
+     * @param string $type 'image' ou 'file'
+     * @param string $tmpPath chemin du fichier temporaire uploadé
+     * @return string|null l'extension validée (minuscule), ou null si refusé
+     */
+    public function validatedExtension($clientName, $type, $tmpPath)
+    {
+        $ext = strtolower(preg_replace('/[^A-Za-z0-9]/', '', pathinfo(basename((string) $clientName), PATHINFO_EXTENSION)) ?? '');
+
+        // ext => liste des types MIME réels acceptés (finfo).
+        $imageAllow = [
+            'jpg'  => ['image/jpeg'],
+            'jpeg' => ['image/jpeg'],
+            'png'  => ['image/png'],
+            'gif'  => ['image/gif'],
+            'webp' => ['image/webp'],
+            'bmp'  => ['image/bmp', 'image/x-ms-bmp'],
+        ];
+        $docAllow = $imageAllow + [
+            'pdf'  => ['application/pdf'],
+            'doc'  => ['application/msword'],
+            'docx' => ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/zip'],
+            'xls'  => ['application/vnd.ms-excel'],
+            'xlsx' => ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip'],
+            'ppt'  => ['application/vnd.ms-powerpoint'],
+            'pptx' => ['application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/zip'],
+            'csv'  => ['text/csv', 'text/plain', 'application/csv'],
+            'txt'  => ['text/plain'],
+            'rtf'  => ['application/rtf', 'text/rtf'],
+            'zip'  => ['application/zip'],
+            'odt'  => ['application/vnd.oasis.opendocument.text', 'application/zip'],
+            'ods'  => ['application/vnd.oasis.opendocument.spreadsheet', 'application/zip'],
+            'odp'  => ['application/vnd.oasis.opendocument.presentation', 'application/zip'],
+        ];
+
+        $allow = $type === 'image' ? $imageAllow : $docAllow;
+        if ($ext === '' || !isset($allow[$ext])) {
+            return null;
+        }
+
+        // Vérifier le type réel du contenu — ne jamais se fier à la seule extension cliente.
+        $mime = '';
+        if (\function_exists('finfo_open') && ($fi = @finfo_open(FILEINFO_MIME_TYPE))) {
+            $mime = (string) @finfo_file($fi, (string) $tmpPath);
+            @finfo_close($fi);
+        }
+        // finfo indisponible → l'allow-list d'extensions reste le plancher.
+        if ($mime !== '' && !\in_array($mime, $allow[$ext], true)) {
+            return null;
+        }
+
+        return $ext;
+    }
+
 	/**
 	 *
 	 * This method gets a document by its $documentId and its type

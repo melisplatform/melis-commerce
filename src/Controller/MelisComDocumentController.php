@@ -313,6 +313,31 @@ class MelisComDocumentController extends MelisAbstractActionController
                     $fileName = basename((string) $uploadedFile['name']);
                     $formattedFileName = $this->getFormattedFileName($fileName);
 
+                    /**
+                     * SECURITY (audit CM-H1) : la branche docType=file n'avait AUCUNE allow-list
+                     * d'extension (un .php déposé sous public/media/commerce/ était exécutable =
+                     * RCE) et les images n'étaient validées que par getimagesize (pas de MIME
+                     * réel). Garde partagée du service : allow-list sans type exécutable/actif +
+                     * MIME finfo croisé avec l'extension, pour les images ET les fichiers. On
+                     * réutilise le gate $isImgTypeOk existant (initialisé à true plus haut, il
+                     * laissait passer tous les fichiers).
+                     */
+                    if (!empty($uploadedFile['tmp_name'])) {
+                        $validatedUploadExt = $this->getDocSvc()->validatedExtension(
+                            $fileName,
+                            $postValues['docType'] == 'image' ? 'image' : 'file',
+                            (string) $uploadedFile['tmp_name']
+                        );
+                        if ($validatedUploadExt === null) {
+                            $isImgTypeOk = false;
+                            $textMessage = $this->getTool()->getTranslation(
+                                $postValues['docType'] == 'image'
+                                    ? 'tr_meliscommerce_documents_upload_image_fileIsImageFalseType'
+                                    : 'tr_meliscommerce_documents_upload_fail_file'
+                            );
+                        }
+                    }
+
 
                     $size = new Size(array(
                         'min'=> $minSize,
