@@ -19,7 +19,7 @@ class MelisComCategoryController extends MelisAbstractActionController
     const PLUGIN_INDEX = 'meliscommerce';
     const TOOL_KEY = 'meliscommerce_categories';
 
-    /** @INFO: Tool access check (CWE-862). */
+    /** @INFO: Tool access check. */
     private function hasAccess($key)
     {
         return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);

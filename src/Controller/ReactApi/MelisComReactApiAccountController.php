@@ -962,7 +962,7 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
 
     /**
      * Valide un fichier téléversé contre une allow-list stricte d'extensions ET le vrai type MIME
-     * (défense anti-RCE : refuse php/phtml/phar/svg/html/js/…). Renvoie l'extension validée sûre.
+     * (refuse php/phtml/phar/svg/html/js/…). Renvoie l'extension validée.
      *
      * @param array $file entrée $_FILES (tmp_name, name, error…)
      * @return array{0: ?string, 1: ?string} [extensionValidée, messageErreurOuNull]
