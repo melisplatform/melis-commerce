@@ -174,7 +174,10 @@ function AttributeValueEditor({ attributeId, value, typeColumn, languages, t, on
     finally { setSaving(false) }
   }
 
-  function ValueInput({ langId }: { langId: number }) {
+  // A render helper, NOT a component: declared inside the editor, a <ValueInput/> was a new
+  // component type on each render, so React remounted the field and it lost focus after
+  // every keystroke (Mantis #0011604). Called as renderValueInput(id) it keeps its element.
+  function renderValueInput(langId: number) {
     const v = perLang[langId]
     if (typeColumn === 'bool') {
       // Champ texte 0/1 comme le legacy (pas de case à cocher).
@@ -246,7 +249,7 @@ function AttributeValueEditor({ attributeId, value, typeColumn, languages, t, on
                       {l.flag ? <img src={`data:image/png;base64,${l.flag}`} alt="" style={{ width: 18, height: 18, borderRadius: 3 }} /> : null}
                     </div>
                     <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-muted-foreground)', marginBottom: 4 }}>{t(`type_${typeColumn}`)}</div>
-                    <ValueInput langId={l.id} />
+                    {renderValueInput(l.id)}
                   </div>
                 ))}
               </div>

@@ -547,6 +547,7 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             $vals = ['price_prd_id' => $prdId, 'price_var_id' => $varId, 'price_country_id' => (int) ($body['countryId'] ?? 0), 'price_currency' => (int) ($body['currency'] ?? 0), 'price_group_id' => 1,
                 'price_net' => $num($body['net'] ?? null), 'price_gross' => $num($body['gross'] ?? null), 'price_vat_percent' => $num($body['vatPercent'] ?? null),
                 'price_vat_price' => $num($body['vatPrice'] ?? null), 'price_other_tax_price' => $num($body['otherTax'] ?? null)];
+            if ($priceErr = $this->priceError($vals)) { return $this->jsonResponse(['success' => false, 'error' => $priceErr], 400); }
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             if ($priceId > 0) {
                 $set = implode(', ', array_map(fn($c) => "$c = ?", array_keys($vals)));
@@ -635,6 +636,7 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             $body = json_decode($this->getRequest()->getContent(), true) ?? [];
             $items = is_array($body['items'] ?? null) ? $body['items'] : [];
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
+            if ($seoErr = $this->seoUrlConflict($db, $items, 'variant', $varId)) { return $this->jsonResponse(['success' => false, 'error' => $seoErr], 409); }
             $existing = [];
             foreach ($db->query('SELECT eseo_id, eseo_lang_id FROM melis_ecom_seo WHERE eseo_variant_id = ?', [$varId]) as $r) { $r = (array) $r; $existing[(int) $r['eseo_lang_id']] = (int) $r['eseo_id']; }
             $seoData = [];
@@ -717,6 +719,7 @@ class MelisComReactApiProductController extends MelisAbstractActionController
                 'price_vat_price'  => $num($body['vatPrice'] ?? null),
                 'price_other_tax_price' => $num($body['otherTax'] ?? null),
             ];
+            if ($priceErr = $this->priceError($price)) { return $this->jsonResponse(['success' => false, 'error' => $priceErr], 400); }
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             ob_start();
             $this->getServiceManager()->get('MelisComProductService')->saveProductPrices($price, $priceId ?: null);
@@ -848,6 +851,7 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             $userId = (int) ($body['userId'] ?? 0);
             $email  = trim((string) ($body['email'] ?? ''));
             $level  = ($body['stockLevel'] ?? '') === '' ? 0 : (int) $body['stockLevel'];
+            if ($level < 0) { return $this->jsonResponse(['success' => false, 'error' => 'L\'alerte de stock ne peut pas être négative.'], 400); }
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             if ($userId > 0) {
                 $uRows = iterator_to_array($db->query('SELECT usr_email FROM melis_core_user WHERE usr_id = ? LIMIT 1', [$userId]));
@@ -1172,7 +1176,7 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         if (!is_dir($dstDir) && !@mkdir($dstDir, 0775, true) && !is_dir($dstDir)) { return; }
 
         $docs = iterator_to_array($db->query(
-            "SELECT d.doc_id, d.doc_name, d.doc_path, d.doc_type_id, dr.rdoc_country_id
+            "SELECT d.doc_id, d.doc_name, d.doc_path, d.doc_type_id, d.doc_subtype_id, dr.rdoc_country_id
              FROM melis_ecom_doc_relations dr
              JOIN melis_ecom_document d ON d.doc_id = dr.rdoc_doc_id
              WHERE dr.$relCol = ?
@@ -1193,8 +1197,9 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             if (!@copy($srcPath, $dstPath)) { continue; }
 
             $newDocPath = '/media/commerce/' . $dstDirId . '/' . $fname;
-            $db->query('INSERT INTO melis_ecom_document (doc_name, doc_path, doc_type_id) VALUES (?, ?, ?)',
-                [(string) $row['doc_name'], $newDocPath, (int) $row['doc_type_id']]);
+            // doc_subtype_id = the image type (Default, Small…): was lost on duplication (Mantis #0011605)
+            $db->query('INSERT INTO melis_ecom_document (doc_name, doc_path, doc_type_id, doc_subtype_id) VALUES (?, ?, ?, ?)',
+                [(string) $row['doc_name'], $newDocPath, (int) $row['doc_type_id'], $row['doc_subtype_id'] !== null ? (int) $row['doc_subtype_id'] : null]);
             $newDocId = (int) iterator_to_array($db->query('SELECT LAST_INSERT_ID() AS id', []))[0]['id'];
             $db->query("INSERT INTO melis_ecom_doc_relations (rdoc_doc_id, $relCol, rdoc_country_id) VALUES (?, ?, ?)",
                 [$newDocId, $dstRelId, $row['rdoc_country_id']]);
@@ -1529,9 +1534,12 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             // un texte associé, validé séparément par son propre form quand on l'ajoute) : ne PAS exiger
             // de nom ici, sinon impossible de créer un produit avec juste sa référence.
             if ($reference === '') { return $this->jsonResponse(['success' => false, 'error' => 'La référence est obligatoire.'], 400); }
+            // a stock alert threshold below 0 makes no sense (Mantis #0011181) — negative stock quantities stay allowed
+            if ($stockLow !== null && $stockLow < 0) { return $this->jsonResponse(['success' => false, 'error' => 'L\'alerte de stock ne peut pas être négative.'], 400); }
 
             $db   = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             if ($this->referenceTaken($db, $reference, $id)) { return $this->jsonResponse(['success' => false, 'error' => 'Cette référence est déjà utilisée par un autre produit.'], 409); }
+            if ($seoErr = $this->seoUrlConflict($db, $seo, 'product', $id)) { return $this->jsonResponse(['success' => false, 'error' => $seoErr], 409); }
             $ttId = $this->titleTypeId($db);
             $now  = date('Y-m-d H:i:s');
             $uid  = $this->currentUserId();
@@ -1717,6 +1725,52 @@ class MelisComReactApiProductController extends MelisAbstractActionController
     }
 
     // ─── Helpers ───────────────────────────────────────────────────────────────
+    /**
+     * A price can end up in a cart and an order total: amounts must be >= 0 and the VAT rate
+     * between 0 and 100 % (Mantis #0011181). Returns the error message, or null.
+     */
+    private function priceError(array $price): ?string
+    {
+        $labels = ['price_net' => 'Le prix HT', 'price_gross' => 'Le prix TTC', 'price_vat_price' => 'Le montant de TVA', 'price_other_tax_price' => 'L\'autre taxe'];
+        foreach ($labels as $col => $label) {
+            if ($price[$col] !== null && !is_finite($price[$col])) { return $label . ' n\'est pas un nombre valide.'; }
+            if ($price[$col] !== null && $price[$col] < 0) { return $label . ' ne peut pas être négatif.'; }
+        }
+        $vat = $price['price_vat_percent'];
+        if ($vat !== null && (!is_finite($vat) || $vat < 0 || $vat > 100)) { return 'Le taux de TVA doit être compris entre 0 et 100 %.'; }
+        return null;
+    }
+
+    /**
+     * An SEO URL is unique across products, variants and categories, as the legacy form checks it
+     * (MelisComSeoService::validateSEOData). The URL is compared once normalised the way
+     * MelisComSeoService::saveSeo() stores it. Returns the error message, or null (Mantis #0011606).
+     *
+     * @param string $type 'product' | 'variant'
+     */
+    private function seoUrlConflict($db, array $seo, string $type, int $typeId): ?string
+    {
+        $tree = $this->getServiceManager()->get('MelisEngineTree');
+        foreach ($seo as $s) {
+            if (!is_array($s)) { continue; }
+            $url = trim((string) ($s['url'] ?? ''));
+            if ($url === '') { continue; }
+            $url = str_replace(' ', '', (string) $tree->cleanLink(mb_strtolower((string) $tree->cleanString(mb_strtolower($url)))));
+            if ($url === '') { continue; }
+            $col = $type === 'variant' ? 'eseo_variant_id' : 'eseo_product_id';
+            $taken = iterator_to_array($db->query(
+                "SELECT eseo_id FROM melis_ecom_seo WHERE eseo_url = ? AND NOT ($col <=> ?) LIMIT 1",
+                [$url, $typeId > 0 ? $typeId : -1]
+            ));
+            if ($taken) {
+                $lang = iterator_to_array($db->query('SELECT elang_name FROM melis_ecom_lang WHERE elang_id = ? LIMIT 1', [(int) ($s['langId'] ?? 0)]));
+                $langName = $lang ? ' (' . ucfirst((string) ((array) $lang[0])['elang_name']) . ')' : '';
+                return 'L\'URL SEO « ' . $url . ' »' . $langName . ' est déjà utilisée, veuillez en choisir une autre.';
+            }
+        }
+        return null;
+    }
+
     /** SKU identifies the variant in carts, orders and stock: unique across variants (Mantis #0011183). */
     private function skuTaken($db, string $sku, int $exceptVarId = 0): bool
     {

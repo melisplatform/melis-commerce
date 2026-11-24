@@ -143,4 +143,14 @@
 		//checkout steps
 		'tr_meliscommerce_plugin_checkout_step tooltip' => 'Processus étape par étape de la commande',
 		'tr_meliscommerce_plugin_checkout_payment_unavailable' => 'Aucun moyen de paiement n\'est disponible pour ce site. Votre commande a été enregistrée ; contactez-nous pour finaliser le paiement.',
+
+		// React order wizard: an action needs the previous steps (Mantis #0011608)
+		'tr_meliscommerce_react_checkout_need_contact' => 'Veuillez d\'abord choisir un contact.',
+		'tr_meliscommerce_react_checkout_need_account' => 'Veuillez d\'abord choisir un compte du contact.',
+		'tr_meliscommerce_react_checkout_account_not_linked' => 'Ce compte n\'est pas lié au contact choisi.',
+		'tr_meliscommerce_react_checkout_need_country' => 'Veuillez d\'abord choisir un pays.',
+		'tr_meliscommerce_react_checkout_need_basket' => 'Le panier est vide : ajoutez d\'abord au moins un produit.',
+		'tr_meliscommerce_react_checkout_need_addresses' => 'Veuillez d\'abord choisir les adresses de facturation et de livraison.',
+		'tr_meliscommerce_react_checkout_need_order' => 'La commande n\'a pas encore été confirmée.',
+		'tr_meliscommerce_react_checkout_bad_step' => 'Étape de commande inconnue.',
 	);

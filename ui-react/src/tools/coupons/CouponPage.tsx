@@ -488,12 +488,14 @@ function CouponForm({ id, base }: { id: string; base: string }) {
       }
       if (isEdit && couponId) {
         await saveCoupon({ ...payload, id: couponId })
+        listCache.invalidate()   // back on the list, the rows are fetched again (#0011607)
         await reconcileAssignments(couponId)
         loadAssignments(couponId)
         updateSubLabel(base, subTabPath, code.trim())
         notify('ok', t('title'), t('saved'))
       } else {
         const r = await saveCoupon(payload)
+        listCache.invalidate()
         await reconcileAssignments(r.id)
         notify('ok', t('title'), t('saved'))
         navigate(`${base}/${r.id}`)

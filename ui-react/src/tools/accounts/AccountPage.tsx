@@ -377,7 +377,7 @@ function AccountList({ base }: { base: string }) {
       )}
 
       {toDelete && (
-        <ConfirmModal title={t('del_title')} message={t('del_confirm', { u: toDelete.name })}
+        <ConfirmModal title={t('del_title')} message={t('del_confirm', { u: toDelete.name?.trim() || `#${toDelete.id}` })}
           onConfirm={confirmDelete} onCancel={() => setToDelete(null)} t={t} />
       )}
     </div>
@@ -515,6 +515,7 @@ function AccountForm({ id, base }: { id: string; base: string }) {
         id: accountId, name: name.trim(), status: active, groupId, countryId, tags: tags.trim(),
         ...(!isEdit && accountNameMode === 'contact_name' && defaultContact ? { contactId: defaultContact.id } : {}),
       })
+      listCache.invalidate()   // back on the list, the rows are fetched again (#0011607)
       const savedId = accountId ?? r?.id
       if (savedId) {
         // company_name mode : la société pilote le nom du compte affiché partout → toujours sauvée,

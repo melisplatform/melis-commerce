@@ -438,11 +438,13 @@ function OrderStatusForm({ id, base }: { id: string; base: string }) {
       const payload = { colorCode: colorCode.trim(), status, translations }
       if (isEdit && statusId !== null) {
         await saveOrderStatus({ ...payload, id: statusId })
+        listCache.invalidate()   // back on the list, the rows are fetched again (#0011607)
         const name = translations.find((tr) => tr.name.trim())?.name || `#${statusId}`
         updateSubLabel(base, subTabPath, name)
         notify('ok', t('title'), t('saved'))
       } else {
         const r = await saveOrderStatus(payload)
+        listCache.invalidate()
         notify('ok', t('title'), t('saved'))
         navigate(`${base}/${r.id}`)
       }

@@ -979,6 +979,9 @@ class MelisComProductService extends MelisComGeneralService
 				//$docTable->deleteById();
 				$priceTable->deleteByField('price_prd_id', $productId);
 				$prodTextTable->deleteByField('ptxt_prd_id', $productId);
+				// SEO rows of the product and of its variants were left behind, still holding their URL (Mantis #0011606)
+				$db->query('DELETE FROM melis_ecom_seo WHERE eseo_product_id = ?'
+					. ($variantIds ? ' OR eseo_variant_id IN (' . implode(',', $variantIds) . ')' : ''), [$productId]);
 				$prodTable->deleteByField('prd_id', $productId);
 				
 				$prdCategory = $prodCatTable->getEntryByField('pcat_prd_id', $productId);

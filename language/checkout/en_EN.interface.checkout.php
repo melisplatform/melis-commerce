@@ -142,5 +142,14 @@
 
 		//checkout steps
 		'tr_meliscommerce_plugin_checkout_step tooltip' => 'Checkout step by step process',
+		// React order wizard: an action needs the previous steps (Mantis #0011608)
+		'tr_meliscommerce_react_checkout_need_contact' => 'Select a contact first.',
+		'tr_meliscommerce_react_checkout_need_account' => 'Select an account of the contact first.',
+		'tr_meliscommerce_react_checkout_account_not_linked' => 'This account is not linked to the selected contact.',
+		'tr_meliscommerce_react_checkout_need_country' => 'Select a country first.',
+		'tr_meliscommerce_react_checkout_need_basket' => 'The basket is empty: add at least one product first.',
+		'tr_meliscommerce_react_checkout_need_addresses' => 'Choose the billing and delivery addresses first.',
+		'tr_meliscommerce_react_checkout_need_order' => 'The order has not been confirmed yet.',
+		'tr_meliscommerce_react_checkout_bad_step' => 'Unknown checkout step.',
 		'tr_meliscommerce_plugin_checkout_payment_unavailable' => 'No payment method is available for this site. Your order has been saved; please contact us to complete the payment.',
 	);

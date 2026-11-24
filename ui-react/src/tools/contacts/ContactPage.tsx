@@ -416,6 +416,7 @@ function ContactForm({ id, base }: { id: string; base: string }) {
         accountId, jobTitle: jobTitle.trim(), jobService: jobService.trim(),
         telMobile: telMobile.trim(), telLandline: telLandline.trim(), tags: tags.trim(),
       })
+      listCache.invalidate()   // back on the list, the rows are fetched again (#0011607)
       const savedId = contactId ?? r?.id
       if (savedId && (addressesLoaded || visitedTabs.has('address'))) {
         try { await saveContactAddresses(savedId, addresses) } catch { /* */ }
@@ -574,11 +575,11 @@ function ContactForm({ id, base }: { id: string; base: string }) {
                 {/* Mot de passe + confirmation */}
                 <div style={{ display: 'grid', gridTemplateColumns: narrow ? '1fr' : '1fr 1fr', gap: 16 }}>
                   <div>
-                    <label style={label}>{isEdit ? t('f_password_edit') : t('f_password')} <span style={{ color: '#ef4444' }}>*</span></label>
+                    <label style={label}>{isEdit ? t('f_password_edit') : t('f_password')}{!isEdit && <> <span style={{ color: '#ef4444' }}>*</span></>}</label>
                     <input type="password" style={inputCss} value={password} onChange={(e) => { setPassword(e.target.value); if (passwordError) setPasswordError('') }} placeholder="******" autoComplete="new-password" />
                   </div>
                   <div>
-                    <label style={label}>{t('f_confirm_password')} <span style={{ color: '#ef4444' }}>*</span></label>
+                    <label style={label}>{t('f_confirm_password')}{!isEdit && <> <span style={{ color: '#ef4444' }}>*</span></>}</label>
                     <input type="password" style={inputCss} value={confirmPassword} onChange={(e) => { setConfirmPassword(e.target.value); if (passwordError) setPasswordError('') }} placeholder="******" autoComplete="new-password" />
                   </div>
                 </div>

@@ -478,10 +478,12 @@ function AttributeForm({ id, base }: { id: string; base: string }) {
       const payload = { reference: reference.trim(), typeId, status, visible, searchable, translations }
       if (isEdit && attributeId) {
         await saveAttribute({ ...payload, id: attributeId })
+        listCache.invalidate()   // back on the list, the rows are fetched again (#0011607)
         updateSubLabel(base, subTabPath, displayName(translations, reference.trim()))
         notify('ok', t('title'), t('saved'))
       } else {
         const r = await saveAttribute(payload)
+        listCache.invalidate()
         notify('ok', t('title'), t('saved'))
         navigate(`${base}/${r.id}`)
       }

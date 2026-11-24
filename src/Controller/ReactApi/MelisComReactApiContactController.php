@@ -352,8 +352,16 @@ class MelisComReactApiContactController extends MelisAbstractActionController
             if ($type !== 'company' && $name === '') {
                 return $this->jsonResponse(['success' => false, 'error' => 'Le nom est obligatoire.'], 400);
             }
+            // same required fields as the React form (Mantis #0011171): first name (the company
+            // name for a « company » contact) always, password on creation only
+            if ($firstname === '') {
+                return $this->jsonResponse(['success' => false, 'error' => $type === 'company' ? 'Le nom de la société est obligatoire.' : 'Le prénom est obligatoire.'], 400);
+            }
             if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 return $this->jsonResponse(['success' => false, 'error' => 'Un email valide est obligatoire.'], 400);
+            }
+            if ($id <= 0 && $password === '') {
+                return $this->jsonResponse(['success' => false, 'error' => 'Le mot de passe est obligatoire.'], 400);
             }
 
             $db  = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
