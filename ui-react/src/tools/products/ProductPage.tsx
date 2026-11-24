@@ -503,6 +503,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
         seo: seo.map((s) => ({ langId: s.langId, pageId: s.pageId, url: s.url, urlRedirect: s.urlRedirect, url301: s.url301, metaTitle: s.metaTitle, metaDescription: s.metaDescription })),
         categoryIds, pageLinks,
       })
+      listCache.invalidate()   // back on the list, the new/edited product is fetched (#0011607)
       const meaningfulPrices = pendingPrices.filter((p) => p.net !== null || p.gross !== null || p.vatPercent !== null || p.vatPrice !== null || p.otherTax !== null)
       if (!isEdit) {
         const pid = result.id

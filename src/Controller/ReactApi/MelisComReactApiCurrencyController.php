@@ -164,9 +164,17 @@ class MelisComReactApiCurrencyController extends MelisAbstractActionController
 
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
 
+            $existingCode = null;
             if ($id > 0) {
-                $existing = iterator_to_array($db->query('SELECT cur_id FROM melis_ecom_currency WHERE cur_id = ? LIMIT 1', [$id]));
+                $existing = iterator_to_array($db->query('SELECT cur_id, cur_code FROM melis_ecom_currency WHERE cur_id = ? LIMIT 1', [$id]));
                 if (empty($existing)) { return $this->jsonResponse(['success' => false, 'error' => 'Currency not found'], 404); }
+                $existingCode = (string) ((array) $existing[0])['cur_code'];
+            }
+
+            // ISO 4217: 3 letters (Mantis #0011603). An existing row may keep its current code
+            // unchanged, so currencies saved before this check can still be edited.
+            if (!preg_match('/^[A-Z]{3}$/', $code) && $code !== $existingCode) {
+                return $this->jsonResponse(['success' => false, 'error' => 'Le code de la devise doit être un code ISO 4217 de 3 lettres (ex. EUR, USD).'], 400);
             }
 
             // Dedup cur_code : refuser à la création si le code existe déjà ; en mise à jour,

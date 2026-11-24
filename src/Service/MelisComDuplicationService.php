@@ -187,6 +187,7 @@ class MelisComDuplicationService extends MelisComGeneralService
         $productData = array(
             'prd_reference' => $product->prd_reference,
             'prd_status' => $arrayParameters['status'],
+            'prd_stock_low' => $product->prd_stock_low ?? null, // lost on duplication (Mantis #0011605)
             'prd_date_creation' => date('Y-m-d H:i:s'),
             'prd_user_id_creation' => $melisTool->getCurrentUserId()
         );
@@ -230,6 +231,11 @@ class MelisComDuplicationService extends MelisComGeneralService
         $productPrices = $productEntity->getPrice();
         foreach ($productPrices As $pKey => $pVal)
         {
+            // variant prices also carry the product id (price_prd_id): they are copied with each
+            // variant by duplicateVariant(), not as product prices (Mantis #0011605)
+            if (!empty($pVal->price_var_id)) {
+                continue;
+            }
             array_push($productPriceData, array(
                 'price_country_id' => $pVal->price_country_id,
                 'price_group_id' => $pVal->price_group_id,

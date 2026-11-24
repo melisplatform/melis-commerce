@@ -340,7 +340,36 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
 
         try {
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
-            $db->query('DELETE FROM melis_ecom_client WHERE cli_id = ?', [$id]);
+            if (!iterator_to_array($db->query('SELECT cli_id FROM melis_ecom_client WHERE cli_id = ? LIMIT 1', [$id]))) {
+                return $this->jsonResponse(['success' => false, 'error' => 'Account not found'], 404);
+            }
+
+            // Mantis #0011174: the account's own rows go with it (company, addresses, contact
+            // links, coupon assignments, persistent basket). The contacts themselves are kept:
+            // they may belong to other accounts. Orders are kept as history.
+            $conn = $db->getDriver()->getConnection();
+            $conn->beginTransaction();
+            try {
+                // contacts whose default account was this one: promote another account they belong to
+                $orphans = iterator_to_array($db->query(
+                    'SELECT cpr_client_person_id FROM melis_ecom_client_person_rel WHERE cpr_client_id = ? AND cpr_default_client = 1', [$id]));
+                $db->query('DELETE FROM melis_ecom_client_person_rel WHERE cpr_client_id = ?', [$id]);
+                foreach ($orphans as $o) {
+                    $pid = (int) ((array) $o)['cpr_client_person_id'];
+                    $db->query('UPDATE melis_ecom_client_person_rel SET cpr_default_client = 1 WHERE cpr_client_person_id = ? ORDER BY cpr_id LIMIT 1', [$pid]);
+                }
+                $db->query('DELETE FROM melis_ecom_client_account_rel WHERE car_client_id = ?', [$id]);
+                $db->query('UPDATE melis_ecom_client_person SET cper_client_id = NULL WHERE cper_client_id = ?', [$id]);
+                $db->query('DELETE FROM melis_ecom_client_company WHERE ccomp_client_id = ?', [$id]);
+                $db->query('DELETE FROM melis_ecom_client_address WHERE cadd_client_id = ?', [$id]);
+                $db->query('DELETE FROM melis_ecom_coupon_client WHERE ccli_client_id = ?', [$id]);
+                $db->query('DELETE FROM melis_ecom_basket_persistent WHERE bper_client_id = ?', [$id]);
+                $db->query('DELETE FROM melis_ecom_client WHERE cli_id = ?', [$id]);
+                $conn->commit();
+            } catch (\Throwable $e) {
+                $conn->rollback();
+                throw $e;
+            }
 
             $this->getEventManager()->trigger('meliscommerce_clients_delete_end', $this, [
                 'success' => true, 'textTitle' => 'Account', 'textMessage' => 'tr_meliscommerce_client_delete_account_success',

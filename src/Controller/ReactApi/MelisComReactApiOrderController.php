@@ -891,6 +891,40 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
         return $container['checkout'][self::WIZARD_SITE_ID] ?? [];
     }
 
+    /**
+     * First missing prerequisite to stand on wizard step $step, or null (Mantis #0011608: the API
+     * accepted an account with no contact, addresses/basket with no account or country, and any
+     * step index, so a reload resumed the wizard in an inconsistent state).
+     * Steps: 0 contact, 1 account, 2 products (country + basket), 3 addresses, 4 summary,
+     * 5 payment, 6 confirmation.
+     */
+    private function wizardStepError(array $state, int $step): ?string
+    {
+        $tr = $this->getServiceManager()->get('translator');
+        if ($step < 0 || $step > 6)                                       { return $tr->translate('tr_meliscommerce_react_checkout_bad_step'); }
+        if ($step >= 1 && empty($state['contactId']))                     { return $tr->translate('tr_meliscommerce_react_checkout_need_contact'); }
+        if ($step >= 2 && empty($state['clientId']))                      { return $tr->translate('tr_meliscommerce_react_checkout_need_account'); }
+        if ($step >= 3 && empty($state['countryId']))                     { return $tr->translate('tr_meliscommerce_react_checkout_need_country'); }
+        if ($step >= 3 && !$this->basketItems())                          { return $tr->translate('tr_meliscommerce_react_checkout_need_basket'); }
+        if ($step >= 4 && (empty($state['billingId']) || empty($state['deliveryId']))) { return $tr->translate('tr_meliscommerce_react_checkout_need_addresses'); }
+        if ($step >= 6 && empty($state['orderId']))                       { return $tr->translate('tr_meliscommerce_react_checkout_need_order'); }
+        return null;
+    }
+
+    /** Basket lines need a contact, its account and a country: prices and stock depend on the country. */
+    private function wizardBasketError(array $state): ?string
+    {
+        if ($err = $this->wizardStepError($state, 2)) { return $err; }
+        return empty($state['countryId'])
+            ? (string) $this->getServiceManager()->get('translator')->translate('tr_meliscommerce_react_checkout_need_country')
+            : null;
+    }
+
+    private function wizardRefused(string $message): HttpResponse
+    {
+        return $this->jsonResponse(['success' => false, 'error' => $message], 409);
+    }
+
     // Same 'tr_' + code convention MelisCommerceCheckoutCouponListener already uses for the
     // legacy flow's coupon errors — reuses the existing language/coupons/*.forms.coupons.php
     // strings instead of showing the raw error code in the UI (Mantis 0010750 follow-up).
@@ -962,6 +996,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
 
             $container = $this->checkoutContainer();
             $s = $container['checkout'][self::WIZARD_SITE_ID] ?? [];
+            if ($err = $this->wizardStepError($s, $step)) { return $this->wizardRefused($err); }
             $s['step'] = $step;
             $container['checkout'][self::WIZARD_SITE_ID] = $s;
 
@@ -1011,6 +1046,15 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
 
             $container = $this->checkoutContainer();
             $state = $container['checkout'][self::WIZARD_SITE_ID] ?? [];
+            // Another contact: the account, country, basket and addresses chosen for the previous
+            // one no longer apply (Mantis #0011608).
+            if (!empty($state['contactId']) && (int) $state['contactId'] !== $contactId) {
+                if (!empty($state['clientId'])) {
+                    $this->getServiceManager()->get('MelisComBasketService')->emptyBasket((int) $state['clientId']);
+                }
+                unset($state['clientId'], $state['countryId'], $state['billingId'], $state['deliveryId']);
+                $state['step'] = 1;
+            }
             $state['contactId'] = $contactId;
             $container['checkout'][self::WIZARD_SITE_ID] = $state;
             return $this->ok(['contactId' => $contactId]);
@@ -1028,6 +1072,20 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
 
             $container = $this->checkoutContainer();
             $state = $container['checkout'][self::WIZARD_SITE_ID] ?? [];
+            // an account of the selected contact only (Mantis #0011608)
+            if ($err = $this->wizardStepError($state, 1)) { return $this->wizardRefused($err); }
+            $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
+            $linked = iterator_to_array($db->query(
+                'SELECT 1 FROM melis_ecom_client_account_rel WHERE car_client_id = ? AND car_client_person_id = ?
+                 UNION SELECT 1 FROM melis_ecom_client_person_rel WHERE cpr_client_id = ? AND cpr_client_person_id = ? LIMIT 1',
+                [$clientId, (int) $state['contactId'], $clientId, (int) $state['contactId']]
+            ));
+            if (!$linked) {
+                return $this->wizardRefused((string) $this->getServiceManager()->get('translator')->translate('tr_meliscommerce_react_checkout_account_not_linked'));
+            }
+            if (!empty($state['clientId']) && (int) $state['clientId'] !== $clientId) {
+                unset($state['billingId'], $state['deliveryId']); // addresses of the previous account
+            }
             $state['clientId'] = $clientId;
             $state['deliveryMethod'] = $state['deliveryMethod'] ?? 'delivery';
             $container['checkout'][self::WIZARD_SITE_ID] = $state;
@@ -1051,6 +1109,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
 
             $container = $this->checkoutContainer();
             $state = $container['checkout'][self::WIZARD_SITE_ID] ?? [];
+            if ($err = $this->wizardStepError($state, 2)) { return $this->wizardRefused($err); } // Mantis #0011608
             $state['countryId'] = $countryId;
             $container['checkout'][self::WIZARD_SITE_ID] = $state;
 
@@ -1402,7 +1461,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
         try {
             $state    = $this->checkoutState();
             $clientId = (int) ($state['clientId'] ?? 0);
-            if (!$clientId) return $this->jsonResponse(['success' => false, 'error' => 'No account selected'], 400);
+            if ($err = $this->wizardBasketError($state)) { return $this->wizardRefused($err); } // Mantis #0011608
 
             $b         = json_decode((string) $this->getRequest()->getContent(), true) ?? [];
             $variantId = (int) ($b['variantId'] ?? 0);
@@ -1426,7 +1485,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
         try {
             $state    = $this->checkoutState();
             $clientId = (int) ($state['clientId'] ?? 0);
-            if (!$clientId) return $this->jsonResponse(['success' => false, 'error' => 'No account selected'], 400);
+            if ($err = $this->wizardBasketError($state)) { return $this->wizardRefused($err); } // Mantis #0011608
 
             $b         = json_decode((string) $this->getRequest()->getContent(), true) ?? [];
             $variantId = (int) ($b['variantId'] ?? 0);
@@ -1449,7 +1508,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
         try {
             $state    = $this->checkoutState();
             $clientId = (int) ($state['clientId'] ?? 0);
-            if (!$clientId) return $this->jsonResponse(['success' => false, 'error' => 'No account selected'], 400);
+            if ($err = $this->wizardBasketError($state)) { return $this->wizardRefused($err); } // Mantis #0011608
 
             $b         = json_decode((string) $this->getRequest()->getContent(), true) ?? [];
             $variantId = (int) ($b['variantId'] ?? 0);
@@ -1478,7 +1537,8 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
         try {
             $state    = $this->checkoutState();
             $clientId = (int) ($state['clientId'] ?? 0);
-            if (!$clientId) return $this->jsonResponse(['success' => false, 'error' => 'No account selected'], 400);
+            // addresses come after the basket: contact, account, country and at least one line (Mantis #0011608)
+            if ($err = $this->wizardStepError($state, 3)) { return $this->wizardRefused($err); }
 
             $b          = json_decode((string) $this->getRequest()->getContent(), true) ?? [];
             $billingId  = (int) ($b['billingId'] ?? 0);
@@ -1640,7 +1700,8 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
         try {
             $state    = $this->checkoutState();
             $clientId = (int) ($state['clientId'] ?? 0);
-            if (!$clientId) return $this->jsonResponse(['success' => false, 'error' => 'No account selected'], 400);
+            // every previous step must be done: contact, account, country, basket, addresses (Mantis #0011608)
+            if ($err = $this->wizardStepError($state, 5)) { return $this->wizardRefused($err); }
 
             $svc    = $this->checkoutSvc();
             // The order lines (product / category / attribute texts) are written in the "front plugin" language

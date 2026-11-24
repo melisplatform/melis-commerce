@@ -187,8 +187,13 @@ export default function CatalogPage() {
       )}
 
       {toDelete && (
-        <ConfirmModal title={t('del_title')} message={t('del_confirm', { u: `${toDelete.id} - ${toDelete.name}` })}
-          extra={toDelete.children.length > 0 && <p style={{ fontSize: 13, color: '#b45309', marginTop: 6 }}>{t(toDelete.type === 'catalog' ? 'del_catalog_warn' : 'del_category_warn')}</p>}
+        // With children the item cannot be deleted (422): say only that, and grey out the button,
+        // instead of also announcing an irreversible deletion (Mantis #0011187).
+        <ConfirmModal title={t('del_title')}
+          message={toDelete.children.length > 0
+            ? <span style={{ color: '#b45309' }}>{`${toDelete.id} - ${toDelete.name} : `}{t(toDelete.type === 'catalog' ? 'del_catalog_warn' : 'del_category_warn')}</span>
+            : t('del_confirm', { u: `${toDelete.id} - ${toDelete.name}` })}
+          confirmDisabled={toDelete.children.length > 0}
           onConfirm={confirmDelete} onCancel={() => setToDelete(null)} t={t} />
       )}
     </div>

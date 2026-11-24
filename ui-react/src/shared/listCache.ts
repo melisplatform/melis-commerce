@@ -16,5 +16,16 @@ export function makeCache<T>() {
     get: (): T | null => value,
     set: (v: T) => { value = v },
     clear: () => { value = null },
+    /**
+     * Drop the cached rows but keep filters, search, sort and mode. The list skips its first
+     * fetch while it has cached rows (skipInitial), so a form that creates or edits an item calls
+     * this after saving: back on the list, the rows are fetched again and show the new item
+     * (Mantis #0011607 — the counters were refreshed, the table was not).
+     */
+    invalidate: () => {
+      if (value && typeof value === 'object' && 'items' in (value as object)) {
+        value = { ...(value as object), items: [] } as T
+      }
+    },
   }
 }
