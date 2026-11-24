@@ -17,7 +17,7 @@ use MelisCore\Controller\MelisAbstractActionController;
 
 class MelisComPriceController extends MelisAbstractActionController
 {
-    /** @INFO: Tool access check (CWE-862). */
+    /** @INFO: Tool access check. */
     private function hasAccess($key)
     {
         return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
@@ -383,7 +383,7 @@ class MelisComPriceController extends MelisAbstractActionController
     
     public function validatePriceFormAction()
     {
-        /** @INFO: Access check (tool right) — CWE-862 */
+        /** @INFO: Access check (tool right) */
         if (! $this->hasAccess('meliscommerce_product_list_container')) {
             return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
         }
@@ -467,7 +467,7 @@ class MelisComPriceController extends MelisAbstractActionController
     */
     public function priceCountryDeletedAction()
     {
-        /** @INFO: Access check (tool right) — CWE-862 */
+        /** @INFO: Access check (tool right) */
         if (! $this->hasAccess('meliscommerce_product_list_container')) {
             return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
         }
@@ -530,7 +530,7 @@ class MelisComPriceController extends MelisAbstractActionController
 
     public function testAction()
     {
-        /** @INFO: Access check (tool right) — CWE-862 */
+        /** @INFO: Access check (tool right) */
         if (! $this->hasAccess('meliscommerce_product_list_container')) {
             return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
         }

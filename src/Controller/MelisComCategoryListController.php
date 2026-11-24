@@ -19,8 +19,8 @@ use MelisCommerce\Model\Language;
 class MelisComCategoryListController extends MelisAbstractActionController
 {
     /**
-     * Outil auquel ce contrôleur appartient (audit DEKRA 7.0) : MelisCoreAuthorizationListener
-     * vérifie canAccess() sur cette clé AVANT le dispatch.
+     * Outil auquel ce contrôleur appartient : MelisCoreAuthorizationListener
+     * vérifie canAccess() sur cette clé avant le dispatch.
      */
     const MELIS_KEY = 'meliscommerce_categories_page';
 
@@ -29,7 +29,7 @@ class MelisComCategoryListController extends MelisAbstractActionController
         'getCategoryTreeView' => '@login', // arbre de catégories des produits et du plugin category-jstree commun
     ];
 
-    /** @INFO: Tool access check (CWE-862). */
+    /** @INFO: Tool access check. */
     private function hasAccess($key)
     {
         return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);

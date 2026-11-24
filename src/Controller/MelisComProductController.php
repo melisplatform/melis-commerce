@@ -18,7 +18,7 @@ use MelisCore\Controller\MelisAbstractActionController;
 
 class MelisComProductController extends MelisAbstractActionController
 {
-    /** @INFO: Tool access check (CWE-862). */
+    /** @INFO: Tool access check. */
     private function hasAccess($key)
     {
         return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
@@ -1009,7 +1009,7 @@ class MelisComProductController extends MelisAbstractActionController
      */
     public function addProductTextTypeAction()
     {
-        /** @INFO: Access check (tool right) — CWE-862 */
+        /** @INFO: Access check (tool right) */
         if (! $this->hasAccess('meliscommerce_product_list_container')) {
             return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
         }
@@ -1110,7 +1110,7 @@ class MelisComProductController extends MelisAbstractActionController
      */
     public function addProductTextAction()
     {
-        /** @INFO: Access check (tool right) — CWE-862 */
+        /** @INFO: Access check (tool right) */
         if (! $this->hasAccess('meliscommerce_product_list_container')) {
             return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
         }
@@ -1194,7 +1194,7 @@ class MelisComProductController extends MelisAbstractActionController
      */
     public function saveProductAction()
     {
-        /** @INFO: Access check (tool right) — CWE-862 */
+        /** @INFO: Access check (tool right) */
         if (! $this->hasAccess('meliscommerce_product_list_container')) {
             return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
         }
@@ -1293,7 +1293,7 @@ class MelisComProductController extends MelisAbstractActionController
      */
     public function saveProductDataAction()
     {
-        /** @INFO: Access check (tool right) — CWE-862 */
+        /** @INFO: Access check (tool right) */
         if (! $this->hasAccess('meliscommerce_product_list_container')) {
             return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
         }
@@ -1538,7 +1538,7 @@ class MelisComProductController extends MelisAbstractActionController
      */
     public function getAttributesAction()
     {
-        /** @INFO: Access check (tool right) — CWE-862 */
+        /** @INFO: Access check (tool right) */
         if (! $this->hasAccess('meliscommerce_product_list_container')) {
             return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
         }
@@ -1601,7 +1601,7 @@ class MelisComProductController extends MelisAbstractActionController
 
     public function getAttributesExceptAttributesOnProductIdAction()
     {
-        /** @INFO: Access check (tool right) — CWE-862 */
+        /** @INFO: Access check (tool right) */
         if (! $this->hasAccess('meliscommerce_product_list_container')) {
             return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
         }
@@ -1799,7 +1799,7 @@ class MelisComProductController extends MelisAbstractActionController
 
     public function getProductTextAction()
     {
-        /** @INFO: Access check (tool right) — CWE-862 */
+        /** @INFO: Access check (tool right) */
         if (! $this->hasAccess('meliscommerce_product_list_container')) {
             return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
         }
@@ -1823,7 +1823,7 @@ class MelisComProductController extends MelisAbstractActionController
 
     public function deleteAction()
     {
-        /** @INFO: Access check (tool right) — CWE-862 */
+        /** @INFO: Access check (tool right) */
         if (! $this->hasAccess('meliscommerce_product_list_container')) {
             return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
         }
@@ -1941,7 +1941,7 @@ class MelisComProductController extends MelisAbstractActionController
      */
     public function checkAttributeOnVariantAction()
     {
-        /** @INFO: Access check (tool right) — CWE-862 */
+        /** @INFO: Access check (tool right) */
         if (! $this->hasAccess('meliscommerce_product_list_container')) {
             return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
         }

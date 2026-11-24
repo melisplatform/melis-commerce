@@ -458,7 +458,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
 
     /**
      * Valide un fichier téléversé contre une allow-list stricte d'extensions ET le vrai type MIME
-     * (défense anti-RCE : refuse php/phtml/phar/svg/html/js/…). Renvoie l'extension validée sûre.
+     * (refuse php/phtml/phar/svg/html/js/…). Renvoie l'extension validée.
      *
      * @param array $file entrée $_FILES (tmp_name, name, error…)
      * @return array{0: ?string, 1: ?string} [extensionValidée, messageErreurOuNull]
@@ -539,7 +539,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                 return $this->jsonResponse(['success' => false, 'error' => $uploadErr], 400);
             }
             // Nom disque 100 % généré côté serveur : seule l'extension validée est conservée
-            // (l'extension/nom d'origine du client ne sont jamais réutilisés — anti-RCE).
+            // (l'extension/nom d'origine du client ne sont jamais réutilisés).
             $storedName = time() . '_' . substr(md5(uniqid('', true)), 0, 16) . '.' . $ext;
             $dir      = $this->uploadDir($id);
             $relPath  = 'orders/' . $id . '/' . $storedName;
