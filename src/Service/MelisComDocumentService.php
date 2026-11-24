@@ -20,7 +20,7 @@ use MelisCommerce\Entity\MelisDocument;
 class MelisComDocumentService extends MelisComGeneralService
 {
     /**
-     * SECURITY (audit CM-H1) : garde d'upload — résout une extension sûre et allow-listée,
+     * Garde d'upload — résout une extension sûre et allow-listée,
      * ou null si refusé. Impose À LA FOIS l'allow-list d'extensions ET le type réel du
      * contenu (MIME finfo) : les extensions exécutables/actives (php/phtml/phar/pht/svg/
      * svgz/html/xhtml/xml/…) ne sont jamais acceptées, quel que soit le nom fourni par le
@@ -73,7 +73,7 @@ class MelisComDocumentService extends MelisComGeneralService
             $mime = (string) @finfo_file($fi, (string) $tmpPath);
             @finfo_close($fi);
         }
-        // finfo indisponible → l'allow-list d'extensions reste le plancher.
+        // Type réel du contenu, quand finfo le fournit.
         if ($mime !== '' && !\in_array($mime, $allow[$ext], true)) {
             return null;
         }

@@ -24,10 +24,7 @@ class DiagnosticController extends MelisAbstractActionController
     private $odbAdapter;
 
     /**
-     * SECURITY (audit CM-H2) : pas de clé d'outil (MELIS_KEY) — avec `access_gate_strict=0`
-     * le listener d'autorisation laisse passer les contrôleurs « nus » : tout compte BO
-     * connecté pouvait lire la config DB de la plateforme (include du platforms/<env>.php)
-     * et lancer les requêtes de diagnostic. Garde unique : admin plateforme uniquement.
+     * Outil de diagnostic sans clé d'outil (MELIS_KEY) : réservé à l'admin plateforme.
      */
     public function onDispatch(\Laminas\Mvc\MvcEvent $e)
     {

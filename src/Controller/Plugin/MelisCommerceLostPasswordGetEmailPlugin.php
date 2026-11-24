@@ -113,10 +113,8 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
                     if (empty($clientPerson))
                     {
                         /**
-                         * SECURITY (audit CM-M2) : la réponse « cet email n'existe pas »
-                         * permettait d'énumérer la base clients depuis le front anonyme.
-                         * Réponse désormais IDENTIQUE à un envoi réussi (aucun email n'est
-                         * envoyé, mais rien ne distingue un compte connu d'un inconnu).
+                         * Réponse identique à un envoi réussi (aucun email n'est envoyé) :
+                         * rien ne distingue un compte connu d'un inconnu.
                          */
                         $message = $translator->translate('tr_meliscommerce_general_send_email_success');
                         $success = 1;

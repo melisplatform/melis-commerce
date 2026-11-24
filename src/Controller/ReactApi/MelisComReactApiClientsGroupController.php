@@ -221,7 +221,7 @@ class MelisComReactApiClientsGroupController extends MelisAbstractActionControll
 
     private function errorResponse(\Throwable $e, int $status = 500): HttpResponse
     {
-        // SECURITY (audit CM-M1) : détail au log serveur, message générique au client.
+        // Détail au log serveur, message générique au client.
         error_log('MelisCommerce ReactApi: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
         return $this->jsonResponse(['success' => false, 'error' => 'Internal error'], $status);
     }

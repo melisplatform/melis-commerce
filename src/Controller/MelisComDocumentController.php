@@ -314,13 +314,9 @@ class MelisComDocumentController extends MelisAbstractActionController
                     $formattedFileName = $this->getFormattedFileName($fileName);
 
                     /**
-                     * SECURITY (audit CM-H1) : la branche docType=file n'avait AUCUNE allow-list
-                     * d'extension (un .php déposé sous public/media/commerce/ était exécutable =
-                     * RCE) et les images n'étaient validées que par getimagesize (pas de MIME
-                     * réel). Garde partagée du service : allow-list sans type exécutable/actif +
-                     * MIME finfo croisé avec l'extension, pour les images ET les fichiers. On
-                     * réutilise le gate $isImgTypeOk existant (initialisé à true plus haut, il
-                     * laissait passer tous les fichiers).
+                     * Garde partagée du service : allow-list sans type exécutable/actif + MIME
+                     * finfo croisé avec l'extension, pour les images ET les fichiers (via le
+                     * gate $isImgTypeOk).
                      */
                     if (!empty($uploadedFile['tmp_name'])) {
                         $validatedUploadExt = $this->getDocSvc()->validatedExtension(
