@@ -16,7 +16,7 @@ use MelisCore\Controller\MelisAbstractActionController;
 
 class MelisComAttributeController extends MelisAbstractActionController
 {
-    /** @INFO: Tool access check (CWE-862). */
+    /** @INFO: Tool access check. */
     private function hasAccess($key)
     {
         return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);

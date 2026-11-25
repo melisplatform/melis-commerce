@@ -18,8 +18,8 @@ use MelisCommerce\Model\Product;
 class MelisComProductListController extends MelisAbstractActionController
 {
     /**
-     * Outil auquel ce contrôleur appartient (audit DEKRA 7.0) : MelisCoreAuthorizationListener
-     * vérifie canAccess() sur cette clé AVANT le dispatch.
+     * Outil auquel ce contrôleur appartient : MelisCoreAuthorizationListener
+     * vérifie canAccess() sur cette clé avant le dispatch.
      */
     const MELIS_KEY = 'meliscommerce_product_list_container';
 
@@ -28,7 +28,7 @@ class MelisComProductListController extends MelisAbstractActionController
         'getToolTip' => ['meliscommerce_product_list_container', 'meliscommerce_categories_page'], // infobulles des outils Catégories, Produits et Variantes
     ];
 
-    /** @INFO: Tool access check (CWE-862). */
+    /** @INFO: Tool access check. */
     private function hasAccess($key)
     {
         return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
@@ -320,7 +320,7 @@ class MelisComProductListController extends MelisAbstractActionController
 
     public function getToolTipAction()
     {
-        /** @INFO: Access check (tool right) — CWE-862 */
+        /** @INFO: Access check (tool right) */
         if (! $this->hasAccess('meliscommerce_product_list_container')) {
             return new JsonModel(['content' => []]);
         }

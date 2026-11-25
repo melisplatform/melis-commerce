@@ -19,7 +19,7 @@ use MelisCore\Controller\MelisAbstractActionController;
  */
 class MelisComPrdVarDuplicationController extends MelisAbstractActionController
 {
-    /** @INFO: Tool access check (CWE-862). */
+    /** @INFO: Tool access check. */
     private function hasAccess($key)
     {
         return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
@@ -142,7 +142,7 @@ class MelisComPrdVarDuplicationController extends MelisAbstractActionController
      */
     public function duplicateVariantAction()
     {
-        /** @INFO: Access check (tool right) — CWE-862 */
+        /** @INFO: Access check (tool right) */
         if (! $this->hasAccess('meliscommerce_product_list_container')) {
             return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
         }
@@ -248,7 +248,7 @@ class MelisComPrdVarDuplicationController extends MelisAbstractActionController
      */
     public function duplicateProductAction()
     {
-        /** @INFO: Access check (tool right) — CWE-862 */
+        /** @INFO: Access check (tool right) */
         if (! $this->hasAccess('meliscommerce_product_list_container')) {
             return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
         }
@@ -355,7 +355,7 @@ class MelisComPrdVarDuplicationController extends MelisAbstractActionController
      */
     public function validateVariantDataAction()
     {
-        /** @INFO: Access check (tool right) — CWE-862 */
+        /** @INFO: Access check (tool right) */
         if (! $this->hasAccess('meliscommerce_product_list_container')) {
             return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
         }

@@ -308,8 +308,8 @@ class MelisComDocumentController extends MelisAbstractActionController
                     $maxSize = $confDocUpload['maxUploadSize'];
 
                     $uploadedFile = $request->getFiles()->toArray()['doc_path'];
-                    // Sécurité : nom fourni par le client → basename() (empêche une traversée « ../ »
-                    // dans la destination/rename qui écrirait hors de public/media/commerce).
+                    // Nom fourni par le client → basename() : la destination reste dans
+                    // public/media/commerce.
                     $fileName = basename((string) $uploadedFile['name']);
                     $formattedFileName = $this->getFormattedFileName($fileName);
 
@@ -1082,13 +1082,13 @@ class MelisComDocumentController extends MelisAbstractActionController
         ));
     }
 
-    /** @INFO: Tool access check (CWE-862). */
+    /** @INFO: Tool access check. */
     private function hasAccess($key)
     {
         return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
     }
 
-    /** @INFO: map a document relation type to its tool rights key (CWE-862). */
+    /** @INFO: map a document relation type to its tool rights key. */
     private function docRelationKey()
     {
         $t = (string) $this->getRequest()->getPost('docRelationType', $this->getRequest()->getQuery('docRelationType', ''));
