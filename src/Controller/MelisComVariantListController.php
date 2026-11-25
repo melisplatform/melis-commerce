@@ -17,7 +17,7 @@ use MelisCommerce\Model\Variant;
 
 class MelisComVariantListController extends MelisAbstractActionController
 {
-    /** @INFO: Tool access check (CWE-862). */
+    /** @INFO: Tool access check. */
     private function hasAccess($key)
     {
         return $this->getServiceManager()->get('MelisCoreRights')->canAccess($key);
@@ -238,7 +238,7 @@ class MelisComVariantListController extends MelisAbstractActionController
 
     public function getToolTipAction()
     {
-        /** @INFO: Access check (tool right) — CWE-862 */
+        /** @INFO: Access check (tool right) */
         if (! $this->hasAccess('meliscommerce_product_list_container')) {
             return new JsonModel(['content' => []]);
         }
@@ -336,7 +336,7 @@ class MelisComVariantListController extends MelisAbstractActionController
      */
     public function updateVariantStatusAction()
     {
-        /** @INFO: Access check (tool right) — CWE-862 */
+        /** @INFO: Access check (tool right) */
         if (! $this->hasAccess('meliscommerce_product_list_container')) {
             return new JsonModel(['success' => 0, 'textTitle' => '', 'textMessage' => 'tr_meliscore_microservice_api_key_no_access', 'errors' => [], 'datas' => []]);
         }
